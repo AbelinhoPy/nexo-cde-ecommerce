@@ -394,6 +394,57 @@ export default function StorefrontPage() {
             </div>
           </div>
         </div>
+
+        {/* Barra de Logística y Garantía TSI (Reemplazo visual moderno y armónico) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-start gap-3.5 hover:border-emerald-500 transition group">
+            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition shrink-0">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Flete Plano TSI</h4>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                ₲ 35.000 (móviles/audio) y ₲ 50.000 (consolas/TVs). Envío asegurado a todo el interior.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-start gap-3.5 hover:border-blue-500 transition group">
+            <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition shrink-0">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Corte 12:00 PM</h4>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Pagos confirmados antes de las 12:00 salen hoy mismo a las 13:00 hs desde CDE.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-start gap-3.5 hover:border-purple-500 transition group">
+            <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition shrink-0">
+              <Camera className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Boleta Sellada en Perfil</h4>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Te subimos la foto real de la guía sellada en ventanilla TSI con número de rastreo.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs flex items-start gap-3.5 hover:border-emerald-500 transition group">
+            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">SIPAP Continental</h4>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Cuenta oficial RUC 4196328-8 • Abel Núñez. Facturación legal y 100% trazable.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ==============================================================================
