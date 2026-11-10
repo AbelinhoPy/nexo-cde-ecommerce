@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { codigoPedido, numeroGuiaTsi, telefonoCliente, nombreCliente } = await req.json();
+    const { codigoPedido, numeroGuiaTsi, telefonoCliente, nombreCliente, fotoGuiaTsi } = await req.json();
 
     if (!codigoPedido || !numeroGuiaTsi) {
       return NextResponse.json(
@@ -32,10 +32,11 @@ export async function POST(req: NextRequest) {
           `
           UPDATE pedidos
           SET estado = 'DESPACHADO_TSI',
-              numero_guia_tsi = $1
-          WHERE codigo_pedido = $2;
+              numero_guia_tsi = $1,
+              foto_guia_tsi = COALESCE($2, foto_guia_tsi)
+          WHERE codigo_pedido = $3;
           `,
-          [guiaSanitizada, codigoPedido]
+          [guiaSanitizada, fotoGuiaTsi || null, codigoPedido]
         );
 
         await query(

@@ -7,6 +7,8 @@ import {
   hashSHA256 
 } from "@/lib/customerAuth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization") || req.headers.get("x-customer-token");

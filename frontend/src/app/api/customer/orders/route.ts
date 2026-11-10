@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { isDbConfigured, getPool } from "@/lib/db";
 import { verifyCustomerToken } from "@/lib/customerAuth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization") || req.headers.get("x-customer-token");
@@ -38,6 +40,7 @@ export async function GET(req: NextRequest) {
           p.estado,
           p.fecha_pago,
           p.numero_guia_tsi,
+          p.foto_guia_tsi,
           p.created_at
         FROM pedidos p
         WHERE p.cliente_id = $1
@@ -77,6 +80,7 @@ export async function GET(req: NextRequest) {
             estado: ped.estado,
             fechaPago: ped.fecha_pago,
             numeroGuiaTsi: ped.numero_guia_tsi,
+            fotoGuiaTsi: ped.foto_guia_tsi || null,
             trackingUrl: ped.numero_guia_tsi ? `https://tsi.com.py/tracking?guia=${encodeURIComponent(ped.numero_guia_tsi)}` : null,
             createdAt: ped.created_at,
             items: itemsRes.rows.map((it: any) => ({

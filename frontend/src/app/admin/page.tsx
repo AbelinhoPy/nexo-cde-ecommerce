@@ -19,12 +19,17 @@ import {
   ArrowLeft,
   Lock,
   KeyRound,
-  LogOut
+  LogOut,
+  Camera,
+  Eye,
+  Sparkles,
+  MessageSquare,
+  X
 } from "lucide-react";
 import { NexoLogo } from "@/components/NexoLogo";
 
 export default function AdminDashboardPage() {
-  const [tabActiva, setTabActiva] = useState<"agenda" | "guias" | "metricas">("agenda");
+  const [tabActiva, setTabActiva] = useState<"agenda" | "guias" | "concierge" | "metricas">("agenda");
   const [cargando, setCargando] = useState(false);
 
   // Estados de autenticación y PIN
@@ -38,6 +43,11 @@ export default function AdminDashboardPage() {
   const [agenda, setAgenda] = useState<any[]>([]);
   const [totalUsdTienda, setTotalUsdTienda] = useState(0);
   const [metricas, setMetricas] = useState<any>(null);
+  const [solicitudesConcierge, setSolicitudesConcierge] = useState<any[]>([]);
+
+  // Fotos de comprobantes TSI por pedido
+  const [fotosMap, setFotosMap] = useState<Record<string, string>>({});
+  const [fotoModalAdmin, setFotoModalAdmin] = useState<string | null>(null);
 
   // Estados para Registro de Guía TSI
   const [codigoPedidoInput, setCodigoPedidoInput] = useState("");
@@ -45,8 +55,8 @@ export default function AdminDashboardPage() {
   const [telefonoClienteInput, setTelefonoClienteInput] = useState("");
   const [mensajeGuiaStatus, setMensajeGuiaStatus] = useState<string | null>(null);
 
-  // Pedidos listos para despacho (Mock demo)
-  const [pedidosPendientesDespacho, setPedidosPendientesDespacho] = useState([
+  // Pedidos listos para despacho (Mock demo inicial)
+  const [pedidosPendientesDespacho, setPedidosPendientesDespacho] = useState<any[]>([
     {
       codigo: "CDE-20261109-9481",
       cliente: "Juan Carlos Bogado",
@@ -106,6 +116,8 @@ export default function AdminDashboardPage() {
         }
         cargarAgenda(pinAProbar.trim());
         cargarMetricas(pinAProbar.trim());
+        cargarPedidosAdmin(pinAProbar.trim());
+        cargarConcierge(pinAProbar.trim());
       } else {
         setIsAuthenticated(false);
         setPinError("PIN incorrecto. Revisa el valor configurado en ADMIN_ACCESS_PIN.");
@@ -155,6 +167,46 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const cargarPedidosAdmin = async (pinActivo = adminPin) => {
+    try {
+      const res = await fetch("/api/admin/orders", {
+        headers: { "x-admin-pin": pinActivo }
+      });
+      const data = await res.json();
+      if (data.success && data.pedidos && data.pedidos.length > 0) {
+        setPedidosPendientesDespacho(data.pedidos);
+      }
+    } catch (e) {
+      console.error("Error cargando pedidos:", e);
+    }
+  };
+
+  const cargarConcierge = async (pinActivo = adminPin) => {
+    try {
+      const res = await fetch("/api/admin/concierge", {
+        headers: { "x-admin-pin": pinActivo }
+      });
+      const data = await res.json();
+      if (data.success && data.solicitudes) {
+        setSolicitudesConcierge(data.solicitudes);
+      }
+    } catch (e) {
+      console.error("Error cargando concierge:", e);
+    }
+  };
+
+  const handleFotoSelect = (codigo: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setFotosMap(prev => ({ ...prev, [codigo]: base64 }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const registrarGuiaTsi = async (codigo: string, guia: string, telefono: string, cliente: string) => {
     if (!guia.trim()) {
       alert("Por favor ingrese o escanee el número de guía de TSI.");
@@ -175,16 +227,17 @@ export default function AdminDashboardPage() {
           codigoPedido: codigo,
           numeroGuiaTsi: guia,
           telefonoCliente: telefono,
-          nombreCliente: cliente
+          nombreCliente: cliente,
+          fotoGuiaTsi: fotosMap[codigo] || null
         })
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setMensajeGuiaStatus(`✓ Guía ${guia.toUpperCase()} asignada a ${codigo}. Notificación WhatsApp enviada al cliente.`);
+        setMensajeGuiaStatus(`✓ Guía ${guia.toUpperCase()} y comprobante físico vinculados a ${codigo}.`);
         setPedidosPendientesDespacho(prev =>
-          prev.map(p => (p.codigo === codigo ? { ...p, guia: guia.toUpperCase() } : p))
+          prev.map(p => (p.codigo === codigo ? { ...p, guia: guia.toUpperCase(), fotoGuiaTsi: fotosMap[codigo] || p.fotoGuiaTsi } : p))
         );
         setCodigoPedidoInput("");
         setNumeroGuiaInput("");
@@ -318,6 +371,18 @@ export default function AdminDashboardPage() {
               >
                 <Barcode className="w-4 h-4" />
                 Guías TSI
+              </button>
+
+              <button
+                onClick={() => setTabActiva("concierge")}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
+                  tabActiva === "concierge"
+                    ? "bg-indigo-600 text-white shadow"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <MessageSquare className="w-4 h-4" />
+                Solicitudes Concierge ({solicitudesConcierge.length})
               </button>
 
               <button
@@ -474,9 +539,9 @@ export default function AdminDashboardPage() {
                       <th className="py-3 px-4">Código</th>
                       <th className="py-3 px-4">Destinatario & Teléfono</th>
                       <th className="py-3 px-4">Destino</th>
-                      <th className="py-3 px-4">Producto</th>
                       <th className="py-3 px-4">Flete Cobrado</th>
                       <th className="py-3 px-4">Número de Guía TSI</th>
+                      <th className="py-3 px-4">Comprobante Físico TSI</th>
                       <th className="py-3 px-4 text-center">Acción</th>
                     </tr>
                   </thead>
@@ -491,13 +556,10 @@ export default function AdminDashboardPage() {
                           <div className="text-slate-400 text-xs">{pedido.telefono}</div>
                         </td>
                         <td className="py-3.5 px-4 text-slate-300 font-medium">
-                          {pedido.destino}
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-300 text-xs">
-                          {pedido.producto}
+                          {pedido.ciudad ? `${pedido.ciudad}, ${pedido.departamento || ""}` : pedido.destino}
                         </td>
                         <td className="py-3.5 px-4 font-mono text-emerald-400 font-semibold">
-                          ₲ {pedido.fletePyg.toLocaleString("es-PY")}
+                          ₲ {pedido.fletePyg?.toLocaleString("es-PY")}
                         </td>
                         <td className="py-3.5 px-4">
                           {pedido.guia ? (
@@ -510,13 +572,51 @@ export default function AdminDashboardPage() {
                               placeholder="Escanear Guía TSI..."
                               defaultValue={pedido.guia}
                               id={`input-${pedido.codigo}`}
-                              className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:ring-1 focus:ring-indigo-500 outline-none w-48"
+                              className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:ring-1 focus:ring-indigo-500 outline-none w-44"
                             />
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          {pedido.fotoGuiaTsi ? (
+                            <button
+                              onClick={() => setFotoModalAdmin(pedido.fotoGuiaTsi)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs hover:bg-emerald-900/60 transition cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Ver Foto</span>
+                            </button>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <label className="cursor-pointer px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500 text-xs flex items-center gap-1.5 text-slate-300 transition">
+                                <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>{fotosMap[pedido.codigo] ? "✓ Foto Lista" : "📷 Foto TSI"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  capture="environment"
+                                  className="hidden"
+                                  onChange={(e) => handleFotoSelect(pedido.codigo, e)}
+                                />
+                              </label>
+                              {fotosMap[pedido.codigo] && (
+                                <button
+                                  onClick={() => setFotosMap(prev => {
+                                    const next = { ...prev };
+                                    delete next[pedido.codigo];
+                                    return next;
+                                  })}
+                                  className="p-1 rounded text-rose-400 hover:bg-rose-950/50"
+                                  title="Quitar foto"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
                           )}
                         </td>
                         <td className="py-3.5 px-4 text-center">
                           {pedido.guia ? (
-                            <span className="text-[11px] text-slate-400">Despachado</span>
+                            <span className="text-[11px] text-emerald-400 font-semibold">✓ Despachado</span>
                           ) : (
                             <button
                               onClick={() => {
@@ -531,7 +631,7 @@ export default function AdminDashboardPage() {
                                 }
                               }}
                               disabled={cargando}
-                              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition flex items-center gap-1.5 mx-auto"
+                              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition flex items-center gap-1.5 mx-auto cursor-pointer"
                             >
                               <Send className="w-3.5 h-3.5" />
                               Despachar
@@ -543,6 +643,91 @@ export default function AdminDashboardPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: SOLICITUDES ESPECIALES CONCIERGE (ENCARGOS FUERA DE CATÁLOGO) */}
+        {tabActiva === "concierge" && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="bg-slate-800/60 rounded-2xl border border-slate-700 p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    Solicitudes de Pedidos Especiales (Concierge CDE)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Artículos solicitados por clientes que no estaban en el catálogo web. Cotízalos con Atacado Connect y contáctalos por WhatsApp.
+                  </p>
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  {solicitudesConcierge.length} Solicitudes
+                </span>
+              </div>
+
+              {solicitudesConcierge.length === 0 ? (
+                <div className="text-center py-12 text-slate-400 text-xs">
+                  No hay solicitudes de productos especiales pendientes por el momento.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm">
+                    <thead className="bg-slate-900/80 text-slate-400 text-xs uppercase tracking-wider">
+                      <tr>
+                        <th className="py-3 px-4">Fecha</th>
+                        <th className="py-3 px-4">Cliente</th>
+                        <th className="py-3 px-4">Teléfono WhatsApp</th>
+                        <th className="py-3 px-4">Producto Solicitado</th>
+                        <th className="py-3 px-4">Ciudad Destino</th>
+                        <th className="py-3 px-4">Link / Referencia</th>
+                        <th className="py-3 px-4 text-center">Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-700/60">
+                      {solicitudesConcierge.map((sol) => (
+                        <tr key={sol.id} className="hover:bg-slate-750/50 transition">
+                          <td className="py-3.5 px-4 text-slate-400 text-xs whitespace-nowrap">
+                            {new Date(sol.created_at).toLocaleDateString("es-PY")}
+                          </td>
+                          <td className="py-3.5 px-4 font-semibold text-white">
+                            {sol.nombre}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-emerald-400 font-bold">
+                            {sol.telefono}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-200 font-medium">
+                            {sol.producto_solicitado}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-300">
+                            {sol.ciudad_destino || "No especificada"}
+                          </td>
+                          <td className="py-3.5 px-4 text-xs text-indigo-400 max-w-xs truncate">
+                            {sol.link_referencia ? (
+                              <a href={sol.link_referencia} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                {sol.link_referencia}
+                              </a>
+                            ) : (
+                              <span className="text-slate-500">—</span>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-4 text-center">
+                            <a
+                              href={`https://wa.me/${sol.telefono.replace(/\D/g, "")}?text=${encodeURIComponent(`Hola ${sol.nombre}, te saluda Abel de NEXO CDE. Recibí tu solicitud para conseguirte: "${sol.producto_solicitado}". Ya verifiqué stock en Ciudad del Este y te paso la cotización mayorista con flete TSI:`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-xs"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              Contactar WhatsApp
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -673,6 +858,40 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </div>
+
+      {/* MODAL LIGHTBOX FOTO TSI ADMIN */}
+      {fotoModalAdmin && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+          onClick={() => setFotoModalAdmin(null)}
+        >
+          <div 
+            className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-4 space-y-3 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Camera className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold text-white">Comprobante Físico de Ventanilla TSI (CDE)</h3>
+              </div>
+              <button
+                onClick={() => setFotoModalAdmin(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center bg-black/50 rounded-xl p-2 min-h-[300px]">
+              <img
+                src={fotoModalAdmin}
+                alt="Comprobante TSI"
+                className="max-h-[65vh] max-w-full rounded-lg object-contain shadow"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

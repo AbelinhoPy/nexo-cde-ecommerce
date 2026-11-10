@@ -14,7 +14,10 @@ import {
   MapPin, 
   Phone, 
   CreditCard,
-  Save
+  Save,
+  Camera,
+  Eye,
+  Download
 } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 
@@ -53,6 +56,7 @@ export function ProfileDrawer() {
   const [tab, setTab] = useState<"ticket" | "pedidos" | "password">("ticket");
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [cargandoPedidos, setCargandoPedidos] = useState(false);
+  const [fotoModalUrl, setFotoModalUrl] = useState<string | null>(null);
 
   // Estados de edición de ticket
   const [editTicket, setEditTicket] = useState({
@@ -434,6 +438,32 @@ export function ProfileDrawer() {
                         </div>
                       )}
 
+                      {/* Comprobante Físico de Ventanilla TSI */}
+                      {ped.fotoGuiaTsi && (
+                        <div className="p-3 bg-emerald-50/90 border border-emerald-300 rounded-xl space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-emerald-900 font-bold text-xs">
+                              <Camera className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Comprobante Físico TSI</span>
+                            </div>
+                            <span className="text-[10px] bg-emerald-200 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                              Sellado en CDE
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-emerald-800">
+                            Foto oficial tomada en ventanilla de Transportadora TSI con sello de recepción y firma.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setFotoModalUrl(ped.fotoGuiaTsi)}
+                            className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Ver Foto del Documento Físico</span>
+                          </button>
+                        </div>
+                      )}
+
                       {/* Total */}
                       <div className="flex justify-between items-baseline pt-2 border-t border-slate-200 text-xs">
                         <span className="text-slate-500">Total Liquidado</span>
@@ -512,6 +542,59 @@ export function ProfileDrawer() {
           </div>
         </div>
       </div>
+
+      {/* MODAL LIGHTBOX FOTO COMPROBANTE TSI */}
+      {fotoModalUrl && (
+        <div 
+          className="fixed inset-0 z-60 bg-black/85 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+          onClick={() => setFotoModalUrl(null)}
+        >
+          <div 
+            className="bg-slate-900 text-white rounded-2xl max-w-2xl w-full p-4 border border-slate-700 shadow-2xl flex flex-col max-h-[90vh] space-y-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Camera className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">Comprobante Físico de Despacho TSI</h3>
+                  <span className="text-[10px] text-slate-400">Sellado en ventanilla de Transportadora San Ignacio (CDE)</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setFotoModalUrl(null)}
+                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-auto py-2 flex items-center justify-center bg-black/40 rounded-xl min-h-[300px]">
+              <img
+                src={fotoModalUrl}
+                alt="Comprobante Físico de Despacho TSI"
+                className="max-h-[60vh] max-w-full rounded-lg shadow-lg object-contain border border-slate-800"
+              />
+            </div>
+
+            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span className="text-[11px]">Guía oficial emitida para entrega en tu localidad</span>
+              <a
+                href={fotoModalUrl}
+                download="comprobante_tsi_cde.jpg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 text-xs transition"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Descargar Documento
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

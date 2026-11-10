@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     fecha_pago TIMESTAMP WITH TIME ZONE,
     comprobante_sipap VARCHAR(80),
     numero_guia_tsi VARCHAR(60),
+    foto_guia_tsi TEXT, -- Foto nítida del comprobante físico emitido en ventanilla TSI
     
     -- Auditoría legal de aceptación de términos
     terminos_aceptados BOOLEAN NOT NULL DEFAULT FALSE,
@@ -265,3 +266,21 @@ JOIN (
 WHERE ped.estado IN ('PAGADO', 'COMPRADO_PROVEEDOR', 'EN_EMBALAJE', 'DESPACHADO_TSI', 'ENTREGADO')
 GROUP BY DATE(ped.fecha_pago)
 ORDER BY fecha DESC;
+
+-- 11. TABLA DE SOLICITUDES ESPECIALES CONCIERGE (ENCARGOS FUERA DE CATÁLOGO)
+CREATE TABLE IF NOT EXISTS solicitudes_concierge (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    nombre VARCHAR(150) NOT NULL,
+    telefono VARCHAR(50) NOT NULL,
+    email VARCHAR(180),
+    producto_solicitado VARCHAR(255) NOT NULL,
+    link_referencia TEXT,
+    presupuesto_estimado VARCHAR(100),
+    ciudad_destino VARCHAR(100),
+    estado VARCHAR(50) DEFAULT 'PENDIENTE', -- PENDIENTE, COTIZADO, CONFIRMADO, DESCARTADO
+    notas TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_solicitudes_telefono ON solicitudes_concierge(telefono);
+
