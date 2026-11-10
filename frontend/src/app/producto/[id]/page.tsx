@@ -50,7 +50,7 @@ export default function ProductDetailPage() {
   const [esFavorito, setEsFavorito] = useState(false);
   const [selectedImg, setSelectedImg] = useState<string>(prod?.img || "");
   const [selectedColor, setSelectedColor] = useState<string>(prod?.colores?.[0] || "");
-  const [activeTab, setActiveTab] = useState<"ficha" | "ahorro" | "caja" | "despacho" | "faq">("ficha");
+  const [activeTab, setActiveTab] = useState<"descricao" | "especificacoes" | "comparativo" | "garantia">("descricao");
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
 
   const { addToCart, setIsCartOpen, totalItems, mostrarNotificacion } = useCart();
@@ -471,142 +471,181 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Pestañas de Información Detallada (Estilo Nissei / Tienda Profesional) */}
+        {/* Pestañas de Información Detallada (Estructura idéntica a Atacado Connect) */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
           
-          {/* Barra de Pestañas */}
+          {/* Barra de Pestañas Oficial estilo Connect */}
           <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar bg-slate-50/70">
             <button
-              onClick={() => setActiveTab("ficha")}
-              className={`px-5 py-3.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "ficha"
-                  ? "border-[#00c853] text-[#00c853] bg-white"
+              onClick={() => setActiveTab("descricao")}
+              className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
+                activeTab === "descricao"
+                  ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Ficha Técnica Completa</span>
+              <span>Descrição</span>
             </button>
 
             <button
-              onClick={() => setActiveTab("ahorro")}
-              className={`px-5 py-3.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "ahorro"
-                  ? "border-[#00c853] text-[#00c853] bg-white"
+              onClick={() => setActiveTab("especificacoes")}
+              className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
+                activeTab === "especificacoes"
+                  ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
+                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Especificações</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("comparativo")}
+              className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
+                activeTab === "comparativo"
+                  ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
               <TrendingDown className="w-4 h-4" />
-              <span>Comparativa vs Asunción</span>
+              <span>Comparativo</span>
             </button>
 
             <button
-              onClick={() => setActiveTab("caja")}
-              className={`px-5 py-3.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "caja"
-                  ? "border-[#00c853] text-[#00c853] bg-white"
+              onClick={() => setActiveTab("garantia")}
+              className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
+                activeTab === "garantia"
+                  ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
-              <Box className="w-4 h-4" />
-              <span>Contenido de la Caja</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("despacho")}
-              className={`px-5 py-3.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "despacho"
-                  ? "border-[#00c853] text-[#00c853] bg-white"
-                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-              }`}
-            >
-              <Truck className="w-4 h-4" />
-              <span>Garantía & Despacho TSI</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("faq")}
-              className={`px-5 py-3.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "faq"
-                  ? "border-[#00c853] text-[#00c853] bg-white"
-                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-              }`}
-            >
-              <HelpCircle className="w-4 h-4" />
-              <span>Preguntas Frecuentes</span>
+              <ShieldCheck className="w-4 h-4" />
+              <span>Garantia & Despacho TSI</span>
             </button>
           </div>
 
           {/* Contenido de la Pestaña Activa */}
           <div className="p-6 sm:p-8">
             
-            {/* 1. FICHA TÉCNICA */}
-            {activeTab === "ficha" && (
-              <div className="space-y-6">
+            {/* 1. ABA DESCRIÇÃO */}
+            {activeTab === "descricao" && (
+              <div className="space-y-6 max-w-4xl">
                 <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    Especificaciones Técnicas Oficiales
+                  <h3 className="text-xl font-black text-slate-900 leading-snug">
+                    Visão Geral do Produto
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Datos extraídos de la ficha de fábrica del distribuidor oficial en Ciudad del Este.
+                    Informações e destaques de uso no dia a dia, jogos e tarefas pesadas.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-2">
-                  {specs.map((item, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-baseline justify-between py-2.5 border-b border-slate-100 text-xs"
-                    >
-                      <span className="font-bold text-slate-500 shrink-0 pr-4">{item.etiqueta}:</span>
-                      <span className="font-semibold text-slate-900 text-right">{item.valor}</span>
-                    </div>
-                  ))}
+                <div className="text-sm text-slate-700 leading-relaxed space-y-3 bg-slate-50/70 p-5 rounded-2xl border border-slate-100">
+                  <p>
+                    {prod.descripcion || (
+                      `O ${prod.nombre} foi desenvolvido para quem busca máxima eficiência, desempenho veloz e tecnologia de ponta com procedência direta de distribuidores em Ciudad del Este. Ideal para jogos exigentes, edição de conteúdo e multitarefa contínua.`
+                    )}
+                  </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600 leading-relaxed">
-                  <strong className="text-slate-800 block mb-1">Verificación Presencial de Fábrica:</strong>
-                  Cada unidad es retirada con precinto de fábrica intacto directamente de distribuidores mayoristas de Ciudad del Este. Antes del embalaje en la terminal de TSI, se coteja el número de serie con el comprobante de compra.
+                {/* Conteúdo da Embalagem */}
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <Box className="w-4 h-4 text-[#00c853]" />
+                    <span>Conteúdo da Caixa (Selada de Fábrica)</span>
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {(prod.contenidoCaja && prod.contenidoCaja.length > 0 ? prod.contenidoCaja : [
+                      `${prod.nombre} (Novo Lacrado de Fábrica)`,
+                      "Carregador de tomada original de alta potência",
+                      "Cabo USB Tipo-C de alta velocidade",
+                      "Capa de proteção original de fábrica",
+                      "Chave extratora da bandeja SIM",
+                      "Manual do usuário e certificado de garantia"
+                    ]).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-800">
+                        <div className="w-5 h-5 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                          <Check className="w-3.5 h-3.5" />
+                        </div>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* 2. COMPARATIVA DE AHORRO VS ASUNCIÓN */}
-            {activeTab === "ahorro" && (
+            {/* 2. ABA ESPECIFICAÇÕES (Tabela idêntica à Atacado Connect) */}
+            {activeTab === "especificacoes" && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900">
+                      Especificações Técnicas
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Ficha técnica homologada de acordo com o catálogo oficial de Connect Partner.
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-lg self-start sm:self-auto">
+                    Cód: {prod.id}
+                  </span>
+                </div>
+
+                <div className="divide-y divide-slate-100">
+                  {specs.map((item, index) => (
+                    <div 
+                      key={index}
+                      className="grid grid-cols-1 sm:grid-cols-12 py-3 text-xs gap-1 sm:gap-4 hover:bg-slate-50/50 px-2 rounded-lg transition"
+                    >
+                      <span className="sm:col-span-4 font-bold text-slate-500">{item.etiqueta}:</span>
+                      <span className="sm:col-span-8 font-semibold text-slate-900">{item.valor}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-500 leading-relaxed italic">
+                  *As descrições e especificações dos produtos são de responsabilidade do fabricante. Equipamentos 100% originais com números de série verificados antes do despacho por Transportadora TSI.
+                </div>
+              </div>
+            )}
+
+            {/* 3. ABA COMPARATIVO (Acerte na sua escolha + Ahorro vs Asunción) */}
+            {activeTab === "comparativo" && (
               <div className="space-y-6 max-w-3xl">
                 <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    ¿Por qué este producto es mucho más accesible aquí que en Asunción?
+                  <h3 className="text-xl font-black text-slate-900">
+                    Acerte na sua escolha: Comparação e Vantagem de Fronteira
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Transparencia absoluta sobre la intermediación mayorista en frontera.
+                    Veja por que vale a pena encomendar de Ciudad del Este em vez de comprar no retail de shoppings.
                   </p>
                 </div>
 
                 <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Precio en Shoppings / Retail Asunción (ej. Nissei):</span>
+                    <span className="text-slate-600">Preço em Shoppings / Lojas de Asunción (ex. Nissei):</span>
                     <span className="font-bold text-slate-500 line-through">
                       ₲ {precioRetail.toLocaleString("es-PY")}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between text-base">
-                    <span className="font-bold text-slate-900">Precio Mayorista NEXO CDE:</span>
+                    <span className="font-bold text-slate-900">Preço Atacado NEXO Connect Partner CDE:</span>
                     <span className="font-black text-emerald-700 text-xl font-mono">
                       ₲ {prod.precioPyg.toLocaleString("es-PY")} (US$ {prod.precioUsd.toFixed(2)})
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between text-sm text-slate-600">
-                    <span>Flete Plano Transportadora TSI hasta tu ciudad:</span>
+                    <span>Frete Plano Transportadora TSI até o Interior:</span>
                     <span className="font-semibold font-mono">
                       + ₲ {prod.fletePyg.toLocaleString("es-PY")}
                     </span>
                   </div>
 
                   <div className="pt-3 border-t border-emerald-300 flex items-center justify-between text-base">
-                    <strong className="text-emerald-950">Tu Ahorro Neto Puesto en Destino:</strong>
+                    <strong className="text-emerald-950">Sua Economia Líquida Entregue no Destino:</strong>
                     <strong className="text-emerald-700 text-xl font-mono">
                       ₲ {Math.max(0, montoAhorro - prod.fletePyg).toLocaleString("es-PY")}
                     </strong>
@@ -614,57 +653,26 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
-                  <h4 className="font-bold text-slate-900 text-sm">El Secreto del Precio de Frontera:</h4>
+                  <h4 className="font-bold text-slate-900 text-sm">Por que a diferença de preço é tão expressiva?</h4>
                   <p>
-                    Las grandes tiendas de retail en Asunción tienen costos enormes de alquiler en centros comerciales, sueldos de cientos de empleados e impuestos de intermediación.
+                    Lojas físicas de shoppings em grandes capitais embutem aluguéis altíssimos, equipes gigantescas e margens de revenda duplicadas.
                   </p>
                   <p>
-                    En <strong>NEXO CDE</strong> funcionamos como tu concierge comercial: compramos directamente con precio mayorista de primer anillo en Ciudad del Este y lo despachamos en la misma tarde por Transportadora TSI. Pagás el precio real de frontera sin recargos injustificados.
+                    Na <strong>NEXO CDE</strong>, você acessa o primeiro anel atacadista de fronteira em Ciudad del Este com flete direto da Transportadora TSI. O produto viaja com nota e seguro diretamente até você.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* 3. CONTENIDO DE LA CAJA */}
-            {activeTab === "caja" && (
-              <div className="space-y-6 max-w-2xl">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    ¿Qué viene incluido dentro de la caja?
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Todos los accesorios originales de fábrica con precintos intactos.
-                  </p>
-                </div>
-
-                <div className="space-y-2.5">
-                  {(prod.contenidoCaja && prod.contenidoCaja.length > 0 ? prod.contenidoCaja : [
-                    `${prod.nombre} (Unidad Nueva Sellada)`,
-                    "Cable de datos y alimentación original de fábrica",
-                    "Adaptador / Fuente de alimentación certificada",
-                    "Manual de usuario y póliza de garantía oficial",
-                    "Embalaje original con código de barras y número de serie"
-                  ]).map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs font-semibold text-slate-800">
-                      <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                        <Check className="w-3.5 h-3.5" />
-                      </div>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 4. GARANTÍA Y DESPACHO TSI */}
-            {activeTab === "despacho" && (
+            {/* 4. ABA GARANTIA & DESPACHO TSI */}
+            {activeTab === "garantia" && (
               <div className="space-y-6 max-w-3xl">
                 <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    Proceso de Despacho y Garantía con Transportadora TSI
+                  <h3 className="text-xl font-black text-slate-900">
+                    Termos de Garantia e Rastreio TSI
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Cero sorpresas: trazabilidad física garantizada de principio a fin.
+                    Segurança máxima: aparelho novo, lacrado e com comprovante físico no seu perfil.
                   </p>
                 </div>
 
@@ -673,9 +681,9 @@ export default function ProductDetailPage() {
                     <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-mono font-bold flex items-center justify-center text-xs">
                       1
                     </span>
-                    <h4 className="font-black text-slate-900">Corte Diario 12:00 PM</h4>
+                    <h4 className="font-black text-slate-900">Lacres Originais</h4>
                     <p className="text-slate-500 leading-snug">
-                      Pagos por transferencia SIPAP Continental confirmados antes de las 12:00 salen en el lote del mismo día.
+                      Caixa lacrada de fábrica pelo distribuidor oficial com número de série registrado.
                     </p>
                   </div>
 
@@ -683,9 +691,9 @@ export default function ProductDetailPage() {
                     <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center text-xs">
                       2
                     </span>
-                    <h4 className="font-black text-slate-900">Embalaje & Precinto</h4>
+                    <h4 className="font-black text-slate-900">Garantia de 48 hs</h4>
                     <p className="text-slate-500 leading-snug">
-                      Caja protegida con plástico burbuja y precinto de seguridad sellado en la agencia TSI de Av. Monseñor Rodríguez.
+                      Prazo para teste completo de funcionamento e encendido após retirar da agência TSI.
                     </p>
                   </div>
 
@@ -693,55 +701,18 @@ export default function ProductDetailPage() {
                     <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-mono font-bold flex items-center justify-center text-xs">
                       3
                     </span>
-                    <h4 className="font-black text-slate-900">Foto en tu Perfil</h4>
+                    <h4 className="font-black text-slate-900">Foto da Guia no Perfil</h4>
                     <p className="text-slate-500 leading-snug">
-                      Subimos la foto real de la boleta física con el sello de ventanilla de TSI para que sigas tu encomienda sin dudas.
+                      Subimos a foto da guia com o carimbo oficial da TSI na ventanilha para você acompanhar.
                     </p>
                   </div>
                 </div>
 
                 <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 space-y-1">
-                  <strong className="block font-bold">Garantía de Satisfacción y Encendido:</strong>
+                  <strong className="block font-bold">Exclusões de Garantia:</strong>
                   <p className="leading-relaxed">
-                    Contás con 48 horas tras retirar de la agencia TSI para verificar el correcto encendido del equipo, además de la garantía oficial contra cualquier falla técnica de fabricación.
+                    Não cobrem danos causados por quedas, umidade excessiva, choques elétricos na rede ou violação dos lacres internos de fábrica.
                   </p>
-                </div>
-              </div>
-            )}
-
-            {/* 5. PREGUNTAS FRECUENTES (FAQ) */}
-            {activeTab === "faq" && (
-              <div className="space-y-4 max-w-3xl">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    Preguntas Frecuentes sobre Compras en CDE
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Resolvemos las dudas más habituales de nuestros clientes en el interior.
-                  </p>
-                </div>
-
-                <div className="space-y-3 text-xs">
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <h4 className="font-bold text-slate-900">¿El equipo funciona con las telefonías de Paraguay?</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      Sí, 100% de los teléfonos que comercializamos son versiones Globales libres de fábrica. Son totalmente compatibles con Tigo, Claro y Personal en redes 5G y 4G LTE.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <h4 className="font-bold text-slate-900">¿Cómo realizo el pago?</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      El pago se efectúa mediante transferencia bancaria SIPAP a nuestra cuenta oficial en Banco Continental a nombre de NUÑEZ MARTINEZ, ABEL IRENEO (RUC 4196328-8).
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
-                    <h4 className="font-bold text-slate-900">¿Puedo ir a retirar personalmente a Ciudad del Este?</h4>
-                    <p className="text-slate-600 leading-relaxed">
-                      No contamos con mostrador abierto al público en CDE; operamos exclusivamente como servicio de concierge y despacho mayorista por Transportadora TSI hacia Asunción y ciudades del interior.
-                    </p>
-                  </div>
                 </div>
               </div>
             )}

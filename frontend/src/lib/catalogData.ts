@@ -12,6 +12,7 @@ export interface ProductoCatalogo {
   img: string;
   galeria?: string[];
   colores?: string[];
+  descripcion?: string;
   destacados?: string[];
   contenidoCaja?: string[];
   esTopVentas?: boolean;
@@ -28,6 +29,43 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
   // ==========================================
   // 1. SMARTPHONES (20 ITEMS TOP CDE)
   // ==========================================
+  {
+    id: "1422221",
+    nombre: "Smartphone Xiaomi Poco F9 Pro 5G Global 512GB 12GB RAM Dual SIM Tela 6.59\" - Branco",
+    categoria: "Smartphones",
+    marca: "POCO",
+    precioUsd: 718.00,
+    precioPyg: calcPyg(718.00),
+    precioRetailReferencia: 6850000,
+    fletePyg: 35000,
+    tipoFlete: "REGULAR",
+    stock: 18,
+    img: "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+    galeria: [
+      "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"
+    ],
+    colores: ["Branco (White)", "Preto (Black)"],
+    descripcion: "¡Mais espaço para unir alto desempenho e uso intenso! O Xiaomi POCO F9 Pro 5G combina 12 GB de RAM e 512 GB de armazenamento, oferecendo agilidade em jogos, aplicativos e multitarefas, além de ampla capacidade para fotos e vídeos. A tela AMOLED de 6,59\" favorece conteúdos e games com visual amplo a 185Hz, enquanto o 5G garante conexão veloz em redes compatíveis. Com Dual SIM e versão Global, é ideal para trabalho, comunicação e entretenimento diário.",
+    destacados: [
+      "Processador Snapdragon 8 Elite Gen 5 Octa-core Oryon V3 até 4.6 GHz",
+      "Tela AMOLED de 6.59\" Full HD+ com taxa de atualização de 185Hz",
+      "Câmera Traseira Tripla de 200 MP + 50 MP + 8 MP com Estabilização Óptica (OIS)",
+      "Bateria monstruosa de 6.330 mAh com suporte a Fast Charging de alta potência",
+      "512 GB UFS 4.0 de armazenamento interno + 12 GB RAM LPDDR5X",
+      "Dual Nano-SIM + eSIM livre de fábrica para Tigo, Personal e Claro Paraguay"
+    ],
+    contenidoCaja: [
+      "Smartphone Xiaomi Poco F9 Pro 5G 512GB (Sellado de Fábrica)",
+      "Carregador de tomada oficial de alta potência",
+      "Cabo de carga e dados USB Tipo-C",
+      "Capa de proteção original de fábrica",
+      "Ferramenta extratora de chip SIM",
+      "Guia de início rápido e termos de garantia"
+    ],
+    esTopVentas: true,
+  },
   {
     id: "1450781",
     nombre: "Smartphone Xiaomi Redmi Note 13 4G 256GB 8GB RAM Dual SIM Pantalla 6.67\" 120Hz",
@@ -46,6 +84,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
       "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&q=80",
     ],
     colores: ["Midnight Black", "Mint Green", "Ice Blue"],
+    descripcion: "Equilibrio perfecto entre rendimiento, pantalla AMOLED inmersiva a 120Hz y cámara ultra nítida de 108MP con IA para captura de fotos de alta fidelidad.",
     destacados: [
       "Pantalla AMOLED de 6.67\" Full HD+ a 120Hz con marcos ultradelgados",
       "Cámara Triple de 108MP de ultra alta resolución con IA",
@@ -1561,6 +1600,37 @@ export function getProductoById(id: string): ProductoCatalogo | undefined {
 export function getEspecificacionesProducto(prod: ProductoCatalogo): Array<{ etiqueta: string; valor: string }> {
   const cat = prod.categoria.toLowerCase();
   const nombre = prod.nombre;
+
+  // Especificaciones exactas oficiales de Atacado Connect para el Poco F9 Pro 5G (Cód 1422221)
+  if (prod.id === "1422221") {
+    return [
+      { etiqueta: "Modelo", valor: "Poco F9 Pro" },
+      { etiqueta: "Versão", valor: "Global (Homologado para uso en Paraguay)" },
+      { etiqueta: "Sistema Operacional", valor: "Android 16 / Xiaomi HyperOS" },
+      { etiqueta: "Capacidade", valor: "512 GB UFS 4.0" },
+      { etiqueta: "Memória RAM", valor: "12 GB LPDDR5X" },
+      { etiqueta: "Processador", valor: "Octa-core (2x4.6 GHz Oryon V3 Phoenix L + 6x3.62 GHz Oryon V3 Phoenix M)" },
+      { etiqueta: "Placa Gráfica (GPU)", valor: "Adreno 840" },
+      { etiqueta: "Chipset", valor: "Qualcomm SM8850-AC Snapdragon 8 Elite Gen 5 (3 nm)" },
+      { etiqueta: "Redes Móveis", valor: "5G (SA/NSA), 4G LTE, 3G HSDPA, 2G GSM" },
+      { etiqueta: "Cartão SIM", valor: "Dual Nano-SIM + eSIM (Libre para Tigo, Personal y Claro)" },
+      { etiqueta: "Conectividade Wireless", valor: "Wi-Fi 6/7 (802.11 ax/be), Bluetooth 6.0, NFC multifunção" },
+      { etiqueta: "Navegação", valor: "GPS, BDS, Galileo, QZSS, NavIC, GLONASS" },
+      { etiqueta: "Tipo de Tela", valor: "AMOLED 185Hz de ultra fluidez" },
+      { etiqueta: "Tamanho da Tela", valor: "6.59 polegadas" },
+      { etiqueta: "Resolução da Tela", valor: "Full HD+ (1156 x 2510 pixels)" },
+      { etiqueta: "Câmera Traseira", valor: "Tripla: 200 MP + 50 MP + 8 MP com Estabilização Óptica (OIS)" },
+      { etiqueta: "Câmera Frontal", valor: "Única: 32 MP com HDR e gravação Full HD" },
+      { etiqueta: "Áudio", valor: "Alto-falantes estéreo com tecnologia Dolby Atmos" },
+      { etiqueta: "Bateria", valor: "6.330 mAh com suporte a Fast Charging" },
+      { etiqueta: "Sensores", valor: "Impressão digital sob a tela, Acelerômetro, Proximidade, Giroscópio, Bússola" },
+      { etiqueta: "Cor", valor: "Branco (White)" },
+      { etiqueta: "Observações", valor: "Carregador incluso na embalagem original" },
+      { etiqueta: "Condição", valor: "100% Novo sellado de fábrica con precintos intactos" },
+      { etiqueta: "Garantia", valor: "Garantía de encendido 48 hs + Garantía oficial de fábrica" },
+      { etiqueta: "Despacho", valor: "Transportadora TSI (Salida diaria 13:00 hs con foto de guía sellada en perfil)" },
+    ];
+  }
 
   // Especificaciones exactas estilo Nissei para el Poco X6 Pro 5G (Cód 1450729)
   if (prod.id === "1450729") {
