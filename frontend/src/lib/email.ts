@@ -122,7 +122,7 @@ export async function sendWelcomeEmail({ email, name }: { email: string; name: s
     <div class="info-box">
       <p style="margin: 0 0 6px;"><strong>Beneficios activos en tu cuenta:</strong></p>
       <ul style="margin: 0; padding-left: 20px; color: #475569;">
-        <li>Acceso a precios mayoristas de Atacado Connect con 5% de descuento directo.</li>
+        <li>Acceso a precios mayoristas de Connect Partner con 5% de descuento directo.</li>
         <li>Inspección física en tienda y precinto de seguridad holográfico garantizado.</li>
         <li>Despachos prioritarios vía Transportadora TSI a cualquier localidad de Paraguay.</li>
         <li>Seguimiento en tiempo real de tus pedidos y números de guía.</li>
@@ -166,7 +166,7 @@ export async function sendOrderConfirmationEmail({
 }) {
   const content = `
     <p>Hola <strong>${nombre}</strong>,</p>
-    <p>Hemos registrado tu solicitud de compra para retiro presencial en <strong>Atacado Connect (CDE)</strong> y despacho a <strong>${ciudadDestino}</strong>.</p>
+    <p>Hemos registrado tu solicitud de compra para preparación en <strong>Connect Partner (CDE)</strong> y despacho a <strong>${ciudadDestino}</strong>.</p>
     
     <div class="info-box">
       <p style="margin: 0 0 8px; font-size: 15px;"><strong>Resumen de tu Orden:</strong></p>
@@ -234,7 +234,7 @@ export async function sendPaymentReceivedEmail({
       </p>
     </div>
 
-    <p>Nuestro equipo en Ciudad del Este realizará el retiro en Atacado Connect en la mañana del despacho, verificará el precinto de fábrica y registrará la guía oficial de Transportadora TSI.</p>
+    <p>Nuestro equipo en Ciudad del Este preparará tu pedido con Connect Partner en la mañana del despacho, verificará el precinto de fábrica y registrará la guía oficial de Transportadora TSI.</p>
   `;
 
   return sendEmail({

@@ -408,14 +408,14 @@ export default function AdminDashboardPage() {
           </div>
         </header>
 
-        {/* TAB 1: AGENDA DE COMPRAS DEL DÍA (ATACADO CONNECT) */}
+        {/* TAB 1: AGENDA DE COMPRAS DEL DÍA (CONNECT PARTNER) */}
         {tabActiva === "agenda" && (
           <div className="space-y-6 animate-fadeIn">
             {/* Banner de Total Requerido en Tienda */}
             <div className="bg-gradient-to-r from-indigo-900/60 to-slate-800 p-6 rounded-2xl border border-indigo-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <span className="text-xs text-indigo-300 uppercase tracking-wider font-semibold block">
-                  Caja Requerida para Atacado Connect (Mañana)
+                  Caja Requerida para Connect Partner (Mañana)
                 </span>
                 <div className="text-3xl font-black text-white font-mono mt-0.5">
                   US$ {totalUsdTienda.toLocaleString("en-US", { minimumFractionDigits: 2 })}
@@ -658,7 +658,7 @@ export default function AdminDashboardPage() {
                     Solicitudes de Pedidos Especiales (Concierge CDE)
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Artículos solicitados por clientes que no estaban en el catálogo web. Cotízalos con Atacado Connect y contáctalos por WhatsApp.
+                    Artículos solicitados por clientes que no estaban en el catálogo web. Cotízalos con Connect Partner y contáctalos por WhatsApp.
                   </p>
                 </div>
                 <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -751,7 +751,7 @@ export default function AdminDashboardPage() {
 
               <div className="bg-slate-800/60 p-5 rounded-2xl border border-slate-700">
                 <span className="text-xs text-slate-400 font-semibold uppercase block">
-                  Costo en Atacado Connect
+                  Costo en Connect Partner
                 </span>
                 <span className="text-2xl font-black text-amber-300 font-mono mt-1 block">
                   US$ {metricas.resumen.costoMercaderiaUsd.toLocaleString("en-US")}

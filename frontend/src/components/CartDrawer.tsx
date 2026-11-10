@@ -99,7 +99,7 @@ export function CartDrawer() {
                 <div className="space-y-1">
                   <p className="font-bold text-slate-700 text-sm">Tu carrito está vacío</p>
                   <p className="text-xs text-slate-500 max-w-xs">
-                    Explora los productos de Atacado Connect y agrégalos con 5% de descuento mayorista.
+                    Explora los productos de Connect Partner y agrégalos con 5% de descuento mayorista.
                   </p>
                 </div>
                 <button

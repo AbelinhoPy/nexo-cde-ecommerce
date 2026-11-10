@@ -1454,3 +1454,99 @@ export const CATEGORIAS_LISTA = [
   { id: "Wearables", nombre: "Smartwatches", icono: "Watch" },
   { id: "Belleza & Cuidado", nombre: "Perfumes & Cuidado", icono: "Sparkles" },
 ];
+
+export function getProductoById(id: string): ProductoCatalogo | undefined {
+  return PRODUCTOS_CATALOGO.find(p => p.id === id);
+}
+
+export function getEspecificacionesProducto(prod: ProductoCatalogo): Array<{ etiqueta: string; valor: string }> {
+  const cat = prod.categoria.toLowerCase();
+  const nombre = prod.nombre;
+
+  const baseSpecs = [
+    { etiqueta: "Condición", valor: "Nuevo Sellado en Caja de Fábrica" },
+    { etiqueta: "Garantía", valor: "Garantía de Encendido 48 hs + Garantía de Marca" },
+    { etiqueta: "Origen", valor: "Importación Directa Ciudad del Este (Alto Paraná)" },
+    { etiqueta: "Despacho", valor: "Transportadora TSI (Salidas 13:00 hs diarias a todo el país)" },
+  ];
+
+  if (cat.includes("smartphones")) {
+    return [
+      { etiqueta: "Marca", valor: prod.marca },
+      { etiqueta: "Conectividad", valor: nombre.includes("5G") ? "5G / 4G LTE Dual SIM" : "4G LTE Dual SIM" },
+      { etiqueta: "Almacenamiento", valor: nombre.includes("512GB") ? "512 GB" : nombre.includes("256GB") ? "256 GB" : "128 GB" },
+      { etiqueta: "Memoria RAM", valor: nombre.includes("12GB") ? "12 GB LPDDR5X" : nombre.includes("8GB") ? "8 GB" : "6 GB" },
+      { etiqueta: "Cámara Principal", valor: nombre.includes("200MP") ? "200 MP con OIS" : nombre.includes("108MP") ? "108 MP" : "50 MP con IA" },
+      { etiqueta: "Pantalla", valor: "AMOLED / Super Retina 120Hz con protección Gorilla Glass" },
+      { etiqueta: "Batería / Carga", valor: "5.000 mAh con Carga Rápida HyperCharge" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("games")) {
+    return [
+      { etiqueta: "Fabricante", valor: prod.marca },
+      { etiqueta: "Almacenamiento", valor: nombre.includes("2TB") ? "2 TB SSD Ultrarrápido" : nombre.includes("1TB") ? "1 TB SSD NVMe" : "64 GB eMMC" },
+      { etiqueta: "Resolución Máxima", valor: nombre.includes("PS5 Pro") ? "Hasta 8K / 4K a 120 fps con PSSR" : "4K HDR a 120 fps" },
+      { etiqueta: "Puertos", valor: "HDMI 2.1, USB Tipo-C SuperSpeed, Gigabit Ethernet" },
+      { etiqueta: "Sonido", valor: "Audio 3D Tempest / Dolby Atmos" },
+      { etiqueta: "Contenido", valor: "Consola, Mando inalámbrico original, Cable HDMI, Cable de alimentación" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("informática")) {
+    return [
+      { etiqueta: "Marca / Fabricante", valor: prod.marca },
+      { etiqueta: "Procesador / GPU", valor: nombre.includes("RTX 4060") ? "NVIDIA GeForce RTX 4060" : nombre.includes("M3") ? "Apple Silicon M3" : nombre.includes("M2") ? "Apple Silicon M2" : "Intel Core i5 / AMD Ryzen" },
+      { etiqueta: "Memoria / Bus", valor: nombre.includes("DDR5") ? "DDR5 de alta frecuencia" : "DDR4 / Memoria Unificada" },
+      { etiqueta: "Almacenamiento", valor: "SSD NVMe M.2 PCIe Gen 4" },
+      { etiqueta: "Pantalla / Video", valor: "Panel IPS FHD / Liquid Retina" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("electrónicos")) {
+    return [
+      { etiqueta: "Marca", valor: prod.marca },
+      { etiqueta: "Resolución", valor: nombre.includes("4K") ? "4K Ultra HD (3840 x 2160)" : "Full HD" },
+      { etiqueta: "Sistema Operativo", valor: "Google TV / Tizen OS con Asistente de Voz" },
+      { etiqueta: "Audio", valor: "Dolby Audio & DTS Virtual:X" },
+      { etiqueta: "Conexiones", valor: "3x HDMI, 2x USB, Wi-Fi Dual Band, Bluetooth 5.0" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("drones")) {
+    return [
+      { etiqueta: "Marca", valor: prod.marca },
+      { etiqueta: "Peso de despegue", valor: nombre.includes("249g") ? "< 249 gramos (Sin requerimiento de registro aeronáutico)" : "Ultraligero" },
+      { etiqueta: "Resolución de Video", valor: nombre.includes("8K") ? "8K 360°" : "4K HDR a 60/120 fps" },
+      { etiqueta: "Tiempo de Vuelo", valor: "Hasta 34 - 45 minutos por batería" },
+      { etiqueta: "Alcance de Transmisión", valor: "Hasta 20 km (Tecnología DJI O4)" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("audio")) {
+    return [
+      { etiqueta: "Marca", valor: prod.marca },
+      { etiqueta: "Conectividad", valor: "Bluetooth 5.3 con códec de alta fidelidad" },
+      { etiqueta: "Resistencia al Agua", valor: "Certificación IP67 a prueba de agua y polvo" },
+      { etiqueta: "Autonomía", valor: "12 a 30 horas de reproducción continua" },
+      ...baseSpecs
+    ];
+  }
+
+  if (cat.includes("belleza")) {
+    return [
+      { etiqueta: "Casa de Perfumería", valor: prod.marca },
+      { etiqueta: "Concentración", valor: "Eau de Parfum (EDP) / Parfum" },
+      { etiqueta: "Volumen", valor: nombre.includes("100ml") ? "100 ml" : nombre.includes("125ml") ? "125 ml" : "80 ml" },
+      { etiqueta: "Autenticidad", valor: "100% Original con celofán y código de lote (Batch Code) verificable" },
+      ...baseSpecs
+    ];
+  }
+
+  return baseSpecs;
+}

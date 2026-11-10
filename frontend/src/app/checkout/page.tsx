@@ -201,7 +201,7 @@ export default function CheckoutPage() {
               <div>
                 <p className="font-bold text-base">Orden Registrada Exitosamente: #{ordenGenerada.codigo}</p>
                 <p className="text-xs text-emerald-800">
-                  Para proceder al retiro en Atacado Connect y despacho en TSI, realiza la transferencia SIPAP exacta a Banco Continental antes de las 12:00 PM.
+                  Para proceder a la preparación de tu pedido en CDE y despacho en TSI, realiza la transferencia SIPAP exacta a Banco Continental antes de las 12:00 PM.
                 </p>
               </div>
             </div>
@@ -374,6 +374,11 @@ export default function CheckoutPage() {
                             </option>
                           ))}
                         </select>
+                        {cliente.departamento === "Alto Paraná" && (
+                          <p className="text-[11px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1.5 leading-tight">
+                            ⚠️ Aviso: NEXO CDE opera exclusivamente mediante despacho por Transportadora TSI. No realizamos entregas presenciales dentro de CDE.
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -461,7 +466,7 @@ export default function CheckoutPage() {
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <span className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                     <ShoppingBag className="w-4 h-4 text-[#00c853]" />
-                    Ítems de Atacado Connect ({cart.length})
+                    Ítems de Connect Partner ({cart.length})
                   </span>
                   <Link href="/" className="text-xs text-emerald-600 font-bold hover:underline">
                     Editar carrito

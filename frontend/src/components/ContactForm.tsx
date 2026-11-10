@@ -81,7 +81,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Escribinos directamente. Nuestro equipo en Ciudad del Este revisa stock presencial en Atacado Connect y te cotiza cualquier artículo de electrónica con despacho garantizado por Transportadora TSI.
+            Escribinos directamente. Nuestro equipo en Ciudad del Este revisa stock presencial con Connect Partner y te cotiza cualquier artículo de electrónica con despacho garantizado por Transportadora TSI.
           </p>
 
           <div className="space-y-3 pt-2 text-xs text-slate-600">
@@ -190,7 +190,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
               <textarea
                 required
                 rows={3}
-                placeholder="Escribe aquí tu consulta o el modelo exacto que necesitas que busquemos en Atacado Connect..."
+                placeholder="Escribe aquí tu consulta o el modelo exacto que necesitas que busquemos en CDE..."
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-[#00c853] focus:ring-1 focus:ring-[#00c853] text-xs sm:text-sm bg-slate-50 focus:bg-white outline-none transition resize-none"

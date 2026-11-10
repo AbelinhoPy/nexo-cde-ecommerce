@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      mensaje: "¡Solicitud recibida! Verificaremos en Atacado Connect y te enviaremos la cotización mayorista por WhatsApp.",
+      mensaje: "¡Solicitud recibida! Verificaremos con Connect Partner y te enviaremos la cotización mayorista por WhatsApp.",
     });
   } catch (error: any) {
     console.error("Error en solicitud concierge:", error);

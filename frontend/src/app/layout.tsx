@@ -4,7 +4,7 @@ import { CartProvider } from "@/lib/CartContext";
 
 export const metadata: Metadata = {
   title: "NEXO Concierge Comercial & Transporte | Compras Mayoristas en Ciudad del Este con Envío TSI",
-  description: "Intermediación directa desde Atacado Connect en Ciudad del Este. Despacho garantizado a todo Paraguay vía Transportadora TSI. Pagos 100% seguros vía SIPAP Banco Continental.",
+  description: "Intermediación directa con Connect Partner en Ciudad del Este. Despacho garantizado a todo el interior de Paraguay vía Transportadora TSI. Pagos 100% seguros vía SIPAP Banco Continental.",
 };
 
 export default function RootLayout({

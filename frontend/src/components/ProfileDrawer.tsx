@@ -354,7 +354,7 @@ export function ProfileDrawer() {
                     <Package className="w-10 h-10 mx-auto text-slate-300" />
                     <p className="text-xs font-semibold text-slate-600">Aún no tienes compras registradas</p>
                     <p className="text-[11px] text-slate-400">
-                      Cuando realices tu primer pedido en Atacado Connect aparecerá aquí con el número de guía TSI.
+                      Cuando realices tu primer pedido en NEXO CDE aparecerá aquí con el número de guía TSI.
                     </p>
                   </div>
                 ) : (

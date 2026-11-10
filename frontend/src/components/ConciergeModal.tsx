@@ -118,7 +118,7 @@ export function ConciergeModal({ isOpen, onClose, initialQuery = "" }: Concierge
               ¡Solicitud Recibida con Éxito!
             </h4>
             <p className="text-xs text-emerald-800 leading-relaxed">
-              Abel de <strong>NEXO CDE</strong> verificará el stock en Atacado Connect y te enviará la cotización mayorista a tu WhatsApp en los próximos minutos.
+              Abel de <strong>NEXO CDE</strong> verificará el stock con Connect Partner y te enviará la cotización mayorista a tu WhatsApp en los próximos minutos.
             </p>
             <div className="pt-2">
               <button
@@ -158,7 +158,7 @@ export function ConciergeModal({ isOpen, onClose, initialQuery = "" }: Concierge
               </label>
               <input
                 type="url"
-                placeholder="https://atacadoconnect.com/... o nissei.com/..."
+                placeholder="Link del producto que buscas (opcional)..."
                 value={linkRef}
                 onChange={(e) => setLinkRef(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-[#00c853] focus:ring-1 focus:ring-[#00c853] text-xs outline-none"
