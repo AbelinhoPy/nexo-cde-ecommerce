@@ -538,19 +538,31 @@ export default function StorefrontPage() {
                     <Heart className={`w-4 h-4 ${esFav ? "fill-rose-500 text-rose-500" : ""}`} />
                   </button>
 
-                  {/* Imagen y Datos del Producto con Enlace al Detalle */}
-                  <Link href={`/producto/${prod.id}`} className="block group/link">
-                    <div className="h-44 flex items-center justify-center p-2 mb-2">
+                  {/* Imagen y Datos del Producto con Enlace al Detalle en Nueva Pestaña */}
+                  <Link 
+                    href={`/producto/${prod.id}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="block group/link"
+                    title={`Ver especificaciones completas de ${prod.nombre} (abre en nueva pestaña)`}
+                  >
+                    <div className="h-44 flex items-center justify-center p-2 mb-2 relative">
                       <img
                         src={prod.img}
                         alt={prod.nombre}
                         className="max-h-full max-w-full object-contain group-hover/link:scale-105 transition duration-200"
                       />
+                      {prod.precioRetailReferencia && (
+                        <div className="absolute top-1 left-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                          Ahorro Frontera
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
-                      <h4 className="text-xs font-bold text-slate-800 line-clamp-2 leading-snug group-hover/link:text-[#00c853] transition">
-                        {prod.nombre}
+                      <h4 className="text-xs font-bold text-slate-800 line-clamp-2 leading-snug group-hover/link:text-[#00c853] transition flex items-start justify-between gap-1">
+                        <span>{prod.nombre}</span>
+                        <span className="text-[10px] text-slate-400 group-hover/link:text-[#00c853] shrink-0 font-normal">↗</span>
                       </h4>
                       
                       <div className="text-[10px] text-slate-500 font-medium flex items-center justify-between">
@@ -558,8 +570,20 @@ export default function StorefrontPage() {
                         <span className="text-[9px] font-mono text-slate-400">Stock: {prod.stock}</span>
                       </div>
 
+                      {/* Comparativa con Retail / Asunción (si existe) */}
+                      {prod.precioRetailReferencia && (
+                        <div className="pt-1 flex items-center justify-between text-[10px]">
+                          <span className="text-slate-400 line-through">
+                            Asunción: ₲ {prod.precioRetailReferencia.toLocaleString("es-PY")}
+                          </span>
+                          <span className="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/80 px-1 rounded">
+                            -₲ {(prod.precioRetailReferencia - prod.precioPyg).toLocaleString("es-PY")}
+                          </span>
+                        </div>
+                      )}
+
                       {/* Precios: USD Grande en Verde y Guaraní Abajo */}
-                      <div className="pt-2">
+                      <div className="pt-1.5">
                         <div className="text-lg font-black text-[#00c853] font-mono leading-none">
                           U$ {prod.precioUsd.toFixed(2)}
                         </div>

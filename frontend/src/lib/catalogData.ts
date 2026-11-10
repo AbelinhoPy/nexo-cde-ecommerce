@@ -5,10 +5,15 @@ export interface ProductoCatalogo {
   marca: string;
   precioUsd: number;
   precioPyg: number;
+  precioRetailReferencia?: number; // Precio de referencia en Asunción / Retail (ej. Nissei)
   fletePyg: number;
   tipoFlete: "REGULAR" | "PESADO" | string;
   stock: number;
   img: string;
+  galeria?: string[];
+  colores?: string[];
+  destacados?: string[];
+  contenidoCaja?: string[];
   esTopVentas?: boolean;
   esOferta?: boolean;
 }
@@ -25,41 +30,97 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
   // ==========================================
   {
     id: "1450781",
-    nombre: "Smartphone Xiaomi Redmi Note 13 4G 256GB 8GB RAM Dual SIM",
+    nombre: "Smartphone Xiaomi Redmi Note 13 4G 256GB 8GB RAM Dual SIM Pantalla 6.67\" 120Hz",
     categoria: "Smartphones",
     marca: "XIAOMI",
     precioUsd: 155.00,
     precioPyg: calcPyg(155.00),
+    precioRetailReferencia: 1550000,
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 45,
-    img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+    galeria: [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&q=80",
+    ],
+    colores: ["Midnight Black", "Mint Green", "Ice Blue"],
+    destacados: [
+      "Pantalla AMOLED de 6.67\" Full HD+ a 120Hz con marcos ultradelgados",
+      "Cámara Triple de 108MP de ultra alta resolución con IA",
+      "Procesador Snapdragon 685 (6nm) de alta eficiencia energética",
+      "Batería de 5.000 mAh con Carga Rápida de 33W (cargador incluido)",
+    ],
+    contenidoCaja: [
+      "Smartphone Xiaomi Redmi Note 13 (Sellado)",
+      "Cargador original de 33W",
+      "Cable USB Tipo-C",
+      "Funda protectora",
+      "Extractor de SIM y Manual",
+    ],
     esTopVentas: true,
   },
   {
     id: "1450729",
-    nombre: "Smartphone Poco X6 Pro 5G 512GB 12GB RAM Dimensity 8300-Ultra",
+    nombre: "Smartphone Poco X6 Pro 5G 512GB 12GB RAM Dual SIM Pantalla 6.67\" Flow AMOLED 120Hz",
     categoria: "Smartphones",
     marca: "POCO",
     precioUsd: 319.00,
     precioPyg: calcPyg(319.00),
+    precioRetailReferencia: 2950000, // Precio de referencia Nissei
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 25,
-    img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+    galeria: [
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
+      "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600&q=80",
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&q=80"
+    ],
+    colores: ["Negro (Black)", "Amarillo (Poco Yellow)", "Gris (Titanium Grey)"],
+    destacados: [
+      "Procesador MediaTek Dimensity 8300-Ultra (4nm) AnTuTu +1.460.000 pts",
+      "Pantalla 6.67\" Flow AMOLED CrystalRes 1.5K 120Hz Dolby Vision HDR10+",
+      "Cámara Triple 64MP con OIS (Estabilización Óptica de Imagen) + 8MP + 2MP",
+      "Batería de 5.000 mAh con Carga Turbo de 67W (cargador incluido en la caja)",
+      "512GB UFS 4.0 Ultrarrápido + 12GB Memoria RAM LPDDR5X",
+      "Altavoces Estéreo Dual Dolby Atmos + Sensor de Huellas bajo pantalla"
+    ],
+    contenidoCaja: [
+      "Smartphone Xiaomi Poco X6 Pro 5G (Sellado de Fábrica)",
+      "Cargador Turbo Original 67W HyperCharge (Enchufe tipo EU/US)",
+      "Cable de carga y datos USB Tipo-C de alto amperaje",
+      "Funda protectora original color negro mate",
+      "Herramienta extractora de bandeja SIM dual",
+      "Guía de inicio rápido y tarjeta de garantía de fábrica"
+    ],
     esTopVentas: true,
   },
   {
     id: "1450422",
-    nombre: "Smartphone Xiaomi Redmi Note 13 Pro+ 5G 512GB 12GB RAM 200MP",
+    nombre: "Smartphone Xiaomi Redmi Note 13 Pro+ 5G 512GB 12GB RAM 200MP OIS IP68",
     categoria: "Smartphones",
     marca: "XIAOMI",
     precioUsd: 369.00,
     precioPyg: calcPyg(369.00),
+    precioRetailReferencia: 3450000,
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&q=80",
+    galeria: [
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&q=80",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
+    ],
+    colores: ["Midnight Black", "Moonlight White", "Aurora Purple"],
+    destacados: [
+      "Cámara insignia de 200MP con OIS y zoom sin pérdidas 4x",
+      "Pantalla curva 1.5K AMOLED 120Hz con protección Gorilla Glass Victus",
+      "Certificación IP68 resistente al agua y al polvo",
+      "Carga ultrarrápida HyperCharge de 120W (100% en 19 minutos)",
+    ],
     esTopVentas: true,
   },
   {
@@ -283,10 +344,29 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     marca: "SONY",
     precioUsd: 465.00,
     precioPyg: calcPyg(465.00),
+    precioRetailReferencia: 4390000,
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 22,
-    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
+    galeria: [
+      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
+      "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&q=80"
+    ],
+    destacados: [
+      "SSD ultrarrápido integrado de 1TB de almacenamiento",
+      "Tecnología Ray Tracing acelerada por hardware y Audio 3D Tempest",
+      "Incluye mando inalámbrico DualSense con gatillos adaptativos",
+      "Resolución hasta 4K con soporte para pantallas a 120Hz y HDR",
+    ],
+    contenidoCaja: [
+      "Consola PlayStation 5 Slim Digital 1TB (Sellada)",
+      "Mando inalámbrico DualSense blanco original",
+      "2 pies de soporte horizontal",
+      "Cable HDMI 2.1 de ultra alta velocidad",
+      "Cable de alimentación CA y Cable USB Tipo-C",
+      "Juego preinstalado ASTRO's PLAYROOM",
+    ],
     esTopVentas: true,
   },
   {
@@ -296,10 +376,28 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     marca: "SONY",
     precioUsd: 519.00,
     precioPyg: calcPyg(519.00),
+    precioRetailReferencia: 4850000,
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 25,
-    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
+    galeria: [
+      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
+      "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600&q=80"
+    ],
+    destacados: [
+      "Unidad lectora de discos Ultra HD Blu-Ray integrada",
+      "1TB de almacenamiento SSD de ultra alta velocidad",
+      "Compatibilidad total con juegos físicos de PS5 y catálogo de PS4",
+      "Mando inalámbrico DualSense con respuesta háptica inmersiva",
+    ],
+    contenidoCaja: [
+      "Consola PlayStation 5 Slim con Lectora Blu-Ray 1TB (Sellada)",
+      "Mando inalámbrico DualSense original",
+      "Cable HDMI 2.1",
+      "Cable de alimentación",
+      "Soportes horizontales y manual de usuario",
+    ],
     esTopVentas: true,
   },
   {
@@ -309,10 +407,11 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     marca: "SONY",
     precioUsd: 849.00,
     precioPyg: calcPyg(849.00),
+    precioRetailReferencia: 7990000,
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 8,
-    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=450&q=80",
+    img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
     esTopVentas: true,
   },
   {
@@ -1463,6 +1562,57 @@ export function getEspecificacionesProducto(prod: ProductoCatalogo): Array<{ eti
   const cat = prod.categoria.toLowerCase();
   const nombre = prod.nombre;
 
+  // Especificaciones exactas estilo Nissei para el Poco X6 Pro 5G (Cód 1450729)
+  if (prod.id === "1450729") {
+    return [
+      { etiqueta: "Marca / Fabricante", valor: "Xiaomi / POCO X Series" },
+      { etiqueta: "Modelo Exacto", valor: "Poco X6 Pro 5G (Dual SIM Global)" },
+      { etiqueta: "Pantalla", valor: "6.67\" Flow AMOLED CrystalRes 1.5K (1220 x 2712p), 120Hz, 1800 nits pico, Dolby Vision, HDR10+, Corning Gorilla Glass 5" },
+      { etiqueta: "Procesador", valor: "MediaTek Dimensity 8300-Ultra (4nm TSMC) Octa-Core hasta 3.35 GHz" },
+      { etiqueta: "Gráficos (GPU)", valor: "ARM Mali-G615 con motor de aceleración IA" },
+      { etiqueta: "Memoria RAM", valor: "12 GB LPDDR5X (ampliable vía RAM dinámica virtual)" },
+      { etiqueta: "Almacenamiento Interno", valor: "512 GB UFS 4.0 de ultra alta velocidad" },
+      { etiqueta: "Cámara Trasera Principal", valor: "Triple: 64MP f/1.7 con OIS (Estabilización Óptica) + 8MP Ultra Gran Angular (120°) + 2MP Macro" },
+      { etiqueta: "Cámara Frontal (Selfie)", valor: "16 MP f/2.4 con modo noche y HDR" },
+      { etiqueta: "Grabación de Video", valor: "4K a 24/30 fps, 1080p a 30/60 fps con giroscopio EIS y estabilización OIS" },
+      { etiqueta: "Batería", valor: "5.000 mAh de polímero de litio de alta densidad" },
+      { etiqueta: "Carga Rápida", valor: "TurboCharge 67W por cable (100% en aprox. 45 min, cargador incluido en caja)" },
+      { etiqueta: "Sistema Operativo", valor: "Xiaomi HyperOS basado en Android 14 (actualizaciones oficiales OTA)" },
+      { etiqueta: "Conectividad Móvil", valor: "5G Dual SIM (Nano-SIM libre para Tigo, Personal y Claro Paraguay)" },
+      { etiqueta: "Wi-Fi & Bluetooth", valor: "Wi-Fi 6 (802.11 a/b/g/n/ac/ax) doble banda + Bluetooth 5.4" },
+      { etiqueta: "NFC & Sensores", valor: "NFC multifunción, Infrarrojo (IR Blaster), Lector de huellas bajo pantalla, Desbloqueo Facial IA" },
+      { etiqueta: "Audio", valor: "Doble altavoz estéreo con certificación Hi-Res Audio y Dolby Atmos" },
+      { etiqueta: "Refrigeración", valor: "Tecnología LiquidCool 2.0 con cámara de vapor de 5.000 mm²" },
+      { etiqueta: "Dimensiones y Peso", valor: "160.45 x 74.34 x 8.25 mm | 186 gramos" },
+      { etiqueta: "Condición", valor: "100% Nuevo sellado en caja de fábrica con precinto original" },
+      { etiqueta: "Garantía", valor: "Garantía de encendido 48 hs + 6 meses contra defectos técnicos" },
+      { etiqueta: "Origen del Stock", valor: "Depósito Mayorista Connect Partner en Ciudad del Este" },
+      { etiqueta: "Despacho", valor: "Transportadora TSI (Salida diaria 13:00 hs con foto de guía sellada en perfil)" },
+    ];
+  }
+
+  // Especificaciones exactas para PS5 Slim (Cód 1448603 y 1448597)
+  if (prod.id === "1448603" || prod.id === "1448597") {
+    const esLector = prod.id === "1448597";
+    return [
+      { etiqueta: "Fabricante", valor: "Sony Interactive Entertainment Inc." },
+      { etiqueta: "Modelo", valor: esLector ? "PlayStation 5 Slim Standard con Unidad Blu-Ray (CFI-2000)" : "PlayStation 5 Slim Digital Edition (CFI-2000)" },
+      { etiqueta: "Almacenamiento Interno", valor: "1 TB SSD NVMe PCIe Gen 4 ultrarrápido (5.5 GB/s sin comprimir)" },
+      { etiqueta: "Procesador (CPU)", valor: "x86-64-AMD Ryzen Zen 2, 8 núcleos / 16 hilos hasta 3.5 GHz de frecuencia variable" },
+      { etiqueta: "Gráficos (GPU)", valor: "AMD Radeon RDNA 2 con Ray Tracing por hardware, hasta 2.23 GHz (10.3 TFLOPS)" },
+      { etiqueta: "Memoria del Sistema", valor: "16 GB GDDR6 con ancho de banda de 448 GB/s" },
+      { etiqueta: "Salida de Video", valor: "Soporte HDMI 2.1 para televisores 4K a 120Hz, 8K y VRR (Tasa de Refresco Variable)" },
+      { etiqueta: "Audio", valor: "Tempest 3D AudioTech con soporte para Dolby Atmos" },
+      { etiqueta: "Unidad Óptica", valor: esLector ? "Unidad Ultra HD Blu-ray (hasta 100 GB/disco)" : "No incluida (compatible con accesorio lector extraíble)" },
+      { etiqueta: "Puertos", valor: "2x USB Tipo-C SuperSpeed 10Gbps frontales, 2x USB Tipo-A traseros, Ethernet Gigabit" },
+      { etiqueta: "Conectividad Inalámbrica", valor: "Wi-Fi 6 (802.11ax) + Bluetooth 5.1" },
+      { etiqueta: "Mando Incluido", valor: "Control inalámbrico Sony DualSense con gatillos adaptativos y vibración háptica" },
+      { etiqueta: "Condición", valor: "Nueva sellada en caja original con precinto de fábrica de Sony" },
+      { etiqueta: "Garantía", valor: "Garantía de encendido 48 hs + 1 año de garantía oficial de Sony" },
+      { etiqueta: "Despacho TSI", valor: "Flete pesado especial ₲ 50.000 asegurado con precinto inviolable" },
+    ];
+  }
+
   const baseSpecs = [
     { etiqueta: "Condición", valor: "Nuevo Sellado en Caja de Fábrica" },
     { etiqueta: "Garantía", valor: "Garantía de Encendido 48 hs + Garantía de Marca" },
@@ -1473,12 +1623,12 @@ export function getEspecificacionesProducto(prod: ProductoCatalogo): Array<{ eti
   if (cat.includes("smartphones")) {
     return [
       { etiqueta: "Marca", valor: prod.marca },
-      { etiqueta: "Conectividad", valor: nombre.includes("5G") ? "5G / 4G LTE Dual SIM" : "4G LTE Dual SIM" },
-      { etiqueta: "Almacenamiento", valor: nombre.includes("512GB") ? "512 GB" : nombre.includes("256GB") ? "256 GB" : "128 GB" },
+      { etiqueta: "Conectividad", valor: nombre.includes("5G") ? "5G / 4G LTE Dual SIM Libre" : "4G LTE Dual SIM Libre" },
+      { etiqueta: "Almacenamiento", valor: nombre.includes("512GB") ? "512 GB UFS" : nombre.includes("256GB") ? "256 GB" : "128 GB" },
       { etiqueta: "Memoria RAM", valor: nombre.includes("12GB") ? "12 GB LPDDR5X" : nombre.includes("8GB") ? "8 GB" : "6 GB" },
-      { etiqueta: "Cámara Principal", valor: nombre.includes("200MP") ? "200 MP con OIS" : nombre.includes("108MP") ? "108 MP" : "50 MP con IA" },
+      { etiqueta: "Cámara Principal", valor: nombre.includes("200MP") ? "200 MP con OIS y Sensor IA" : nombre.includes("108MP") ? "108 MP" : "50 MP con IA" },
       { etiqueta: "Pantalla", valor: "AMOLED / Super Retina 120Hz con protección Gorilla Glass" },
-      { etiqueta: "Batería / Carga", valor: "5.000 mAh con Carga Rápida HyperCharge" },
+      { etiqueta: "Batería / Carga", valor: "5.000 mAh con Carga Rápida de alta potencia" },
       ...baseSpecs
     ];
   }
