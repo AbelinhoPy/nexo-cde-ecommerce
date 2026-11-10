@@ -26,13 +26,31 @@ import {
   Building2, 
   Phone,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Lock
 } from "lucide-react";
 import { NexoLogo } from "@/components/NexoLogo";
 import { ContactForm } from "@/components/ContactForm";
+import { useCart } from "@/lib/CartContext";
+import { CartDrawer } from "@/components/CartDrawer";
+import { AuthModal } from "@/components/AuthModal";
+import { ProfileDrawer } from "@/components/ProfileDrawer";
+
+export interface ProductoCatalogo {
+  id: string;
+  nombre: string;
+  categoria: string;
+  marca: string;
+  precioUsd: number;
+  precioPyg: number;
+  fletePyg: number;
+  tipoFlete: "REGULAR" | "PESADO" | string;
+  stock: number;
+  img: string;
+}
 
 // Catálogo Top 50 Alta Rotación CDE (Atacado Connect)
-const PRODUCTOS_CATALOGO = [
+const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
   // SMARTPHONES
   { 
     id: "1450781", 
@@ -227,6 +245,16 @@ export default function StorefrontPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [moneda, setMoneda] = useState<"PYG" | "USD">("PYG");
 
+  const { 
+    addToCart, 
+    totalItems, 
+    setIsCartOpen, 
+    setIsAuthModalOpen, 
+    setIsProfileOpen, 
+    customer, 
+    notificacion 
+  } = useCart();
+
   const copiarSku = (sku: string) => {
     navigator.clipboard.writeText(sku);
     setCopiedId(sku);
@@ -244,7 +272,7 @@ export default function StorefrontPage() {
           1. HEADER ATACADO CONNECT + NEXO CONCIERGE (PATRÓN EXACTO ATACADO CONNECT)
       ============================================================================== */}
       
-      {/* Top Banner Verde con Horario de Corte y Enlace a Cámara del Puente */}
+      {/* Top Banner Verde con Horario de Corte y Garantía */}
       <div className="bg-[#00c853] text-white text-[11px] font-semibold py-1.5 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -257,9 +285,9 @@ export default function StorefrontPage() {
             <span className="hidden sm:inline text-white/90">
               Despacho garantizado a todo el territorio paraguayo
             </span>
-            <Link href="/admin" className="text-white hover:underline font-bold">
-              Panel Operativo CDE
-            </Link>
+            <span className="text-white/95 font-medium">
+              Flete plano TSI: ₲35.000 / ₲50.000
+            </span>
           </div>
         </div>
       </div>
@@ -313,28 +341,49 @@ export default function StorefrontPage() {
 
             {/* Iconos de Acción (Favoritos, Usuario, Carrito) */}
             <div className="flex items-center gap-2">
-              <button className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-red-500 hover:border-red-200 transition">
+              <button 
+                onClick={() => alert("Favoritos: Guarda tus artículos preferidos de Atacado Connect.")}
+                className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-red-500 hover:border-red-200 transition cursor-pointer"
+                title="Favoritos"
+              >
                 <Heart className="w-4 h-4" />
               </button>
               
-              <Link
-                href="/admin"
-                className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-[#00c853] hover:border-[#00c853]/40 transition"
-                title="Acceso Operativo"
+              {/* Botón de Perfil / Login del Cliente */}
+              <button
+                onClick={() => {
+                  if (customer) {
+                    setIsProfileOpen(true);
+                  } else {
+                    setIsAuthModalOpen(true);
+                  }
+                }}
+                className={`w-9 h-9 rounded-full border flex items-center justify-center transition cursor-pointer relative ${
+                  customer 
+                    ? "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold" 
+                    : "border-slate-200 text-slate-600 hover:text-[#00c853] hover:border-[#00c853]/40"
+                }`}
+                title={customer ? `Mi Cuenta: ${customer.nombre}` : "Iniciar Sesión / Crear Perfil"}
               >
                 <User className="w-4 h-4" />
-              </Link>
+                {customer && (
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                )}
+              </button>
 
-              <Link
-                href="/checkout"
-                className="w-9 h-9 rounded-full bg-[#00c853] text-white flex items-center justify-center hover:bg-[#00b34a] shadow-sm transition relative"
-                title="Ver Carrito y Checkout"
+              {/* Botón de Carrito con Slide-over */}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="w-9 h-9 rounded-full bg-[#00c853] text-white flex items-center justify-center hover:bg-[#00b34a] shadow-xs transition relative cursor-pointer"
+                title="Ver Carrito y Finalizar Compra"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
-                  1
-                </span>
-              </Link>
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center animate-in zoom-in">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -412,13 +461,18 @@ export default function StorefrontPage() {
               </p>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                <Link
-                  href="/checkout"
-                  className="px-6 py-2.5 rounded-full bg-[#00c853] hover:bg-[#00b34a] text-white font-extrabold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+                <button
+                  onClick={() => {
+                    const ps5 = PRODUCTOS_CATALOGO.find(p => p.id === "1448603");
+                    if (ps5) addToCart(ps5);
+                    setIsCartOpen(true);
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-[#00c853] hover:bg-[#00b34a] text-white font-extrabold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                  <span>SEPA MÁS</span>
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>AGREGAR AL CARRITO</span>
                   <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+                </button>
                 <span className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-[#00c853]" />
                   Pago 100% SIPAP Continental
@@ -544,12 +598,16 @@ export default function StorefrontPage() {
               />
             </div>
 
-            <Link
-              href="/checkout"
-              className="w-full py-2.5 rounded-full bg-[#00c853] hover:bg-[#00b34a] text-white text-xs font-extrabold text-center block shadow transition"
+            <button
+              onClick={() => {
+                const rn13 = PRODUCTOS_CATALOGO.find(p => p.id === "1450781");
+                if (rn13) addToCart(rn13);
+                setIsCartOpen(true);
+              }}
+              className="w-full py-2.5 rounded-full bg-[#00c853] hover:bg-[#00b34a] text-white text-xs font-extrabold text-center block shadow transition cursor-pointer active:scale-95"
             >
-              SEPA MÁS &gt;
-            </Link>
+              AGREGAR AL CARRITO &gt;
+            </button>
           </div>
 
           {/* 3 Tarjetas de Producto en Fondo Blanco (Formato Idéntico a Atacado Connect) */}
@@ -560,7 +618,10 @@ export default function StorefrontPage() {
                 className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover:border-[#00c853] transition shadow-xs group relative"
               >
                 {/* Botón Favorito Arriba a la Derecha */}
-                <button className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition">
+                <button 
+                  onClick={() => alert(`Favorito: ${prod.nombre}`)}
+                  className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition cursor-pointer"
+                >
                   <Heart className="w-4 h-4" />
                 </button>
 
@@ -598,7 +659,7 @@ export default function StorefrontPage() {
                 <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between">
                   <button
                     onClick={() => copiarSku(prod.id)}
-                    className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-slate-800 transition"
+                    className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-slate-800 transition cursor-pointer"
                     title="Copiar código Atacado Connect"
                   >
                     <span>{prod.id}</span>
@@ -609,13 +670,13 @@ export default function StorefrontPage() {
                     )}
                   </button>
 
-                  <Link
-                    href="/checkout"
-                    className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs"
-                    title="Comprar y solicitar despacho TSI"
+                  <button
+                    onClick={() => addToCart(prod)}
+                    className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs cursor-pointer active:scale-95"
+                    title="Agregar al Carrito"
                   >
                     <ShoppingBag className="w-4 h-4" />
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
@@ -699,13 +760,13 @@ export default function StorefrontPage() {
                   )}
                 </button>
 
-                <Link
-                  href="/checkout"
-                  className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs"
-                  title="Comprar y solicitar despacho TSI"
+                <button
+                  onClick={() => addToCart(prod)}
+                  className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs cursor-pointer active:scale-95"
+                  title="Agregar al Carrito"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                </Link>
+                </button>
               </div>
             </div>
           ))}
@@ -733,7 +794,10 @@ export default function StorefrontPage() {
               key={prod.id}
               className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover:border-[#00c853] transition shadow-xs group relative"
             >
-              <button className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition">
+              <button 
+                onClick={() => alert(`Favorito: ${prod.nombre}`)}
+                className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition cursor-pointer"
+              >
                 <Heart className="w-4 h-4" />
               </button>
 
@@ -767,7 +831,7 @@ export default function StorefrontPage() {
               <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between">
                 <button
                   onClick={() => copiarSku(prod.id)}
-                  className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-slate-800 transition"
+                  className="flex items-center gap-1 text-[11px] font-mono text-slate-400 hover:text-slate-800 transition cursor-pointer"
                   title="Copiar código Atacado Connect"
                 >
                   <span>{prod.id}</span>
@@ -778,13 +842,13 @@ export default function StorefrontPage() {
                   )}
                 </button>
 
-                <Link
-                  href="/checkout"
-                  className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs"
-                  title="Comprar y solicitar despacho TSI"
+                <button
+                  onClick={() => addToCart(prod)}
+                  className="w-8 h-8 rounded-lg bg-[#00c853] hover:bg-[#00b34a] text-white flex items-center justify-center transition shadow-xs cursor-pointer active:scale-95"
+                  title="Agregar al Carrito"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                </Link>
+                </button>
               </div>
             </div>
           ))}
@@ -875,13 +939,45 @@ export default function StorefrontPage() {
         </div>
 
         <div className="max-w-7xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
-          <p>© 2026 NEXO Concierge Comercial & Transporte • En alianza con Atacado Connect CDE.</p>
+          <p className="flex items-center gap-1.5 text-slate-500">
+            <span>© 2026 NEXO Concierge Comercial & Transporte • En alianza con Atacado Connect CDE.</span>
+            {/* Acceso operativo camuflado imperceptible donde nadie tocaría */}
+            <Link 
+              href="/admin" 
+              className="text-slate-800 hover:text-slate-600 transition inline-block p-0.5 opacity-20 hover:opacity-100" 
+              title="Sistema"
+            >
+              <Lock className="w-2.5 h-2.5" />
+            </Link>
+          </p>
           <div className="flex gap-4">
             <Link href="/checkout" className="text-slate-400 hover:text-white">Checkout Seguro</Link>
-            <Link href="/admin" className="text-slate-400 hover:text-white">Panel Interno</Link>
+            <button 
+              onClick={() => customer ? setIsProfileOpen(true) : setIsAuthModalOpen(true)}
+              className="text-slate-400 hover:text-white cursor-pointer"
+            >
+              {customer ? `Mi Cuenta (${customer.nombre.split(" ")[0]})` : "Iniciar Sesión"}
+            </button>
           </div>
         </div>
       </footer>
+
+      {/* Drawer del Carrito */}
+      <CartDrawer />
+
+      {/* Modal de Autenticación / Registro de Ticket */}
+      <AuthModal />
+
+      {/* Drawer de Perfil de Cliente, Compras Anteriores y Cambio de Seña */}
+      <ProfileDrawer />
+
+      {/* Notificación Toast Flotante */}
+      {notificacion && (
+        <div className="fixed bottom-5 right-5 z-50 bg-slate-900 text-white border border-emerald-500/40 px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold flex items-center gap-2 animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{notificacion}</span>
+        </div>
+      )}
     </div>
   );
 }

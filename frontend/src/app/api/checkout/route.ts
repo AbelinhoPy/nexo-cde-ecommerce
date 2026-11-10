@@ -9,11 +9,20 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "0123456789abcdef0123456789abcdef";
 const IV_LENGTH = 16;
 
+const CartItemSchema = z.object({
+  productoId: z.string().min(1).max(100),
+  cantidad: z.number().int().positive().default(1),
+  precioPyg: z.number().int().positive(),
+  tipoFlete: z.enum(["REGULAR", "PESADO"]).default("REGULAR"),
+  nombre: z.string().optional(),
+});
+
 /**
- * Esquema de validación estricto con Zod (Mitiga inyecciones y payloads maliciosos)
+ * Esquema de validación estricto con Zod
  */
 const CheckoutSchema = z.object({
   cliente: z.object({
+    id: z.string().optional(),
     nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres").max(120),
     ci: z.string().min(5, "El documento / CI debe tener al menos 5 dígitos").max(20),
     telefono: z.string().min(6, "El teléfono de contacto debe tener al menos 6 dígitos").max(25),
@@ -22,17 +31,17 @@ const CheckoutSchema = z.object({
     ciudad: z.string().min(2).max(80),
     direccion: z.string().min(5, "La dirección debe ser descriptiva para el chofer de TSI").max(200),
   }),
-  productoId: z.string().min(1).max(100),
-  tipoFlete: z.enum(["REGULAR", "PESADO"]),
-  montoProductosPyg: z.number().int().positive("El monto del producto debe ser un entero positivo"),
+  items: z.array(CartItemSchema).optional(),
+  productoId: z.string().min(1).max(100).optional(),
+  tipoFlete: z.enum(["REGULAR", "PESADO"]).optional(),
+  montoProductosPyg: z.number().int().positive("El monto de productos debe ser positivo"),
+  cuponCodigo: z.string().max(30).optional().nullable(),
+  descuentoCuponPyg: z.number().int().min(0).default(0),
   terminosAceptados: z.literal(true, {
     errorMap: () => ({ message: "Debe aceptar expresamente las condiciones de inspección y despacho TSI" }),
   }),
 });
 
-/**
- * Función de cifrado simétrico AES-256-CBC retornando Buffer binario para BYTEA de PostgreSQL
- */
 function encryptAES256Buffer(text: string): Buffer {
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY), iv);
@@ -40,20 +49,17 @@ function encryptAES256Buffer(text: string): Buffer {
   return Buffer.concat([iv, encrypted]);
 }
 
-/**
- * Función Hash SHA-256 para Blind Indexing
- */
 function hashSHA256(text: string): string {
   return crypto.createHash("sha256").update(text.trim().toLowerCase()).digest("hex");
 }
 
 export async function POST(req: NextRequest) {
   try {
-    // 0. Control de tasa de peticiones (Rate Limiting anti DoS / Spam)
+    // 0. Rate Limiting por IP
     const clientIp = getClientIp(req);
     const rateCheck = checkRateLimit(`checkout_${clientIp}`, {
-      windowMs: 10 * 60 * 1000, // 10 minutos
-      max: 15, // Máximo 15 pedidos cada 10 min por IP
+      windowMs: 10 * 60 * 1000,
+      max: 15,
     });
 
     if (!rateCheck.allowed) {
@@ -81,11 +87,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { cliente, productoId, tipoFlete, montoProductosPyg } = parseResult.data;
+    const { cliente, items, productoId, tipoFlete, montoProductosPyg, cuponCodigo, descuentoCuponPyg } = parseResult.data;
+
+    // Normalizar items (soporta array de carrito o producto único)
+    const normalizedItems: Array<{ productoId: string; cantidad: number; precioPyg: number; tipoFlete: "REGULAR" | "PESADO"; nombre?: string }> =
+      items && items.length > 0
+        ? items
+        : [
+            {
+              productoId: productoId || "CON-PS5-SLIM-DIG",
+              cantidad: 1,
+              precioPyg: montoProductosPyg,
+              tipoFlete: tipoFlete || "REGULAR",
+            },
+          ];
 
     // 2. Regla inmutable de Flete TSI en Servidor
-    const costoFleteCalculado = tipoFlete === "PESADO" ? 50000 : 35000;
-    const totalPagarCalculado = montoProductosPyg + costoFleteCalculado;
+    const tienePesado = normalizedItems.some((it) => it.tipoFlete === "PESADO");
+    const costoFleteCalculado = tienePesado ? 50000 : 35000;
+    const descuentoAplicado = Math.min(descuentoCuponPyg, montoProductosPyg + costoFleteCalculado);
+    const totalPagarCalculado = montoProductosPyg + costoFleteCalculado - descuentoAplicado;
 
     // 3. Generación de Código Único de Pedido
     const hoyStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -99,11 +120,9 @@ export async function POST(req: NextRequest) {
 
     const ciHash = hashSHA256(cliente.ci);
     const telefonoHash = hashSHA256(cliente.telefono);
-
-    // 5. Auditoría legal de aceptación
     const timestampAceptacion = new Date();
 
-    // 6. Persistencia real en Neon PostgreSQL
+    // 5. Persistencia real en Neon PostgreSQL
     if (isDbConfigured()) {
       const pool = getPool();
       const client = await pool.connect();
@@ -115,14 +134,15 @@ export async function POST(req: NextRequest) {
           `
           INSERT INTO clientes (
             nombre_completo, ci_cifrado, telefono_cifrado, direccion_cifrada,
-            ci_hash, telefono_hash, ciudad_destino, departamento
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ci_hash, telefono_hash, ciudad_destino, departamento, email
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           ON CONFLICT (ci_hash) DO UPDATE SET
             nombre_completo = EXCLUDED.nombre_completo,
             telefono_cifrado = EXCLUDED.telefono_cifrado,
             direccion_cifrada = EXCLUDED.direccion_cifrada,
             ciudad_destino = EXCLUDED.ciudad_destino,
-            departamento = EXCLUDED.departamento
+            departamento = EXCLUDED.departamento,
+            email = COALESCE(EXCLUDED.email, clientes.email)
           RETURNING id;
           `,
           [
@@ -134,17 +154,19 @@ export async function POST(req: NextRequest) {
             telefonoHash,
             cliente.ciudad,
             cliente.departamento,
+            cliente.email || null,
           ]
         );
         const clienteId = clienteRes.rows[0].id;
 
-        // Insertar Pedido
+        // Insertar Pedido con cupón y flete
         const pedidoRes = await client.query(
           `
           INSERT INTO pedidos (
-            codigo_pedido, cliente_id, monto_productos_pyg, monto_flete_pyg, total_pagar_pyg,
+            codigo_pedido, cliente_id, monto_productos_pyg, monto_flete_pyg,
+            cupon_codigo, descuento_cupon_pyg, total_pagar_pyg,
             estado, terminos_aceptados, terminos_aceptados_ip, terminos_aceptados_timestamp
-          ) VALUES ($1, $2, $3, $4, $5, 'PENDIENTE', TRUE, $6, $7)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDIENTE', TRUE, $8, $9)
           RETURNING id;
           `,
           [
@@ -152,6 +174,8 @@ export async function POST(req: NextRequest) {
             clienteId,
             montoProductosPyg,
             costoFleteCalculado,
+            cuponCodigo || null,
+            descuentoAplicado,
             totalPagarCalculado,
             clientIp,
             timestampAceptacion,
@@ -159,37 +183,39 @@ export async function POST(req: NextRequest) {
         );
         const pedidoId = pedidoRes.rows[0].id;
 
-        // Buscar producto en catálogo para snapshot de costos
-        const prodQuery = await client.query(
-          "SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos WHERE sku = $1 OR id::text = $1 LIMIT 1;",
-          [productoId]
-        );
-
-        let prodDb = prodQuery.rows[0];
-        if (!prodDb) {
-          // Fallback al primer producto si se pasó un ID genérico demo
-          const fallbackQuery = await client.query("SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos LIMIT 1;");
-          prodDb = fallbackQuery.rows[0];
-        }
-
-        if (prodDb) {
-          await client.query(
-            `
-            INSERT INTO pedido_items (
-              pedido_id, producto_id, cantidad, costo_unitario_usd,
-              cotizacion_usada_pyg, costo_unitario_pyg, precio_unitario_pyg, subtotal_pyg
-            ) VALUES ($1, $2, 1, $3, $4, $5, $6, $7);
-            `,
-            [
-              pedidoId,
-              prodDb.id,
-              prodDb.costo_neto_usd,
-              prodDb.cotizacion_aplicada_pyg,
-              prodDb.costo_neto_pyg,
-              montoProductosPyg,
-              montoProductosPyg,
-            ]
+        // Insertar todos los items del carrito
+        for (const item of normalizedItems) {
+          const prodQuery = await client.query(
+            "SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos WHERE sku = $1 OR id::text = $1 LIMIT 1;",
+            [item.productoId]
           );
+
+          let prodDb = prodQuery.rows[0];
+          if (!prodDb) {
+            const fallbackQuery = await client.query("SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos LIMIT 1;");
+            prodDb = fallbackQuery.rows[0];
+          }
+
+          if (prodDb) {
+            await client.query(
+              `
+              INSERT INTO pedido_items (
+                pedido_id, producto_id, cantidad, costo_unitario_usd,
+                cotizacion_usada_pyg, costo_unitario_pyg, precio_unitario_pyg, subtotal_pyg
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+              `,
+              [
+                pedidoId,
+                prodDb.id,
+                item.cantidad,
+                prodDb.costo_neto_usd,
+                prodDb.cotizacion_aplicada_pyg,
+                prodDb.costo_neto_pyg,
+                item.precioPyg,
+                item.precioPyg * item.cantidad,
+              ]
+            );
+          }
         }
 
         await client.query("COMMIT;");
@@ -208,14 +234,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 7. Envío de Correo de Confirmación de Compra al Cliente
+    // 6. Envío de Correo de Confirmación de Compra al Cliente
     if (cliente.email && cliente.email.includes("@")) {
       try {
+        const resumenProductos = normalizedItems
+          .map((i) => `${i.cantidad}x ${i.nombre || i.productoId}`)
+          .join(", ");
+
         await sendOrderConfirmationEmail({
           email: cliente.email.trim(),
           nombre: cliente.nombre,
           codigoPedido,
-          productoNombre: productoId || "Producto Mayorista CDE",
+          productoNombre: resumenProductos || "Productos Mayoristas CDE",
           totalPyg: totalPagarCalculado,
           fletePyg: costoFleteCalculado,
           ciudadDestino: `${cliente.ciudad} (${cliente.departamento})`,
@@ -231,6 +261,8 @@ export async function POST(req: NextRequest) {
         codigoPedido,
         totalPagarPyg: totalPagarCalculado,
         fletePyg: costoFleteCalculado,
+        descuentoPyg: descuentoAplicado,
+        cuponCodigo: cuponCodigo || null,
         banco: "Banco Continental",
         cuenta: "010015602601",
         titular: "NUÑEZ MARTINEZ, ABEL IRENEO",
@@ -238,9 +270,7 @@ export async function POST(req: NextRequest) {
         ruc: "4196328-8",
         mensaje: "Pedido registrado exitosamente. Transfiera el monto exacto vía SIPAP antes de las 12:00 PM.",
       },
-      {
-        status: 201,
-      }
+      { status: 201 }
     );
   } catch (error: any) {
     console.error("Error en checkout API:", error);

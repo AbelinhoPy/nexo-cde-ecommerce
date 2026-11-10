@@ -100,10 +100,15 @@ CREATE TABLE IF NOT EXISTS clientes (
     
     ciudad_destino VARCHAR(100) NOT NULL, -- ej. Asunción, Encarnación, Cnel. Oviedo
     departamento VARCHAR(100) NOT NULL,
+    email VARCHAR(180) UNIQUE,
+    password_hash VARCHAR(255),
+    password_salt VARCHAR(64),
+    ultimo_login TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_clientes_ci_hash ON clientes(ci_hash);
+CREATE INDEX IF NOT EXISTS idx_clientes_email ON clientes(email);
 
 -- 6. TABLA DE PEDIDOS
 CREATE TABLE IF NOT EXISTS pedidos (
@@ -113,6 +118,8 @@ CREATE TABLE IF NOT EXISTS pedidos (
     
     monto_productos_pyg BIGINT NOT NULL,
     monto_flete_pyg INT NOT NULL, -- 35000 o 50000
+    cupon_codigo VARCHAR(30),
+    descuento_cupon_pyg BIGINT DEFAULT 0,
     total_pagar_pyg BIGINT NOT NULL, -- Exacto para matching SIPAP
     
     estado estado_pedido_enum NOT NULL DEFAULT 'PENDIENTE',
