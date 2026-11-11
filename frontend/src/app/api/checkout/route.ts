@@ -89,6 +89,27 @@ export async function POST(req: NextRequest) {
 
     const { cliente, items, productoId, tipoFlete, montoProductosPyg, cuponCodigo, descuentoCuponPyg } = parseResult.data;
 
+    // Validación estricta: Exclusión geográfica de Ciudad del Este / Alto Paraná
+    const depLower = (cliente.departamento || "").toLowerCase();
+    const ciudadLower = (cliente.ciudad || "").toLowerCase();
+    const esDestinoCde = 
+      depLower.includes("alto paraná") || 
+      depLower.includes("alto parana") || 
+      ciudadLower.includes("ciudad del este") || 
+      ciudadLower.includes("hernandarias") || 
+      ciudadLower.includes("franco") || 
+      ciudadLower.includes("minga");
+
+    if (esDestinoCde) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Servicio exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a destinos de Asunción y el interior de Paraguay. No disponemos de entregas locales ni mostrador en Ciudad del Este.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Normalizar items (soporta array de carrito o producto único)
     const normalizedItems: Array<{ productoId: string; cantidad: number; precioPyg: number; tipoFlete: "REGULAR" | "PESADO"; nombre?: string }> =
       items && items.length > 0

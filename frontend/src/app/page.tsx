@@ -56,6 +56,19 @@ export default function StorefrontPage() {
   const [favoritos, setFavoritos] = useState<string[]>([]);
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
   const [isPuenteOpen, setIsPuenteOpen] = useState(false);
+  const [geoAlertaCde, setGeoAlertaCde] = useState(false);
+
+  // Verificación de geolocalización automática: Detectar si el visitante está en CDE / Alto Paraná
+  React.useEffect(() => {
+    fetch("/api/geo/check")
+      .then(res => res.json())
+      .then(data => {
+        if (data?.esZonaCde) {
+          setGeoAlertaCde(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const { 
     addToCart, 
@@ -116,6 +129,25 @@ export default function StorefrontPage() {
           1. HEADER CONNECT PARTNER + NEXO CONCIERGE
       ============================================================================== */}
       
+      {/* Alerta de Geolocalización si entra alguien desde CDE / Alto Paraná */}
+      {geoAlertaCde && (
+        <div className="bg-amber-500 text-slate-950 text-xs font-bold py-2.5 px-4 border-b border-amber-600 flex items-center justify-between shadow-xs">
+          <div className="max-w-7xl mx-auto flex items-center gap-2">
+            <span className="text-base">📍</span>
+            <span>
+              <strong>Ubicación detectada en Ciudad del Este / Alto Paraná:</strong> NEXO CDE opera exclusivamente como servicio de despacho y encomiendas vía Transportadora TSI para clientes de Asunción y el Interior del país. No disponemos de retiro presencial ni salón de ventas en CDE.
+            </span>
+          </div>
+          <button 
+            onClick={() => setGeoAlertaCde(false)} 
+            className="text-slate-950/70 hover:text-slate-950 p-1 cursor-pointer"
+            title="Cerrar aviso"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Top Banner Verde con Horario de Corte y Garantía */}
       <div className="bg-[#00c853] text-white text-[11px] font-semibold py-1.5 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">

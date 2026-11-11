@@ -28,7 +28,6 @@ import { useCart } from "@/lib/CartContext";
 const DEPARTAMENTOS_PARAGUAY = [
   "Central",
   "Asunción (Distrito Capital)",
-  "Alto Paraná",
   "Itapúa",
   "Caaguazú",
   "Cordillera",
@@ -112,6 +111,20 @@ export default function CheckoutPage() {
 
     if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.direccion) {
       alert("Por favor completa los datos de tu ticket de envío para la guía de TSI.");
+      return;
+    }
+
+    const depLower = (cliente.departamento || "").toLowerCase();
+    const ciudadLower = (cliente.ciudad || "").toLowerCase();
+    if (
+      depLower.includes("alto paraná") || 
+      depLower.includes("alto parana") || 
+      ciudadLower.includes("ciudad del este") || 
+      ciudadLower.includes("hernandarias") || 
+      ciudadLower.includes("franco") || 
+      ciudadLower.includes("minga")
+    ) {
+      alert("⚠️ Servicio Exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a localidades de Asunción y el interior de Paraguay (Central, Itapúa, Caaguazú, etc.). No disponemos de entregas locales ni mostrador en Ciudad del Este.");
       return;
     }
 
