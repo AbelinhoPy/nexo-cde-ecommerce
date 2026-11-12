@@ -20,7 +20,6 @@ import { NexoLogo } from "./NexoLogo";
 const DEPARTAMENTOS_PARAGUAY = [
   "Central",
   "Asunción (Distrito Capital)",
-  "Alto Paraná",
   "Itapúa",
   "Caaguazú",
   "Cordillera",
@@ -56,8 +55,8 @@ export function AuthModal() {
     telefono: "",
     email: "",
     password: "",
-    departamento: "Central",
-    ciudad: "Asunción",
+    departamento: "",
+    ciudad: "",
     direccion: "",
   });
 
@@ -312,12 +311,16 @@ export function AuthModal() {
                   Departamento
                 </label>
                 <select
+                  required
                   value={regForm.departamento}
                   onChange={(e) => setRegForm({ ...regForm, departamento: e.target.value })}
-                  className="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className={`w-full py-2 px-3 rounded-xl border text-xs bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none ${
+                    !regForm.departamento ? "text-slate-400 border-slate-300" : "text-slate-900 border-slate-300"
+                  }`}
                 >
+                  <option value="" disabled>-- Selecciona un Departamento --</option>
                   {DEPARTAMENTOS_PARAGUAY.map((dep) => (
-                    <option key={dep} value={dep}>
+                    <option key={dep} value={dep} className="text-slate-900">
                       {dep}
                     </option>
                   ))}

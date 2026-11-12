@@ -56,6 +56,7 @@ export default function CheckoutPage() {
     totalPagarPyg, 
     customer, 
     setIsAuthModalOpen, 
+    registerCustomer,
     clearCart 
   } = useCart();
 
@@ -70,14 +71,15 @@ export default function CheckoutPage() {
     fletePyg: number;
   } | null>(null);
 
-  // Datos del ticket de envío (prellenados si customer existe)
+  // Datos del ticket de envío (sin selección inicial para departamento y ciudad)
   const [cliente, setCliente] = useState({
     nombre: "",
     ci: "",
     telefono: "",
     email: "",
-    departamento: "Central",
-    ciudad: "Asunción",
+    password: "",
+    departamento: "",
+    ciudad: "",
     direccion: "",
   });
 
@@ -88,8 +90,9 @@ export default function CheckoutPage() {
         ci: customer.ci || "",
         telefono: customer.telefono || "",
         email: customer.email || "",
-        departamento: customer.departamento || "Central",
-        ciudad: customer.ciudad || "Asunción",
+        password: "",
+        departamento: customer.departamento || "",
+        ciudad: customer.ciudad || "",
         direccion: customer.direccion || "",
       });
     }
@@ -109,8 +112,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.direccion) {
-      alert("Por favor completa los datos de tu ticket de envío para la guía de TSI.");
+    if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.email || !cliente.departamento || !cliente.ciudad || !cliente.direccion) {
+      alert("Por favor completa todos los datos obligatorios para la guía de TSI (incluyendo departamento y ciudad de destino).");
+      return;
+    }
+
+    if (!customer && (!cliente.password || cliente.password.length < 6)) {
+      alert("Por favor ingresa una contraseña de al menos 6 caracteres para crear tu cuenta y poder ver la foto de tu guía TSI.");
       return;
     }
 
@@ -131,6 +139,28 @@ export default function CheckoutPage() {
     setCargando(true);
 
     try {
+      // Si el cliente no está logueado, registrar su cuenta para que tenga acceso al perfil y foto de guía TSI
+      if (!customer && cliente.password) {
+        const regRes = await registerCustomer({
+          nombre: cliente.nombre,
+          ci: cliente.ci,
+          telefono: cliente.telefono,
+          email: cliente.email,
+          password: cliente.password,
+          departamento: cliente.departamento,
+          ciudad: cliente.ciudad,
+          direccion: cliente.direccion,
+        });
+
+        if (!regRes.success) {
+          if (regRes.error && regRes.error.toLowerCase().includes("ya existe")) {
+            alert("⚠️ Ya existe una cuenta con este correo o cédula. Por favor inicia sesión con tu contraseña para continuar con tu compra.");
+            setIsAuthModalOpen(true);
+            setCargando(false);
+            return;
+          }
+        }
+      }
       // Si el carrito está vacío (ej. acceso directo), armar item de respaldo
       const itemsPayload = cart.length > 0
         ? cart.map(it => ({
@@ -239,17 +269,17 @@ export default function CheckoutPage() {
             {/* Formulario / Ticket de Envío (7 Columnas) */}
             <div className="lg:col-span-7 bg-white rounded-2xl p-6 sm:p-8 shadow-xs border border-slate-200 space-y-6">
               
-              {/* Banner de Inicio de Sesión si no está logueado */}
+              {/* Banner de Identificación y Registro para Despacho TSI */}
               {!customer ? (
                 <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-[#00c853] flex items-center justify-center shrink-0">
                       <User className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">¿Ya tienes cuenta o compraste antes?</h3>
+                      <h3 className="text-sm font-bold">Identificación para Despacho TSI</h3>
                       <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
-                        Inicia sesión para usar tu ticket de envío guardado (CI, teléfono, dirección) y acumular tus compras anteriores.
+                        ¿Ya compraste antes en NEXO? Inicia sesión para autocompletar tu ticket guardado. Si es tu primera compra, completa tus datos abajo y te crearemos tu cuenta para que puedas ver la foto de tu guía TSI en tu perfil.
                       </p>
                     </div>
                   </div>
@@ -258,11 +288,11 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setIsAuthModalOpen(true)}
-                      className="px-4 py-2 bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-bold rounded-lg text-xs transition"
+                      className="px-4 py-2 bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-bold rounded-lg text-xs transition cursor-pointer"
                     >
-                      Iniciar Sesión / Registrarme
+                      Ya tengo cuenta • Iniciar Sesión
                     </button>
-                    <span className="text-[11px] text-slate-400">o completa tus datos abajo</span>
+                    <span className="text-[11px] text-slate-400">o completa tus datos abajo para registrarte</span>
                   </div>
                 </div>
               ) : (
@@ -357,7 +387,7 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Correo Electrónico (para comprobante y tracking)
+                        Correo Electrónico (para comprobante y tracking) *
                       </label>
                       <input
                         type="email"
@@ -370,39 +400,61 @@ export default function CheckoutPage() {
                       />
                     </div>
 
+                    {!customer && (
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Crear Contraseña para tu Cuenta NEXO (mínimo 6 caracteres) *
+                        </label>
+                        <input
+                          type="password"
+                          name="password"
+                          required
+                          minLength={6}
+                          placeholder="Crea una contraseña para ingresar a tu perfil y ver tu guía TSI"
+                          value={cliente.password}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"
+                        />
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          🔒 Se registrará tu cuenta automáticamente para que puedas ingresar a tu perfil y ver la foto de la boleta de remisión en cuanto Abel la despache en TSI.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Departamento
+                          Departamento de Destino *
                         </label>
                         <select
                           name="departamento"
+                          required
                           value={cliente.departamento}
                           onChange={handleInputChange}
-                          className="w-full px-2 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:ring-1 focus:ring-emerald-500 outline-none"
+                          className={`w-full px-2 py-2 rounded-xl border text-xs bg-white focus:ring-1 focus:ring-emerald-500 outline-none ${
+                            !cliente.departamento ? "text-slate-400 border-slate-300" : "text-slate-900 border-slate-300"
+                          }`}
                         >
+                          <option value="" disabled>
+                            -- Selecciona tu Departamento --
+                          </option>
                           {DEPARTAMENTOS_PARAGUAY.map((dep) => (
-                            <option key={dep} value={dep}>
+                            <option key={dep} value={dep} className="text-slate-900">
                               {dep}
                             </option>
                           ))}
                         </select>
-                        {cliente.departamento === "Alto Paraná" && (
-                          <p className="text-[11px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1.5 leading-tight">
-                            ⚠️ Aviso: NEXO CDE opera exclusivamente mediante despacho por Transportadora TSI. No realizamos entregas presenciales dentro de CDE.
-                          </p>
-                        )}
                       </div>
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Ciudad de Destino
+                          Ciudad de Destino *
                         </label>
                         <input
                           type="text"
                           name="ciudad"
                           required
-                          placeholder="ej. Encarnación, Luque, Cnel. Oviedo"
+                          placeholder="ej. Luque, Encarnación, Cnel. Oviedo..."
                           value={cliente.ciudad}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"

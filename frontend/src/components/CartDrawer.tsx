@@ -264,27 +264,30 @@ export function CartDrawer() {
                 </div>
               </div>
 
-              {/* Botón de Checkout con Control de Login */}
-              {customer ? (
-                <Link
-                  href="/checkout"
-                  onClick={() => setIsCartOpen(false)}
-                  className="w-full bg-[#00c853] hover:bg-[#00b34a] text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm"
-                >
-                  <span>Continuar con mi Ticket de Envío</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              ) : (
-                <button
-                  onClick={() => {
-                    setIsCartOpen(false);
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm"
-                >
-                  <ShieldCheck className="w-4 h-4 text-[#00c853]" />
-                  <span>Inicia Sesión para Confirmar Compra</span>
-                </button>
+              {/* Botón de Checkout Unificado */}
+              <Link
+                href="/checkout"
+                onClick={() => setIsCartOpen(false)}
+                className="w-full bg-[#00c853] hover:bg-[#00b34a] text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+              >
+                <span>{customer ? "Continuar con mi Ticket de Envío" : "Proceder al Checkout / Datos de Envío"}</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              {!customer && (
+                <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500 pt-1">
+                  <span>¿Ya tienes cuenta?</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCartOpen(false);
+                      setIsAuthModalOpen(true);
+                    }}
+                    className="text-[#00c853] hover:text-[#00b34a] font-bold underline cursor-pointer"
+                  >
+                    Inicia sesión aquí
+                  </button>
+                </div>
               )}
 
               <p className="text-[10px] text-center text-slate-400 leading-tight">
