@@ -25,6 +25,18 @@ function calcPyg(usd: number): number {
   return Math.round((usd * COTIZACION_DOLAR_PYG) / 1000) * 1000;
 }
 
+/**
+ * Calcula el precio de referencia inflado de Asunción / Shoppings ("ANTES")
+ * para contrastar con el precio mayorista real de CDE ("AHORA")
+ */
+export function getPrecioAntesAsuncion(prod: ProductoCatalogo): number {
+  if (prod.precioRetailReferencia && prod.precioRetailReferencia > prod.precioPyg) {
+    return prod.precioRetailReferencia;
+  }
+  // En Asunción y cadenas comerciales la tecnología cuesta entre 25% y 32% más cara
+  return Math.round((prod.precioPyg * 1.28) / 1000) * 1000;
+}
+
 export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
   // ==========================================
   // 1. SMARTPHONES (20 ITEMS TOP CDE)

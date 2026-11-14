@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXO CDE — Concierge Mayorista & Transporte TSI (Hallmark Edition)</title>
+  
+  <!-- Hallmark Typography: Familjen Grotesk + IBM Plex Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       HALLMARK DESIGN SPECIFICATION: NEXO CDE (OBSIDIAN & EMERALD PRECISION)
+       Genre: Modern-Minimal / Precision Commerce
+       Rules: No AI slop, no floating blur gradients, no generic stock cards.
+       Material: Deep obsidian graphite, crisp 1px hairlines, physical keycaps,
+                 exact retail price comparisons, and authoritative typography.
+       ========================================================================== */
+
+    :root {
+      /* Paper & Ground */
+      --paper: #090D14;
+      --paper-card: #0F1624;
+      --paper-raised: #151F33;
+      --paper-sunken: #06090F;
+      
+      /* Inks */
+      --ink: #F1F5F9;
+      --ink-muted: #94A3B8;
+      --ink-faint: #475569;
+      
+      /* Precision Signal: Emerald Neon */
+      --emerald: #00E599;
+      --emerald-glow: rgba(0, 229, 153, 0.12);
+      --emerald-dark: #035438;
+      --emerald-border: #059669;
+      
+      /* Hairline Rules */
+      --hairline: rgba(255, 255, 255, 0.08);
+      --hairline-strong: rgba(255, 255, 255, 0.16);
+      
+      /* Typography */
+      --font-display: 'Familjen Grotesk', -apple-system, sans-serif;
+      --font-body: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      /* Physical Keycap Mechanics (Hallmark Signature) */
+      --key-edge: #059669;
+      --shadow-key: 0 3px 0 0 #047857, 0 6px 12px rgba(0, 0, 0, 0.4);
+      --shadow-key-press: 0 1px 0 0 #047857, inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Top Telemetry Strip */
+    .telemetry-strip {
+      border-bottom: 1px solid var(--hairline);
+      background: var(--paper-sunken);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .telemetry-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .telemetry-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+
+    /* Header Nav */
+    header {
+      border-bottom: 1px solid var(--hairline);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(9, 13, 20, 0.85);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--paper-raised);
+      border: 1px solid var(--hairline-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--emerald);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Keycap Buttons (Hallmark tactile buttons) */
+    .keycap-btn {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--hairline-strong);
+      background: var(--paper-raised);
+      color: var(--ink);
+      box-shadow: 0 3px 0 0 rgba(0,0,0,0.6);
+      transition: all 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .keycap-btn:hover {
+      background: #1c2942;
+      transform: translateY(-1px);
+    }
+
+    .keycap-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 0 rgba(0,0,0,0.6);
+    }
+
+    .keycap-btn.primary {
+      background: var(--emerald);
+      color: #032115;
+      border-color: #00ffaa;
+      box-shadow: var(--shadow-key);
+      font-weight: 700;
+    }
+
+    .keycap-btn.primary:hover {
+      background: #00ffaa;
+    }
+
+    .keycap-btn.primary:active {
+      transform: translateY(3px);
+      box-shadow: var(--shadow-key-press);
+    }
+
+    /* Layout Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero Section: The Ledger */
+    .hero-section {
+      padding: 48px 0 36px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--emerald);
+      background: var(--emerald-glow);
+      border: 1px solid var(--emerald-border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+
+    .hero-heading {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--ink-muted);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    /* The Live Savings Ledger Card */
+    .ledger-card {
+      background: var(--paper-card);
+      border: 1px solid var(--hairline-strong);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .ledger-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ledger-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .ledger-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .ledger-row.highlight {
+      background: rgba(0, 229, 153, 0.06);
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px dashed var(--emerald-border);
+      margin: 12px 0;
+    }
+
+    .price-strike {
+      text-decoration: line-through;
+      color: var(--ink-faint);
+      font-family: var(--font-mono);
+    }
+
+    .price-nexo {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--emerald);
+      font-size: 15px;
+    }
+
+    .savings-badge {
+      background: var(--emerald);
+      color: #032115;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    /* Proof Section: 3 Columns */
+    .proof-section {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .proof-item {
+      background: var(--paper-card);
+      border: 1px solid var(--hairline);
+      padding: 24px;
+      border-radius: 10px;
+    }
+
+    .proof-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--emerald);
+      margin-bottom: 8px;
+    }
+
+    .proof-heading {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .proof-text {
+      color: var(--ink-muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* Catalog Section */
+    .catalog-section {
+      padding: 48px 0 64px;
+    }
+
+    .catalog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .catalog-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-tab {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--paper-raised);
+      border: 1px solid var(--hairline);
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+
+    .filter-tab.active {
+      background: var(--emerald);
+      color: #032115;
+      border-color: var(--emerald);
+      font-weight: 700;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .product-card {
+      background: var(--paper-card);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-col: column;
+      justify-content: space-between;
+      transition: border-color 0.15s ease;
+      position: relative;
+    }
+
+    .product-card:hover {
+      border-color: var(--hairline-strong);
+    }
+
+    .product-sku {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+    }
+
+    .product-thumb {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      background: #080C14;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .product-thumb img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .product-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .product-pricing {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .price-usd {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .price-main {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    .card-footer {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--hairline);
+      background: var(--paper-sunken);
+      padding: 40px 24px;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .stamp {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .proof-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .telemetry-strip {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. TELEMETRY STRIP (Hallmark Precision Detail) -->
+  <div class="telemetry-strip">
+    <div class="telemetry-item">
+      <div class="telemetry-dot"></div>
+      <span>CDE LOGÍSTICA ACTIVA: Conexión mayorista Connect Partner • Despachos vía Transportadora TSI</span>
+    </div>
+    <div class="telemetry-item">
+      <span>CORTE DIARIO TSI: 12:00 PM</span>
+      <span>•</span>
+      <span>CAMIÓN SALE: 13:00 HS</span>
+      <span>•</span>
+      <span style="color: var(--emerald);">SIPAP CONTINENTAL VERIFICADO</span>
+    </div>
+  </div>
+
+  <!-- 2. HEADER -->
+  <header>
+    <a href="#" class="brand-mark">
+      <div class="brand-badge">
+        <svg width="22" height="22" viewBox="0 0 128 128" fill="none">
+          <rect width="128" height="128" rx="28" fill="#0B111E"/>
+          <path d="M26 30 H42 V98 H26 Z" fill="#E2E8F0"/>
+          <path d="M86 30 H102 V98 H86 Z" fill="#E2E8F0"/>
+          <path d="M38 28 L90 100" stroke="#00E599" stroke-width="14" stroke-linecap="round"/>
+          <path d="M88 28 L40 100" stroke="#00E599" stroke-width="10" stroke-linecap="round" stroke-dasharray="20 16 20"/>
+          <circle cx="64" cy="64" r="4" fill="#FFFFFF"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">NEXO CDE</div>
+        <div class="brand-sub">Concierge Comercial & Transporte</div>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <span class="telemetry-item" style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted);">
+        📍 Av. Amado Benítez Gamarra, CDE
+      </span>
+      <a href="https://nexocde.vercel.app/checkout" target="_blank" class="keycap-btn primary">
+        <span>Ir a Tienda Oficial</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- 3. HERO SECTION (Hallmark: No AI slop hero, just factual value) -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-badge-tag">
+          <span>● CERO INTERMEDIARIOS EN ASUNCIÓN</span>
+        </div>
+        <h1 class="hero-heading">
+          El precio real mayorista de Ciudad del Este, directo a tu ciudad.
+        </h1>
+        <p class="hero-desc">
+          En Asunción y el interior pagás hasta 40% de sobreprecio en shoppings y cadenas comerciales. 
+          En NEXO compramos en las galerías de CDE a valor de frontera y te despachamos en 24h por Transportadora TSI con foto de tu remisión en mano.
+        </p>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <a href="#catalogo" class="keycap-btn primary">
+            <span>Ver Catálogo con Ahorro Real</span>
+          </a>
+          <a href="#como-funciona" class="keycap-btn">
+            <span>Cómo Funciona el Despacho</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Live Savings Ledger -->
+      <div class="ledger-card">
+        <div class="ledger-header">
+          <span class="ledger-title">Auditoría de Ahorro en Vivo (vs Shoppings Asunción)</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--emerald);">ACTUALIZADO HOY</span>
+        </div>
+
+        <div class="ledger-row">
+          <div>
+            <strong>Xiaomi Poco F9 Pro 5G</strong> (512GB)
+            <div style="font-size: 11px; color: var(--ink-faint);">Cód. Connect 1422221</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="price-strike">₲ 6.850.000</div>
+            <div class="price-nexo">₲ 5.486.000</div>
+          </div>
+        </div>
+
+        <div class="ledger-row highlight">
+          <span style="font-weight: 600;">Ahorro neto directo puesto en tu puerta:</span>
+          <span class="savings-badge">- ₲ 1.364.000 AHORRO</span>
+        </div>
+
+        <div class="ledger-row">
+          <div>
+            <strong>Sony PlayStation 5 Slim Digital</strong> (1TB)
+            <div style="font-size: 11px; color: var(--ink-faint);">Cód. Connect 1448603</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="price-strike">₲ 4.850.000</div>
+            <div class="price-nexo">₲ 3.971.000</div>
+          </div>
+        </div>
+
+        <div class="ledger-row highlight">
+          <span style="font-weight: 600;">Ahorro neto directo puesto en tu puerta:</span>
+          <span class="savings-badge">- ₲ 879.000 AHORRO</span>
+        </div>
+
+        <div style="margin-top: 12px; font-size: 11px; color: var(--ink-faint); font-family: var(--font-mono); text-align: center;">
+          🛡️ Flete plano TSI: ₲ 35.000 (Regular) / ₲ 50.000 (Pesado) incluido seguro de transporte.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PROOF SECTION (Hallmark Triad) -->
+  <section class="proof-section" id="como-funciona">
+    <div class="container proof-grid">
+      <div class="proof-item">
+        <div class="proof-number">01 / LOGÍSTICA EN CDE</div>
+        <div class="proof-heading">Compra Directa en Galería</div>
+        <div class="proof-text">
+          Abel retira tu equipo directamente en Connect Partner en CDE con precinto original de fábrica intacto y número de serie registrado.
+        </div>
+      </div>
+
+      <div class="proof-item">
+        <div class="proof-number">02 / SEGURIDAD DE PAGO</div>
+        <div class="proof-heading">SIPAP Banco Continental</div>
+        <div class="proof-text">
+          Transferís de forma blindada por SIPAP a nombre de NUÑEZ MARTINEZ, ABEL IRENEO (RUC 4196328-8) con ticket bancario instantáneo.
+        </div>
+      </div>
+
+      <div class="proof-item">
+        <div class="proof-number">03 / VISOR DE BOLETA</div>
+        <div class="proof-heading">Foto de Remisión TSI en tu Perfil</div>
+        <div class="proof-text">
+          Apenas entregamos el paquete en la agencia de Transportadora TSI en CDE, le tomamos una foto a la boleta y la ves en vivo en tu perfil.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CATALOG PREVIEW -->
+  <section class="catalog-section" id="catalogo">
+    <div class="container">
+      <div class="catalog-header">
+        <div>
+          <h2 class="catalog-title">Productos Estrella con Stock Verificado</h2>
+          <p style="color: var(--ink-muted); font-size: 13px;">Precios de frontera liquidados en Guaraníes para Asunción y el Interior.</p>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="filter-tab active">Todos</button>
+          <button class="filter-tab">Smartphones</button>
+          <button class="filter-tab">Consolas</button>
+          <button class="filter-tab">Drones</button>
+        </div>
+      </div>
+
+      <div class="product-grid">
+        
+        <!-- CARD 1 -->
+        <div class="product-card">
+          <div>
+            <div class="product-sku">SKU: 1422221 • CONNECT PARTNER CDE</div>
+            <div class="product-thumb">
+              <img src="https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp" alt="Poco F9 Pro">
+            </div>
+            <div class="product-name">Xiaomi Poco F9 Pro 5G (512GB / 12GB RAM) 6.59"</div>
+            <div style="font-size: 11px; color: var(--ink-muted);">Snapdragon 8 Elite • Cámara 200MP • Batería 6.330 mAh</div>
+          </div>
+
+          <div>
+            <div class="product-pricing">
+              <span class="price-usd">U$ 718.00</span>
+              <span class="price-main">₲ 5.486.000</span>
+            </div>
+            <div class="card-footer">
+              <a href="https://nexocde.vercel.app/producto/1422221" target="_blank" class="keycap-btn primary" style="width: 100%; justify-content: center;">
+                <span>Ver Ficha Técnica y Comprar</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="product-card">
+          <div>
+            <div class="product-sku">SKU: 1448603 • SONY OFICIAL</div>
+            <div class="product-thumb">
+              <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80" alt="PS5 Slim">
+            </div>
+            <div class="product-name">Sony PlayStation 5 Slim Digital 1TB SSD</div>
+            <div style="font-size: 11px; color: var(--ink-muted);">Incluye DualSense Blanco • 4K 120Hz HDR • Precinto Sony</div>
+          </div>
+
+          <div>
+            <div class="product-pricing">
+              <span class="price-usd">U$ 520.00</span>
+              <span class="price-main">₲ 3.971.000</span>
+            </div>
+            <div class="card-footer">
+              <a href="https://nexocde.vercel.app/checkout" target="_blank" class="keycap-btn primary" style="width: 100%; justify-content: center;">
+                <span>Comprar vía SIPAP</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="product-card">
+          <div>
+            <div class="product-sku">SKU: 1448671 • DJI INNOVATION</div>
+            <div class="product-thumb">
+              <img src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=600&q=80" alt="DJI Mini 4K">
+            </div>
+            <div class="product-name">Drone DJI Mini 4K Fly More Combo</div>
+            <div style="font-size: 11px; color: var(--ink-muted);">3 Baterías • Hub de carga • Bolsa de transporte • Video 4K</div>
+          </div>
+
+          <div>
+            <div class="product-pricing">
+              <span class="price-usd">U$ 489.00</span>
+              <span class="price-main">₲ 3.736.000</span>
+            </div>
+            <div class="card-footer">
+              <a href="https://nexocde.vercel.app/checkout" target="_blank" class="keycap-btn primary" style="width: 100%; justify-content: center;">
+                <span>Comprar vía SIPAP</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FOOTER WITH HALLMARK STAMP -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div style="font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px;">
+            NEXO CDE — Concierge Comercial & Transporte
+          </div>
+          <p style="margin-bottom: 12px; max-width: 440px;">
+            Intermediación autorizada con galerías mayoristas de Ciudad del Este. Despacho exclusivo a Asunción y localidades del interior de Paraguay vía Transportadora TSI.
+          </p>
+          <div class="stamp">
+            DIRECCIÓN: Avda. Amado Benítez Gamarra, Ciudad del Este<br>
+            TITULAR: NUÑEZ MARTINEZ, ABEL IRENEO • RUC: 4196328-8<br>
+            BANCO RECEPTOR: Banco Continental S.A.E.C.A. • Cta: 010015602601
+          </div>
+        </div>
+
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 600; color: var(--ink); margin-bottom: 12px;">Despacho TSI</div>
+          <div class="stamp">
+            Agencia TSI: Monseñor Rodríguez<br>
+            Horario de Corte: 12:00 PM<br>
+            Salida de Camiones: 13:00 HS<br>
+            Tiempo a Asunción: 24 horas
+          </div>
+        </div>
+
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 600; color: var(--ink); margin-bottom: 12px;">Garantía & Prueba</div>
+          <div class="stamp">
+            Garantía de Prueba: 48 horas<br>
+            Precinto: Sellado de fábrica<br>
+            Seguro: Cobertura total TSI<br>
+            Soporte: Concierge Personalizado
+          </div>
+        </div>
+      </div>
+
+      <div style="padding-top: 24px; border-top: 1px solid var(--hairline); display: flex; justify-content: space-between; font-size: 11px; font-family: var(--font-mono); color: var(--ink-faint);">
+        <span>© 2026 NEXO CDE • Hallmark Precision Commerce Prototype</span>
+        <span>PRODUCCIÓN VERCEL: nexocde.vercel.app</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

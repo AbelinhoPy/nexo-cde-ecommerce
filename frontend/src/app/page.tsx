@@ -32,7 +32,11 @@ import {
   Camera,
   Tablet,
   Watch,
-  X
+  X,
+  Tag,
+  TrendingDown,
+  BadgePercent,
+  Zap
 } from "lucide-react";
 import { NexoLogo } from "@/components/NexoLogo";
 import { ContactForm } from "@/components/ContactForm";
@@ -46,7 +50,8 @@ import {
   PRODUCTOS_CATALOGO, 
   CATEGORIAS_LISTA, 
   COTIZACION_DOLAR_PYG, 
-  ProductoCatalogo 
+  ProductoCatalogo,
+  getPrecioAntesAsuncion
 } from "@/lib/catalogData";
 
 export default function StorefrontPage() {
@@ -148,21 +153,28 @@ export default function StorefrontPage() {
         </div>
       )}
 
-      {/* Top Banner Verde con Horario de Corte y Garantía */}
-      <div className="bg-[#00c853] text-white text-[11px] font-semibold py-1.5 px-4">
+      {/* Top Banner Black November con Horario de Corte y Garantía */}
+      <div className="bg-gradient-to-r from-black via-zinc-950 to-black text-amber-300 text-[11px] font-semibold py-2 px-4 border-b border-amber-500/30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-white" />
-              <strong>Corte Diario: 12:00 PM</strong> • Pagos SIPAP confirmados antes de las 12:00 se despachan a las 13:00 hs por TSI
+            <span className="flex items-center gap-1.5 bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse">
+              <Flame className="w-3 h-3 text-amber-300" />
+              BLACK NOVEMBER CDE
+            </span>
+            <span className="hidden sm:inline text-zinc-300">
+              Precios de frontera sin el sobreprecio de shoppings de Asunción
+            </span>
+            <span className="flex items-center gap-1 text-amber-400">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <strong>Corte Diario 12:00 PM</strong> • Despacho TSI 13:00 hs
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline text-white/90">
-              Servicio exclusivo para envíos al Interior de Paraguay vía TSI
+          <div className="flex items-center gap-3">
+            <span className="hidden md:inline text-zinc-400">
+              Envíos al Interior vía Transportadora TSI
             </span>
-            <span className="text-white/95 font-medium">
-              Flete plano TSI: ₲35.000 / ₲50.000
+            <span className="bg-amber-400/10 border border-amber-400/30 text-amber-300 px-2 py-0.5 rounded text-[10px] font-black">
+              AHORRO DIRECTO DE HASTA -35%
             </span>
           </div>
         </div>
@@ -335,46 +347,97 @@ export default function StorefrontPage() {
       </header>
 
       {/* ==============================================================================
-          2. BANNER PRINCIPAL Y SECCIÓN LATERAL PROMO (CONNECT PARTNER OFICIAL)
+          2. BANNER PRINCIPAL Y SECCIÓN LATERAL PROMO (MODO BLACK NOVEMBER CDE)
       ============================================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           
-          {/* Banner Principal Grande (9 cols) */}
-          <div className="lg:col-span-9 bg-[#111827] rounded-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between min-h-[300px] sm:min-h-[320px] shadow-sm border border-slate-800">
-            <div className="p-6 sm:p-10 max-w-lg z-10 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#00c853] text-white">
-                <Truck className="w-3 h-3" />
-                <span>Exclusivo para Envíos al Interior vía TSI</span>
+          {/* Poster Principal Black November (9 cols) */}
+          <div className="lg:col-span-9 bg-gradient-to-br from-black via-zinc-950 to-neutral-950 rounded-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between min-h-[340px] shadow-xl border border-amber-500/40">
+            {/* Elementos visuales de fondo Black Friday */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="p-6 sm:p-10 max-w-xl z-10 space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs animate-pulse">
+                  <Flame className="w-3.5 h-3.5 text-amber-300" />
+                  <span>LIQUIDACIÓN BLACK NOVEMBER CDE</span>
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400/10 text-amber-300 border border-amber-400/30">
+                  <Zap className="w-3 h-3 text-amber-400" />
+                  <span>PRECIOS DE FRONTERA SIN INTERMEDIARIOS</span>
+                </span>
               </div>
 
               <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight leading-tight">
-                Comprá en Ciudad del Este <br />
-                <span className="text-[#00c853]">al precio mayorista real</span>
+                NO PAGUES SOBREPRECIO <br />
+                <span className="text-amber-400">DE SHOPPING EN ASUNCIÓN</span>
               </h2>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Catálogo curado con los 100 productos de mayor rotación en Connect Partner CDE. Sin sobreprecios inflados de Asunción y con flete plano TSI a todo el interior del país.
+              <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                Los mismos productos de <strong>PlayStation, Xiaomi, Apple y DJI</strong> con precios inflados en shoppings de la capital, los comprás acá al costo real mayorista de Ciudad del Este con flete diario asegurado vía Transportadora TSI.
               </p>
+
+              {/* Ticker de Ahorro Directo Black November */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
+                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                  <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
+                    <span>PS5 SLIM 1TB</span>
+                    <span className="text-rose-400 line-through">₲ 5.080.000</span>
+                  </div>
+                  <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
+                    ₲ 3.971.000
+                  </div>
+                  <div className="text-[10px] font-bold text-amber-300">
+                    Ahorrás ₲ 1.109.000
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                  <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
+                    <span>POCO F9 PRO 5G</span>
+                    <span className="text-rose-400 line-through">₲ 7.020.000</span>
+                  </div>
+                  <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
+                    ₲ 5.486.000
+                  </div>
+                  <div className="text-[10px] font-bold text-amber-300">
+                    Ahorrás ₲ 1.534.000
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                  <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
+                    <span>DJI MINI 4K</span>
+                    <span className="text-rose-400 line-through">₲ 3.650.000</span>
+                  </div>
+                  <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
+                    ₲ 2.857.000
+                  </div>
+                  <div className="text-[10px] font-bold text-amber-300">
+                    Ahorrás ₲ 793.000
+                  </div>
+                </div>
+              </div>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => {
-                    const ps5 = PRODUCTOS_CATALOGO.find(p => p.id === "1448603");
-                    if (ps5) addToCart(ps5);
-                    setIsCartOpen(true);
+                    const el = document.getElementById("catalogo-principal");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="px-6 py-2.5 rounded-full bg-[#00c853] hover:bg-[#00b34a] text-white font-extrabold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>AGREGAR AL CARRITO</span>
+                  <Flame className="w-3.5 h-3.5 text-rose-700 fill-rose-700" />
+                  <span>VER OFERTAS BLACK NOVEMBER</span>
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setIsConciergeOpen(true)}
-                  className="px-4 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                   <span>¿Buscás otro producto? Pedilo aquí</span>
                 </button>
               </div>
@@ -383,46 +446,67 @@ export default function StorefrontPage() {
             <div className="relative md:absolute md:right-0 md:top-0 md:bottom-0 w-full md:w-1/2 h-56 md:h-full overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800&q=80"
-                alt="PlayStation 5 y Gaming CDE"
-                className="w-full h-full object-cover object-center opacity-90 hover:scale-102 transition duration-500"
+                alt="PlayStation 5 y Gaming CDE Black November"
+                className="w-full h-full object-cover object-center opacity-85 hover:scale-102 transition duration-500"
               />
-              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/40 to-transparent"></div>
+              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
             </div>
           </div>
 
-          {/* Banner Lateral Derecho (3 cols) */}
-          <div className="lg:col-span-3 rounded-2xl relative overflow-hidden shadow-sm border border-slate-200 group min-h-[300px] flex flex-col justify-end bg-slate-900">
-            <img
-              src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=600&q=80"
-              alt="Drones & Gaming CDE"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-85"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-
-            <div className="relative z-10 p-5 space-y-2 text-white">
-              <span className="inline-block px-2.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-[#00c853] text-white">
-                DRONES & GAMING
-              </span>
-              <h3 className="text-base font-black leading-snug">
-                STOCK FÍSICO EN CONNECT PARTNER
-              </h3>
-              <p className="text-[11px] text-slate-300">
-                Flete plano TSI: ₲35.000 (regular) y ₲50.000 (consolas y TVs).
-              </p>
-
-              <div className="pt-2">
-                <button
-                  onClick={() => {
-                    const drone = PRODUCTOS_CATALOGO.find(p => p.id === "1448671");
-                    if (drone) addToCart(drone);
-                    setIsCartOpen(true);
-                  }}
-                  className="w-full py-2 rounded-xl bg-white/95 hover:bg-white text-slate-900 text-xs font-bold flex items-center justify-center gap-1 shadow transition cursor-pointer"
-                >
-                  <span>Ver Oferta DJI Mini 4K</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+          {/* Banner Lateral Derecho Black Deal (3 cols) */}
+          <div className="lg:col-span-3 rounded-2xl relative overflow-hidden shadow-xl border border-amber-500/40 group min-h-[340px] flex flex-col justify-between bg-gradient-to-b from-zinc-950 via-zinc-900 to-black p-5 text-white">
+            <div className="space-y-2 z-10">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
+                  <Flame className="w-3 h-3 text-amber-300" />
+                  BLACK DEAL
+                </span>
+                <span className="text-[10px] font-black text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2 py-0.5 rounded">
+                  -22% OFF
+                </span>
               </div>
+              
+              <h3 className="text-base font-black leading-tight pt-1">
+                XIAOMI POCO F9 PRO 5G (512GB)
+              </h3>
+              <p className="text-[11px] text-zinc-400">
+                Gama alta con 12GB RAM y pantalla 6.59&quot;. Stock físico verificado en CDE.
+              </p>
+            </div>
+
+            <div className="my-3 p-3 rounded-xl bg-black/60 border border-zinc-800 space-y-1.5 z-10">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-400 font-semibold">ANTES (Asunción):</span>
+                <span className="line-through text-rose-400 font-bold font-mono">
+                  ₲ 7.020.000
+                </span>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-black text-emerald-400 uppercase">AHORA BLACK:</span>
+                <span className="text-xl font-black text-emerald-400 font-mono">
+                  ₲ 5.486.000
+                </span>
+              </div>
+              <div className="pt-1 border-t border-zinc-800 flex items-center justify-between text-[11px] text-amber-300 font-bold">
+                <span>Ahorro en tu bolsillo:</span>
+                <span className="bg-amber-400/10 px-1.5 py-0.5 rounded text-amber-300 font-mono">
+                  ₲ 1.534.000
+                </span>
+              </div>
+            </div>
+
+            <div className="z-10">
+              <button
+                onClick={() => {
+                  const poco = PRODUCTOS_CATALOGO.find(p => p.id === "1422221");
+                  if (poco) addToCart(poco);
+                  setIsCartOpen(true);
+                }}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg transition cursor-pointer active:scale-95"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>COMPRAR AL PRECIO CDE</span>
+              </button>
             </div>
           </div>
         </div>
@@ -484,18 +568,20 @@ export default function StorefrontPage() {
       ============================================================================== */}
       <section id="catalogo-principal" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-4">
         
-        {/* Barra de Título Verde con Selector de Categoría / Búsqueda */}
-        <div className="bg-[#00c853] text-white px-4 py-3 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs">
+        {/* Barra de Título Black November con Selector de Categoría / Búsqueda */}
+        <div className="bg-gradient-to-r from-zinc-950 via-black to-zinc-900 border border-amber-500/40 text-white px-4 py-3 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-md">
           <div className="flex items-center gap-2 font-bold text-sm">
-            <Package className="w-4 h-4" />
+            <span className="bg-rose-600 text-white p-1 rounded shadow-xs">
+              <Flame className="w-4 h-4 text-amber-300" />
+            </span>
             <span>
               {busqueda
-                ? `Resultados para "${busqueda}" (${productosFiltrados.length})`
+                ? `Resultados Black November: "${busqueda}" (${productosFiltrados.length})`
                 : categoriaActiva === "favoritos"
-                ? `Mis Productos Favoritos (${productosFiltrados.length})`
+                ? `Mis Favoritos Black November (${productosFiltrados.length})`
                 : categoriaActiva === "todos"
-                ? `Catálogo Top 100 Mayorista CDE (${PRODUCTOS_CATALOGO.length} productos)`
-                : `${categoriaActiva} (${productosFiltrados.length} productos)`}
+                ? `Liquidación Black November CDE • Precios de Frontera (${PRODUCTOS_CATALOGO.length} productos)`
+                : `${categoriaActiva} • Modo Black November (${productosFiltrados.length} productos)`}
             </span>
           </div>
 
@@ -506,7 +592,7 @@ export default function StorefrontPage() {
                   setCategoriaActiva("todos");
                   setBusqueda("");
                 }}
-                className="px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-white font-semibold transition cursor-pointer"
+                className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold transition cursor-pointer border border-zinc-700"
               >
                 Ver todos (100)
               </button>
@@ -514,9 +600,9 @@ export default function StorefrontPage() {
 
             <button
               onClick={() => setIsConciergeOpen(true)}
-              className="px-3 py-1 rounded bg-white text-slate-900 font-bold hover:bg-slate-100 transition shadow-xs flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-black transition shadow-xs flex items-center gap-1 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>Pedir por Encargo</span>
             </button>
           </div>
@@ -556,15 +642,19 @@ export default function StorefrontPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {productosFiltrados.map((prod) => {
               const esFav = favoritos.includes(prod.id);
+              const precioAntes = getPrecioAntesAsuncion(prod);
+              const ahorroPyg = Math.max(0, precioAntes - prod.precioPyg);
+              const pctAhorro = Math.round((ahorroPyg / precioAntes) * 100);
+
               return (
                 <div
                   key={prod.id}
-                  className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover:border-[#00c853] transition shadow-xs group relative"
+                  className="bg-white rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover:border-amber-500/80 hover:shadow-md transition shadow-xs group relative"
                 >
                   {/* Botón Favorito Funcional */}
                   <button 
                     onClick={() => toggleFavorito(prod)}
-                    className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition cursor-pointer z-10"
+                    className="absolute top-3.5 right-3.5 text-slate-300 hover:text-red-500 transition cursor-pointer z-20"
                     title={esFav ? "Quitar de favoritos" : "Guardar en favoritos"}
                   >
                     <Heart className={`w-4 h-4 ${esFav ? "fill-rose-500 text-rose-500" : ""}`} />
@@ -579,16 +669,22 @@ export default function StorefrontPage() {
                     title={`Ver especificaciones completas de ${prod.nombre} (abre en nueva pestaña)`}
                   >
                     <div className="h-44 flex items-center justify-center p-2 mb-2 relative">
+                      {/* Badges Flotantes Black November */}
+                      <div className="absolute top-1 left-1 flex flex-col gap-1 z-10 pointer-events-none">
+                        <span className="bg-black/95 text-amber-400 border border-amber-500/40 text-[9px] font-black px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
+                          <Flame className="w-2.5 h-2.5 text-rose-500 fill-rose-500" />
+                          BLACK
+                        </span>
+                        <span className="bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-xs w-fit">
+                          -{pctAhorro}% OFF
+                        </span>
+                      </div>
+
                       <img
                         src={prod.img}
                         alt={prod.nombre}
                         className="max-h-full max-w-full object-contain group-hover/link:scale-105 transition duration-200"
                       />
-                      {prod.precioRetailReferencia && (
-                        <div className="absolute top-1 left-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded-full">
-                          Ahorro Frontera
-                        </div>
-                      )}
                     </div>
 
                     <div className="space-y-1.5">
@@ -602,25 +698,38 @@ export default function StorefrontPage() {
                         <span className="text-[9px] font-mono text-slate-400">Stock: {prod.stock}</span>
                       </div>
 
-                      {/* Comparativa con Retail / Asunción (si existe) */}
-                      {prod.precioRetailReferencia && (
-                        <div className="pt-1 flex items-center justify-between text-[10px]">
-                          <span className="text-slate-400 line-through">
-                            Asunción: ₲ {prod.precioRetailReferencia.toLocaleString("es-PY")}
-                          </span>
-                          <span className="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/80 px-1 rounded">
-                            -₲ {(prod.precioRetailReferencia - prod.precioPyg).toLocaleString("es-PY")}
+                      {/* Bloque Comparativo ANTES (Asunción) vs AHORA (Black Friday CDE) */}
+                      <div className="pt-2 pb-1 border-t border-dashed border-slate-200 space-y-1">
+                        {/* Precio ANTES (Asunción / Shopping inflado) */}
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-slate-400 font-semibold text-[10px]">ANTES (Asunción):</span>
+                          <span className="line-through text-rose-500 font-mono font-bold text-xs">
+                            ₲ {precioAntes.toLocaleString("es-PY")}
                           </span>
                         </div>
-                      )}
 
-                      {/* Precios: USD Grande en Verde y Guaraní Abajo */}
-                      <div className="pt-1.5">
-                        <div className="text-lg font-black text-[#00c853] font-mono leading-none">
-                          U$ {prod.precioUsd.toFixed(2)}
+                        {/* Precio AHORA (Black Friday NEXO CDE) */}
+                        <div className="flex items-baseline justify-between gap-1">
+                          <span className="text-[10px] font-black uppercase text-emerald-700 tracking-tight flex items-center gap-0.5">
+                            <Flame className="w-3 h-3 text-rose-600 fill-rose-600 inline" />
+                            AHORA BLACK:
+                          </span>
+                          <div className="text-right">
+                            <span className="text-base sm:text-lg font-black text-slate-900 font-mono">
+                              ₲ {prod.precioPyg.toLocaleString("es-PY")}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-xs font-semibold text-slate-600 font-mono mt-1">
-                          G$ {prod.precioPyg.toLocaleString("es-PY")}
+
+                        {/* USD y Ahorro en Guaraníes */}
+                        <div className="flex items-center justify-between text-[10px] pt-0.5">
+                          <span className="font-mono font-bold text-emerald-600 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded">
+                            US$ {prod.precioUsd.toFixed(2)}
+                          </span>
+                          <span className="text-emerald-700 font-black bg-amber-50 border border-amber-300/80 text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <Sparkles className="w-2.5 h-2.5 text-amber-500" />
+                            Ahorrás ₲ {ahorroPyg.toLocaleString("es-PY")}
+                          </span>
                         </div>
                       </div>
                     </div>

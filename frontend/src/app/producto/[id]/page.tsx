@@ -24,7 +24,10 @@ import {
   Box,
   HelpCircle,
   FileText,
-  BadgePercent
+  BadgePercent,
+  Flame,
+  Zap,
+  Tag
 } from "lucide-react";
 import { NexoLogo } from "@/components/NexoLogo";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -36,7 +39,8 @@ import {
   getProductoById, 
   getEspecificacionesProducto, 
   PRODUCTOS_CATALOGO, 
-  COTIZACION_DOLAR_PYG 
+  COTIZACION_DOLAR_PYG,
+  getPrecioAntesAsuncion
 } from "@/lib/catalogData";
 
 export default function ProductDetailPage() {
@@ -86,10 +90,10 @@ export default function ProductDetailPage() {
     ? [prod.img, ...prod.galeria.filter(g => g !== prod.img)]
     : [prod.img];
 
-  // Cálculo de ahorro frente al precio retail de Asunción / Nissei
-  const precioRetail = prod.precioRetailReferencia || Math.round((prod.precioPyg * 1.22) / 1000) * 1000;
-  const montoAhorro = Math.max(0, precioRetail - prod.precioPyg);
-  const porcentajeAhorro = Math.round((montoAhorro / precioRetail) * 100);
+  // Cálculo de ahorro frente al precio retail de Asunción ("ANTES" vs "AHORA")
+  const precioAntes = getPrecioAntesAsuncion(prod);
+  const montoAhorro = Math.max(0, precioAntes - prod.precioPyg);
+  const porcentajeAhorro = Math.round((montoAhorro / precioAntes) * 100);
 
   const copiarSku = () => {
     navigator.clipboard.writeText(prod.id);
@@ -127,21 +131,28 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#F4F6F8] text-[#1E293B] antialiased font-sans flex flex-col">
-      {/* Top Banner de Horario y Restricción Geográfica */}
-      <div className="bg-[#00c853] text-white text-[11px] font-semibold py-1.5 px-4">
+      {/* Top Banner Black November con Horario de Corte y Garantía */}
+      <div className="bg-gradient-to-r from-black via-zinc-950 to-black text-amber-300 text-[11px] font-semibold py-2 px-4 border-b border-amber-500/30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-white" />
-              <strong>Corte Diario: 12:00 PM</strong> • Despacho garantizado por TSI a las 13:00 hs
+            <span className="flex items-center gap-1.5 bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider animate-pulse">
+              <Flame className="w-3 h-3 text-amber-300" />
+              BLACK NOVEMBER CDE
+            </span>
+            <span className="hidden sm:inline text-zinc-300">
+              Precios de frontera sin el sobreprecio de shoppings de Asunción
+            </span>
+            <span className="flex items-center gap-1 text-amber-400">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <strong>Corte Diario 12:00 PM</strong> • Despacho TSI 13:00 hs
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline text-white/90">
-              Servicio exclusivo para compradores del Interior de Paraguay (Asunción, Central, etc.)
+          <div className="flex items-center gap-3">
+            <span className="hidden md:inline text-zinc-400">
+              Envíos al Interior vía Transportadora TSI
             </span>
-            <span className="text-white/95 font-medium">
-              Flete plano TSI: ₲ {prod.fletePyg.toLocaleString("es-PY")}
+            <span className="bg-amber-400/10 border border-amber-400/30 text-amber-300 px-2 py-0.5 rounded text-[10px] font-black">
+              AHORRO DIRECTO -{porcentajeAhorro}%
             </span>
           </div>
         </div>
@@ -207,6 +218,17 @@ export default function ProductDetailPage() {
           {/* Columna Izquierda: Galería Interactiva con Miniaturas */}
           <div className="lg:col-span-5 space-y-4">
             <div className="relative rounded-2xl border border-slate-100 bg-[#FBFBFB] p-6 flex items-center justify-center min-h-[340px] sm:min-h-[400px]">
+              {/* Badges Flotantes Black November */}
+              <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10 pointer-events-none">
+                <span className="bg-black/95 text-amber-400 border border-amber-500/40 text-[10px] font-black px-2.5 py-1 rounded shadow-md flex items-center gap-1.5">
+                  <Flame className="w-3 h-3 text-rose-500 fill-rose-500" />
+                  BLACK NOVEMBER
+                </span>
+                <span className="bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded shadow-sm w-fit">
+                  -{porcentajeAhorro}% OFF vs ASUNCIÓN
+                </span>
+              </div>
+
               <button
                 onClick={() => {
                   setEsFavorito(!esFavorito);
@@ -324,66 +346,73 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Caja de Precios y Comparador con Nissei / Asunción */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-[#F8FAF9] to-emerald-50/40 border border-emerald-200/80 space-y-3">
+              {/* Caja de Precios Black November ANTES (Asunción) vs AHORA (NEXO CDE) */}
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white border border-amber-500/40 space-y-4 shadow-xl">
                 
-                {/* Banner de Ahorro Directo vs Retail */}
-                {montoAhorro > 0 && (
-                  <div className="p-3 bg-emerald-600 text-white rounded-xl flex items-center justify-between shadow-xs">
-                    <div className="flex items-center gap-2">
-                      <BadgePercent className="w-5 h-5 text-emerald-200" />
-                      <div>
-                        <span className="text-[11px] uppercase tracking-wider block font-semibold text-emerald-100">
-                          Precio Retail Asunción (ej. Nissei): ₲ {precioRetail.toLocaleString("es-PY")}
+                {/* Banner de Ahorro Directo vs Shopping Asunción */}
+                <div className="p-3 bg-gradient-to-r from-rose-600/90 to-rose-700/90 text-white rounded-xl flex items-center justify-between shadow-xs border border-rose-500/30">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-amber-300 fill-amber-300 shrink-0" />
+                    <div>
+                      <span className="text-[10px] sm:text-[11px] uppercase tracking-wider block font-bold text-rose-100">
+                        PRECIO ANTES (Shopping / Asunción): ₲ {precioAntes.toLocaleString("es-PY")}
+                      </span>
+                      <strong className="text-xs sm:text-sm font-black text-amber-300">
+                        ¡AHORRÁS ₲ {montoAhorro.toLocaleString("es-PY")} ({porcentajeAhorro}% MENOS QUE EN ASUNCIÓN)!
+                      </strong>
+                    </div>
+                  </div>
+                  <span className="hidden sm:inline-block px-2.5 py-1 bg-amber-400 text-slate-950 rounded-lg text-xs font-black uppercase tracking-wide shrink-0">
+                    BLACK DEAL
+                  </span>
+                </div>
+
+                {/* Comparativa ANTES vs AHORA */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>Precio en Shoppings Asunción (ANTES):</span>
+                    <span className="line-through text-rose-400 font-mono font-bold text-sm">
+                      ₲ {precioAntes.toLocaleString("es-PY")}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 pt-1 border-t border-zinc-800">
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl sm:text-4xl font-black text-emerald-400 font-mono leading-none">
+                          ₲ {prod.precioPyg.toLocaleString("es-PY")}
                         </span>
-                        <strong className="text-xs sm:text-sm font-black">
-                          ¡Comprando en NEXO CDE ahorrás ₲ {montoAhorro.toLocaleString("es-PY")} ({porcentajeAhorro}% OFF)!
-                        </strong>
+                        <span className="text-xs font-black text-amber-400 uppercase tracking-wider">
+                          AHORA BLACK
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-zinc-300 mt-1.5">
+                        <span className="text-sm font-bold font-mono text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 rounded">
+                          US$ {prod.precioUsd.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-zinc-400 font-mono">
+                          (Cotización oficial ₲ {COTIZACION_DOLAR_PYG.toLocaleString("es-PY")})
+                        </span>
                       </div>
                     </div>
-                    <span className="hidden sm:inline-block px-2.5 py-1 bg-white text-emerald-800 rounded-lg text-xs font-extrabold uppercase tracking-wide">
-                      Ahorro CDE
-                    </span>
-                  </div>
-                )}
 
-                {/* Precios Principales: USD y Guaraníes */}
-                <div className="flex flex-wrap items-baseline justify-between gap-2 pt-1">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl sm:text-4xl font-black text-[#00c853] font-mono leading-none">
-                        US$ {prod.precioUsd.toFixed(2)}
-                      </span>
-                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                        Mayorista CDE
+                    <div className="text-right">
+                      <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Disponibilidad CDE</span>
+                      <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full inline-block mt-0.5">
+                        ✓ {prod.stock} unidades listas
                       </span>
                     </div>
-
-                    <div className="flex items-center gap-2 text-slate-800 mt-1">
-                      <span className="text-xl font-black font-mono">
-                        ₲ {prod.precioPyg.toLocaleString("es-PY")}
-                      </span>
-                      <span className="text-xs text-slate-500 font-mono">
-                        (Cotización oficial ₲ {COTIZACION_DOLAR_PYG.toLocaleString("es-PY")})
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Disponibilidad</span>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-100/60 px-2 py-0.5 rounded-full">
-                      ✓ {prod.stock} unidades en stock
-                    </span>
                   </div>
                 </div>
 
                 {/* Flete Plano TSI */}
-                <div className="pt-3 border-t border-emerald-200/60 flex items-center justify-between text-xs text-emerald-900">
+                <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-xs text-zinc-300">
                   <span className="flex items-center gap-1.5 font-semibold">
-                    <Truck className="w-4 h-4 text-emerald-600" />
+                    <Truck className="w-4 h-4 text-emerald-400" />
                     Flete plano Transportadora TSI a todo Paraguay:
                   </span>
-                  <span className="font-black font-mono text-sm">
+                  <span className="font-black font-mono text-sm text-emerald-400">
                     ₲ {prod.fletePyg.toLocaleString("es-PY")}
                   </span>
                 </div>
@@ -614,51 +643,52 @@ export default function ProductDetailPage() {
             {activeTab === "comparativo" && (
               <div className="space-y-6 max-w-3xl">
                 <div>
-                  <h3 className="text-xl font-black text-slate-900">
-                    Acerte na sua escolha: Comparação e Vantagem de Fronteira
+                  <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-rose-600 fill-rose-600" />
+                    <span>Comparativa Black November: Shopping Asunción vs NEXO CDE</span>
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Veja por que vale a pena encomendar de Ciudad del Este em vez de comprar no retail de shoppings.
+                    Comprobá por qué conviene pedir directo de Ciudad del Este en vez de pagar el sobreprecio de retail en la capital.
                   </p>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-4">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white border border-amber-500/40 space-y-4 shadow-md">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Preço em Shoppings / Lojas de Asunción (ex. Nissei):</span>
-                    <span className="font-bold text-slate-500 line-through">
-                      ₲ {precioRetail.toLocaleString("es-PY")}
+                    <span className="text-zinc-400">Precio ANTES en Shoppings de Asunción:</span>
+                    <span className="font-bold text-rose-400 font-mono line-through text-base">
+                      ₲ {precioAntes.toLocaleString("es-PY")}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-base">
-                    <span className="font-bold text-slate-900">Preço Atacado NEXO Connect Partner CDE:</span>
-                    <span className="font-black text-emerald-700 text-xl font-mono">
+                  <div className="flex items-center justify-between text-base border-t border-zinc-800 pt-3">
+                    <span className="font-bold text-amber-300">Precio AHORA Black November NEXO CDE:</span>
+                    <span className="font-black text-emerald-400 text-xl font-mono">
                       ₲ {prod.precioPyg.toLocaleString("es-PY")} (US$ {prod.precioUsd.toFixed(2)})
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm text-slate-600">
-                    <span>Frete Plano Transportadora TSI até o Interior:</span>
-                    <span className="font-semibold font-mono">
+                  <div className="flex items-center justify-between text-sm text-zinc-400">
+                    <span>Flete Plano Transportadora TSI hasta tu ciudad:</span>
+                    <span className="font-semibold font-mono text-zinc-200">
                       + ₲ {prod.fletePyg.toLocaleString("es-PY")}
                     </span>
                   </div>
 
-                  <div className="pt-3 border-t border-emerald-300 flex items-center justify-between text-base">
-                    <strong className="text-emerald-950">Sua Economia Líquida Entregue no Destino:</strong>
-                    <strong className="text-emerald-700 text-xl font-mono">
+                  <div className="pt-3 border-t border-amber-500/30 flex items-center justify-between text-base">
+                    <strong className="text-amber-300">Tu Ahorro Líquido Entregado en Destino:</strong>
+                    <strong className="text-emerald-400 text-2xl font-mono">
                       ₲ {Math.max(0, montoAhorro - prod.fletePyg).toLocaleString("es-PY")}
                     </strong>
                   </div>
                 </div>
 
                 <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
-                  <h4 className="font-bold text-slate-900 text-sm">Por que a diferença de preço é tão expressiva?</h4>
+                  <h4 className="font-bold text-slate-900 text-sm">¿Por qué la diferencia de precio es tan grande?</h4>
                   <p>
-                    Lojas físicas de shoppings em grandes capitais embutem aluguéis altíssimos, equipes gigantescas e margens de revenda duplicadas.
+                    Las tiendas físicas de shoppings en Asunción y Gran Asunción trasladan al consumidor costos descomunales de alquileres comerciales, intermediación y márgenes de ganancia inflados.
                   </p>
                   <p>
-                    Na <strong>NEXO CDE</strong>, você acessa o primeiro anel atacadista de fronteira em Ciudad del Este com flete direto da Transportadora TSI. O produto viaja com nota e seguro diretamente até você.
+                    En <strong>NEXO CDE</strong> comprás al costo de frontera de Ciudad del Este. Tu paquete se retira del distribuidor y sale a las 13:00 hs por Transportadora TSI con guía sellada y seguimiento a tu destino.
                   </p>
                 </div>
               </div>
