@@ -333,15 +333,27 @@ export default function StorefrontPage() {
               ))}
             </nav>
 
-            {/* Botón Cámara en Vivo del Puente de la Amistad */}
-            <button
-              onClick={() => setIsPuenteOpen(true)}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] shadow-xs transition shrink-0 cursor-pointer animate-pulse"
-              title="Ver tráfico y cámaras de aduana en el Puente de la Amistad"
-            >
-              <Video className="w-3.5 h-3.5" />
-              <span>CÁMARA EN VIVO DEL PUENTE</span>
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Botón Cómo Comprar por TSI */}
+              <Link
+                href="/como-comprar"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] shadow-xs transition shrink-0"
+                title="Guía oficial de compras mayoristas y envíos por Transportadora TSI"
+              >
+                <Truck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>¿CÓMO COMPRAR POR TSI?</span>
+              </Link>
+
+              {/* Botón Cámara en Vivo del Puente de la Amistad */}
+              <button
+                onClick={() => setIsPuenteOpen(true)}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] shadow-xs transition shrink-0 cursor-pointer animate-pulse"
+                title="Ver tráfico y cámaras de aduana en el Puente de la Amistad"
+              >
+                <Video className="w-3.5 h-3.5" />
+                <span>CÁMARA EN VIVO DEL PUENTE</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -829,6 +841,17 @@ export default function StorefrontPage() {
             </div>
           </div>
         </div>
+
+        {/* Enlace destacado a la Guía de Compra TSI */}
+        <div className="max-w-7xl mx-auto mt-6 text-center">
+          <Link
+            href="/como-comprar"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition shadow-xs group"
+          >
+            <span>¿Primera vez comprando en CDE? Leé nuestra guía paso a paso de envíos por Transportadora TSI</span>
+            <ChevronRight className="w-3.5 h-3.5 text-emerald-400 group-hover:translate-x-0.5 transition" />
+          </Link>
+        </div>
       </section>
 
       {/* ==============================================================================
@@ -950,6 +973,10 @@ export default function StorefrontPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <Link href="/como-comprar" className="text-emerald-400 hover:text-emerald-300 font-bold transition">
+                Guía Cómo Comprar
+              </Link>
+              <span>•</span>
               <span>Despachos vía Transportadora TSI</span>
               <span>•</span>
               <span>Pagos 100% SIPAP Continental</span>
