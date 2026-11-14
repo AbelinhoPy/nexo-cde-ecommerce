@@ -382,10 +382,10 @@ export default function StorefrontPage() {
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-black text-white italic tracking-tight leading-tight">
                 NO PAGUES SOBREPRECIO <br />
                 <span className="text-amber-400">DE SHOPPING EN ASUNCIÓN</span>
-              </h2>
+              </h1>
 
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                 Los mismos productos de <strong>PlayStation, Xiaomi, Apple y DJI</strong> con precios inflados en shoppings de la capital, los comprás acá al costo real mayorista de Ciudad del Este con flete diario asegurado vía Transportadora TSI.

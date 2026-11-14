@@ -49,8 +49,47 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://nexocde.vercel.app/#organization",
+        "name": "NEXO CDE",
+        "alternateName": "NEXO Concierge Comercial & Transporte",
+        "url": "https://nexocde.vercel.app",
+        "logo": "https://nexocde.vercel.app/logo-nexo-sheet.jpg",
+        "description": "Intermediación mayorista directa de tecnología en Ciudad del Este con despacho diario por Transportadora TSI a todo Paraguay.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Ciudad del Este",
+          "addressRegion": "Alto Paraná",
+          "addressCountry": "PY"
+        },
+        "paymentAccepted": "SIPAP Banco Continental, Transferencia Bancaria",
+        "currenciesAccepted": "PYG, USD"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://nexocde.vercel.app/#website",
+        "url": "https://nexocde.vercel.app",
+        "name": "NEXO CDE",
+        "publisher": {
+          "@id": "https://nexocde.vercel.app/#organization"
+        },
+        "inLanguage": "es-PY"
+      }
+    ]
+  };
+
   return (
     <html lang="es">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="bg-slate-900 text-slate-100 antialiased min-h-screen">
         <CartProvider>
           {children}

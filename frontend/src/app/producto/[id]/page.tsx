@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${prod.nombre} | Precio Mayorista CDE | NEXO`;
+  const title = `${prod.nombre} - Precio Mayorista CDE`;
+  const ogTitle = `${prod.nombre} | NEXO CDE`;
   const description = `Comprá ${prod.nombre} al costo mayorista de Ciudad del Este por ₲ ${prod.precioPyg.toLocaleString("es-PY")} (US$ ${prod.precioUsd.toFixed(2)}). Despacho diario garantizado por Transportadora TSI a Asunción y todo Paraguay.`;
   const canonicalUrl = `https://nexocde.vercel.app/producto/${prod.id}`;
 
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: ogTitle,
       description,
       url: canonicalUrl,
       siteName: "NEXO CDE",
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: ogTitle,
       description,
       images: [prod.img],
     },
@@ -83,8 +84,8 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   const canonicalUrl = `https://nexocde.vercel.app/producto/${prod.id}`;
 
-  // Datos estructurados Schema.org: Product + Offer oficiales para Google Search
-  const jsonLd = {
+  // Datos estructurados Schema.org: Product + Offer oficiales para Google Search & Shopping
+  const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": prod.nombre,
@@ -92,6 +93,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     "description": prod.descripcion || `Comprá ${prod.nombre} al precio mayorista de frontera de Connect Partner CDE. Despacho diario vía Transportadora TSI a todo el interior del país.`,
     "sku": prod.id,
     "category": prod.categoria,
+    ...(prod.colores && prod.colores.length > 0 ? { "color": prod.colores[0] } : {}),
     "brand": {
       "@type": "Brand",
       "name": prod.marca
@@ -107,6 +109,14 @@ export default function ProductDetailPage({ params }: PageProps) {
       "seller": {
         "@type": "Organization",
         "name": "NEXO CDE"
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "PY",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 30,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
       },
       "shippingDetails": {
         "@type": "OfferShippingDetails",
@@ -138,12 +148,42 @@ export default function ProductDetailPage({ params }: PageProps) {
     }
   };
 
+  // Migas de pan Schema.org BreadcrumbList coincidentes con la navegación visible
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "https://nexocde.vercel.app/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": prod.categoria,
+        "item": "https://nexocde.vercel.app/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": prod.nombre,
+        "item": canonicalUrl
+      }
+    ]
+  };
+
   return (
     <>
       {/* Datos estructurados JSON-LD validados para Google Rich Results */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       
       {/* Componente Interactivo del Cliente (Carrito, Fotos, Opciones, Checkout) */}
