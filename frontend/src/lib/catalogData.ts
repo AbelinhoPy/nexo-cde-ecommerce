@@ -598,7 +598,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 10,
-    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=450&q=80",
+    img: "https://resource.logitechg.com/w_544,h_466,ar_7:6,c_pad,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/products/drivingforce/2025/gallery/g29-playstation-3qtr-angle-gallery-1.png",
   },
   {
     id: "1448591",
@@ -622,7 +622,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 50,
-    img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=450&q=80",
+    img: "https://image.api.playstation.com/vulcan/ap/rnd/202409/1616/d90ccc5e8c0cff821bd1c61fbc2b5fea98f18e4f832ff2f6.png",
     esTopVentas: true,
   },
 
@@ -714,7 +714,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=450&q=80",
+    img: "https://dlcdnwebimgs.asus.com/gain/ec0565b6-9765-4b27-9147-f58e6eef7a60/w692",
     esTopVentas: true,
   },
   {
@@ -727,7 +727,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 9,
-    img: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=450&q=80",
+    img: "https://storage-asset.msi.com/global/picture/product/product_1704699649413398d807686f322a7a562d15b205df.webp",
   },
   {
     id: "1448628",
@@ -764,7 +764,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 50,
-    img: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=450&q=80",
+    img: "https://media.kingston.com/kingston/press/ktc-press-fe-nv2-ssd.jpg",
     esTopVentas: true,
   },
   {
@@ -777,7 +777,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=450&q=80",
+    img: "https://images.samsung.com/is/image/samsung/p6pim/uk/mz-v9p1t0bw/gallery/uk-990pro-nvme-m2-ssd-mz-v9p1t0bw-534234835?$1164_776_PNG$",
   },
   {
     id: "1448632",
@@ -789,7 +789,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 14,
-    img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=450&q=80",
+    img: "https://cdn.sanity.io/images/hf5b3axp/production/d711ca9aaf71f961f8ab64eff8d6624d4d532839-3840x3840.png?w=800&fit=max&auto=format",
   },
   {
     id: "1448633",
@@ -801,7 +801,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 10,
-    img: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=450&q=80",
+    img: "https://images.samsung.com/is/image/samsung/p6pim/ar/ls27ag550elxzb/gallery/ar-odyssey-g5-g55a-407983-ls27ag550elxzb-530679334?$1164_776_PNG$",
   },
   {
     id: "1448634",
@@ -813,7 +813,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 30,
-    img: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=450&q=80",
+    img: "https://resource.logitech.com/w_544,h_466,ar_7:6,c_pad,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/2025-update/mx-master-3s-bluetooth-edition-top-view-black-new-1.png",
     esTopVentas: true,
   },
   {
@@ -826,7 +826,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 45,
-    img: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=450&q=80",
+    img: "https://redragonshop.com/cdn/shop/products/redragonk552.png",
   },
 
   // ==========================================
@@ -842,7 +842,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 16,
-    img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-tv-a-pro-43/674146db9afc4485fe860fdc9b478b28.jpg",
     esTopVentas: true,
   },
   {
@@ -855,7 +855,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 12,
-    img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-tv-a-pro-65-2025/M/m-tv65-header-bg.png",
     esTopVentas: true,
   },
   {
@@ -868,7 +868,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 15,
-    img: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=450&q=80",
+    img: "https://images.samsung.com/is/image/samsung/p6pim/py/un50u8000hpxpa/gallery/py-uhd-u8000h-610885-un50u8000hpxpa-555301893?$684_547_PNG$",
     esTopVentas: true,
   },
   {
@@ -905,7 +905,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 45,
-    img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-tv-box-s-2nd-gen/m/c46d1847f784a11cc9e6f74a55fc75fb.jpg",
     esTopVentas: true,
   },
   {
@@ -918,7 +918,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 50,
-    img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=450&q=80",
+    img: "https://m.media-amazon.com/images/I/51EBhwkD+kL._AC_SL1000_.jpg",
     esTopVentas: true,
   },
   {
@@ -931,7 +931,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 16,
-    img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=450&q=80",
+    img: "https://www.techpunt.nl/cdn/shop/files/xiaomi-wanbo-projector-t2-max-9.jpg?v=1776341842&width=800",
   },
   {
     id: "1448658",
@@ -943,7 +943,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 12,
-    img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=450&q=80",
+    img: "https://www.jbl.es/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw1da2b297/JBL_Bar_2.1_Deep_%20Bass_Hero_0167.png",
   },
   {
     id: "1448659",
@@ -967,7 +967,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 35,
-    img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-smart-camera-c400/m/8bd303badf7bee0b5bf4dc4d51a11151.png",
   },
   {
     id: "1448661",
@@ -979,7 +979,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 60,
-    img: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-33w-power-bank-10000-integrated-cable/m/15846173317f8167a90ef8616db24bbf.jpg",
   },
 
   // ==========================================
@@ -995,7 +995,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 14,
-    img: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=450&q=80",
+    img: "https://se-cdn.djiits.com/tpc/uploads/carousel/image/bfd2492a864554bbd536a30b305f4021@ultra.jpg",
     esTopVentas: true,
   },
   {
@@ -1123,7 +1123,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 35,
-    img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=450&q=80",
+    img: "https://www.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw561380a8/1_JBL_FLIP6_HERO_BLUE_29399_x1.png",
     esTopVentas: true,
   },
   {
@@ -1136,7 +1136,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 28,
-    img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=450&q=80",
+    img: "https://global.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw65eaac1a/JBL_CHARGE5_HERO_BLACK_0046_x1.png",
     esTopVentas: true,
   },
   {
@@ -1149,7 +1149,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 8,
-    img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=450&q=80",
+    img: "https://uk.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwde547794/PBSTAGE320WHT-COVER-1605x1605-1.png?sw=680&sh=680",
   },
   {
     id: "1448703",
@@ -1161,7 +1161,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 10,
-    img: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=450&q=80",
+    img: "https://mm.jbl.com/dw/image/v2/AAUJ_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwcc34fe73/1_JBL_BOOMBOX_3_SQUAD_HERO_33262_x2.png",
   },
   {
     id: "1448704",
@@ -1301,7 +1301,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 22,
-    img: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/redmi-pad-pro/M/4afad8aa5b4d7de2fea20bd488fd8ffa.jpg",
     esTopVentas: true,
   },
   {
@@ -1338,7 +1338,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=450&q=80",
+    img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/refurb-46-s10-titanium-natural-sport-band-stone-gray?wid=800&hei=800&fmt=jpeg&qlt=90",
     esTopVentas: true,
   },
   {
@@ -1375,7 +1375,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 28,
-    img: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=450&q=80",
+    img: "https://i02.appmifile.com/454_operator_sg/07/02/2024/8c830b215b01a2083baecd0191c5391f.png",
   },
   {
     id: "1448729",
@@ -1387,7 +1387,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 60,
-    img: "https://images.unsplash.com/photo-1510017803434-a899398421b3?w=450&q=80",
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-smart-band-9/m/kv_bg.jpg",
     esTopVentas: true,
   },
   {
@@ -1400,7 +1400,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 30,
-    img: "https://images.unsplash.com/photo-1583225214464-9296029427aa?w=450&q=80",
+    img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MUWA3_AV1?wid=800&hei=800&fmt=jpeg&qlt=90",
   },
   {
     id: "1448731",
@@ -1441,7 +1441,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 30,
-    img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=450&q=80",
+    img: "https://www.dior.com/dw/image/v2/BGXS_PRD/on/demandware.static/-/Sites-master_dior/default/dw9763bedf/Y0785220/Y0785220_F078524009_E01_RHC.jpg?sw=800",
     esTopVentas: true,
   },
   {
@@ -1454,7 +1454,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 35,
-    img: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=450&q=80",
+    img: "https://medias.carolinaherrera.com/cdn-cgi/image/width=800,fit=contain,quality=90,format=auto/medias/sys_master/images/h74/h24/10986554425374/10986554359838/10986554359838.jpg",
     esTopVentas: true,
   },
   {
@@ -1467,7 +1467,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 28,
-    img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=450&q=80",
+    img: "https://medias.carolinaherrera.com/cdn-cgi/image/width=800,fit=contain,quality=90,format=auto/medias/sys_master/images/h1b/hed/10357967749150/CH-GG-EDP-2_1x1/CH-GG-EDP-2-1x1.jpg",
     esTopVentas: true,
   },
   {
@@ -1480,7 +1480,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 20,
-    img: "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?w=450&q=80",
+    img: "https://www.giorgioarmanibeauty-usa.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-gab-master-catalog/default/dwd0ff0e89/products/2025/A2608%20RESTAGE/3614273954167_05.jpg?sw=600&sh=600&sfrm=jpg&q=85",
   },
   {
     id: "1448745",
@@ -1492,7 +1492,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 22,
-    img: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=450&q=80",
+    img: "https://medias.rabanne.com/cdn-cgi/image/width=700,quality=90,format=auto/https://medias.rabanne.com/medias/sys_master/images/h8b/h34/10733337542686/10733337477150/10733337477150.png",
   },
   {
     id: "1448746",
@@ -1504,7 +1504,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 6,
-    img: "https://images.unsplash.com/photo-1595425970377-c9703cf48b6d?w=450&q=80",
+    img: "https://creedboutique.com/cdn/shop/files/Aventus_100ml_Mobile_1.jpg?v=1788962948&width=800",
   },
   {
     id: "1448747",
@@ -1528,7 +1528,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=450&q=80",
+    img: "https://medias.jeanpaulgaultier.com/medias/sys_master/images/hd3/h9a/9858844590110/9858844524574/9858844524574.png",
   },
   {
     id: "1448749",
@@ -1540,7 +1540,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 30,
-    img: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?w=450&q=80",
+    img: "https://www.versace.com/dw/image/v2/BGWN_PRD/on/demandware.static/-/Sites-ver-master-catalog/default/dwae254714/original/90_R741010-R100MLS_RNUL_20_Eros~Flame~EDP~100~ml-Accessories-Versace-online-store_1_1.jpg?sw=550&q=85&strip=true",
   },
   {
     id: "1448750",
@@ -1552,7 +1552,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 20,
-    img: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=450&q=80",
+    img: "https://www.yslbeauty.com/dw/image/v2/BDCR_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dwacd8ffb0/images/PACKSHOTS/FRAGRANCE/FOR_HER/WW-50657YSL_libre_edp_intense/3614273069540_ysl_edp_intense_50ml_main.webp",
   },
   {
     id: "1448751",
@@ -1564,7 +1564,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 25,
-    img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=450&q=80",
+    img: "https://i01.appmifile.com/webfile/globalimg/pic/water-ionic-hair-dryer-h500.png",
   },
   {
     id: "1448752",
@@ -1576,7 +1576,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 35000,
     tipoFlete: "REGULAR",
     stock: 18,
-    img: "https://images.unsplash.com/photo-1621607512214-68297480165e?w=450&q=80",
+    img: "https://i01.appmifile.com/webfile/globalimg/pic/xiaomi-electric-shaver-s700.png",
   },
   {
     id: "1448753",
@@ -1588,7 +1588,7 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     fletePyg: 50000,
     tipoFlete: "PESADO",
     stock: 14,
-    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=450&q=80",
+    img: "https://i02.appmifile.com/58_operator_sg/07/03/2023/f7e5f7b6c038a33966170077dbb4f72a.jpg",
   }
 ];
 
