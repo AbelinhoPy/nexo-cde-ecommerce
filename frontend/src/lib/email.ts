@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 const resendApiKey = process.env.RESEND_API_KEY;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const fromAddress = process.env.EMAIL_FROM || 'NEXO CDE <notificaciones@resend.dev>';
-const adminRecipient = process.env.CONTACT_RECIPIENT_EMAIL || 'abelnunez997@gmail.com';
+export const adminRecipient = process.env.ORDER_NOTIFICATION_EMAIL || process.env.CONTACT_RECIPIENT_EMAIL || 'abelnunez997@gmail.com';
 
 interface SendEmailParams {
   to: string;
@@ -266,21 +266,26 @@ export async function sendShippingDispatchEmail({
   numeroGuiaTsi: string;
   destino: string;
 }) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexocde.vercel.app';
   const content = `
     <p>Hola <strong>${nombre}</strong>,</p>
-    <p>Tu paquete ha sido inspeccionado, precintado y <strong>entregado a Transportadora TSI en Ciudad del Este</strong>.</p>
+    <p>Tu paquete ha sido inspeccionado en Ciudad del Este, precintado y <strong>entregado formalmente a Transportadora TSI</strong> para viaje a tu localidad.</p>
 
     <div class="info-box">
-      <p style="margin: 0 0 4px;"><strong>Pedido:</strong> ${codigoPedido}</p>
+      <p style="margin: 0 0 4px;"><strong>Código de Pedido:</strong> ${codigoPedido}</p>
       <p style="margin: 0 0 4px;"><strong>Destino:</strong> ${destino}</p>
-      <p style="margin: 0 0 4px;"><strong>Empresa de Envío:</strong> Transportadora San Ignacio (TSI)</p>
+      <p style="margin: 0 0 4px;"><strong>Empresa de Encomienda:</strong> Transportadora San Ignacio (TSI)</p>
       <p style="margin: 8px 0 0; font-size: 16px; color: #00c853; font-weight: 800;">
         🏷️ Guía TSI: ${numeroGuiaTsi}
       </p>
     </div>
 
-    <p style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 13px;">
-      ⚠️ <strong>Recordatorio Obligatorio:</strong> Inspecciona el exterior del paquete y el precinto antes de firmar la guía con el chofer de TSI.
+    <p style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 12px; border-radius: 8px; font-size: 13px;">
+      📱 <strong>Comprobante Oficial:</strong> Ya podés ingresar a tu perfil en NEXO CDE para ver la foto de la guía firmada y sellada en ventanilla TSI. Al recibir tu paquete, podrás pulsar <strong>«Confirmar recepción»</strong> directamente desde tu cuenta.
+    </p>
+
+    <p style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 10px;">
+      ⚠️ <strong>Inspección previa:</strong> Verifica el precinto holográfico antes de firmar la planilla con el chofer de TSI.
     </p>
   `;
 
@@ -288,17 +293,134 @@ export async function sendShippingDispatchEmail({
     to: email,
     subject: `🚚 ¡Tu pedido ${codigoPedido} ya fue despachado por TSI! Guía: ${numeroGuiaTsi}`,
     html: baseNexoTemplate({
-      title: 'Tu paquete va en camino',
+      title: '¡Tu pedido va en camino!',
       content,
-      buttonText: 'Rastrear Guía en TSI',
-      buttonUrl: `https://tsi.com.py/tracking?guia=${encodeURIComponent(numeroGuiaTsi)}`,
+      buttonText: 'Ver Mi Pedido y Guía en NEXO',
+      buttonUrl: `${siteUrl}/checkout`,
     }),
   });
 }
 
 // ============================================================================
-// 5. Correo de Contacto y Consultas (Copiado de LavaYA! directo a Abel)
+// 6. Aviso al Administrador: Nuevo Pedido Pendiente de Pago
 // ============================================================================
+
+export async function sendAdminNewOrderEmail({
+  codigoPedido,
+  items,
+  clienteNombre,
+  clienteCi,
+  clienteTelefono,
+  clienteEmail,
+  destinoDepartamento,
+  destinoCiudad,
+  destinoDireccion,
+  modalidadEntrega,
+  agenciaTsi,
+  montoProductosPyg,
+  fletePyg,
+  descuentoPyg,
+  totalPagarPyg,
+}: {
+  codigoPedido: string;
+  items: Array<{ nombre?: string; productoId?: string; cantidad: number; precioPyg: number }>;
+  clienteNombre: string;
+  clienteCi: string;
+  clienteTelefono: string;
+  clienteEmail?: string | null;
+  destinoDepartamento: string;
+  destinoCiudad: string;
+  destinoDireccion: string;
+  modalidadEntrega?: string;
+  agenciaTsi?: string | null;
+  montoProductosPyg: number;
+  fletePyg: number;
+  descuentoPyg?: number;
+  totalPagarPyg: number;
+}) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexocde.vercel.app';
+  const adminUrl = `${siteUrl}/admin`;
+
+  const itemsHtml = items
+    .map(
+      (it) => `
+      <tr>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px;">
+          <strong>${it.cantidad}x</strong> ${it.nombre || it.productoId || 'Producto CDE'}
+        </td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-family: monospace; font-size: 13px; font-weight: bold;">
+          ₲ ${(it.precioPyg * it.cantidad).toLocaleString('es-PY')}
+        </td>
+      </tr>
+    `
+    )
+    .join('');
+
+  const content = `
+    <p style="font-size: 15px; color: #0f172a; margin-bottom: 16px;">
+      🔔 <strong>¡Nuevo pedido entrante!</strong> Se ha registrado una nueva orden en la tienda esperando acreditación SIPAP en Banco Continental.
+    </p>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin: 16px 0;">
+      <p style="margin: 0 0 6px; font-size: 14px;"><strong>Código de Pedido:</strong> <span class="highlight-pill">#${codigoPedido}</span></p>
+      <p style="margin: 0 0 6px; font-size: 14px;"><strong>Destinatario:</strong> ${clienteNombre}</p>
+      <p style="margin: 0 0 6px; font-size: 14px;"><strong>CI / RUC:</strong> ${clienteCi || 'No indicado'}</p>
+      <p style="margin: 0 0 6px; font-size: 14px;"><strong>Teléfono:</strong> <a href="tel:${clienteTelefono}" style="color: #00c853; font-weight: bold;">${clienteTelefono}</a></p>
+      <p style="margin: 0; font-size: 14px;"><strong>Correo Comprador:</strong> ${clienteEmail && clienteEmail.trim() ? clienteEmail : '<em style="color: #94a3b8;">Sin correo ingresado</em>'}</p>
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin: 16px 0;">
+      <div style="background: #0f172a; color: #ffffff; padding: 10px 16px; font-weight: bold; font-size: 13px; text-transform: uppercase;">
+        Detalle de Artículos Solicitados
+      </div>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody>
+          ${itemsHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin: 16px 0; font-size: 13px;">
+      <p style="margin: 0 0 6px;"><strong>Destino:</strong> ${destinoCiudad}, ${destinoDepartamento}</p>
+      <p style="margin: 0 0 6px;"><strong>Modalidad TSI:</strong> ${modalidadEntrega === 'AGENCIA' ? 'Retiro en Agencia TSI' : 'Entrega a Domicilio'}${agenciaTsi ? ` (${agenciaTsi})` : ''}</p>
+      <p style="margin: 0 0 8px;"><strong>Dirección de Entrega:</strong> ${destinoDireccion}</p>
+      <hr style="border: 0; border-top: 1px dashed #86efac; margin: 8px 0;" />
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span>Subtotal Productos:</span>
+        <span style="font-family: monospace; font-weight: 600;">₲ ${montoProductosPyg.toLocaleString('es-PY')}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span>Costo de Envío TSI:</span>
+        <span style="font-family: monospace; font-weight: 600;">₲ ${fletePyg.toLocaleString('es-PY')}</span>
+      </div>
+      ${descuentoPyg ? `
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #15803d;">
+        <span>Descuento Cupón:</span>
+        <span style="font-family: monospace; font-weight: 600;">- ₲ ${descuentoPyg.toLocaleString('es-PY')}</span>
+      </div>` : ''}
+      <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 16px; font-weight: 900; color: #047857; border-top: 2px solid #86efac; padding-top: 8px;">
+        <span>TOTAL A COBRAR (SIPAP):</span>
+        <span style="font-family: monospace;">₲ ${totalPagarPyg.toLocaleString('es-PY')}</span>
+      </div>
+    </div>
+
+    <p style="font-size: 12px; color: #64748b; margin-top: 14px;">
+      Al verificar la acreditación en Banco Continental (cuenta 010015602601), ingresá al panel para marcar como «Pagado» y preparar el despacho por TSI.
+    </p>
+  `;
+
+  return sendEmail({
+    to: adminRecipient,
+    subject: `NEXO CDE | Nuevo pedido pendiente de pago #${codigoPedido}`,
+    html: baseNexoTemplate({
+      title: `Nuevo Pedido #${codigoPedido}`,
+      content,
+      buttonText: 'Abrir Panel de Administración',
+      buttonUrl: adminUrl,
+    }),
+  });
+}
+
 
 export async function sendContactInquiryEmail({
   nombre,

@@ -530,9 +530,9 @@ export default function StorefrontPage() {
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Flete Plano TSI</h4>
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Calculá tu envío según destino</h4>
               <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                ₲ 35.000 (móviles/audio) y ₲ 50.000 (consolas/TVs). Envío asegurado a todo el interior.
+                Tarifas confirmadas por localidad y agencia TSI. Envío asegurado a todo el interior.
               </p>
             </div>
           </div>
@@ -870,7 +870,7 @@ export default function StorefrontPage() {
             <div className="space-y-3">
               <NexoLogo theme="dark" size="sm" />
               <p className="text-slate-400 text-xs leading-relaxed">
-                Intermediación mayorista y concierge comercial en Ciudad del Este. Compras directas de stock físico con flete plano garantizado por Transportadora TSI.
+                Intermediación mayorista y concierge comercial en Ciudad del Este. Compras directas de stock físico con envíos asegurados por Transportadora TSI a todo Paraguay según destino.
               </p>
             </div>
 

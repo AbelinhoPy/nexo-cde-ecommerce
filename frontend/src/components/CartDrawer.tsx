@@ -237,10 +237,10 @@ export function CartDrawer() {
                 <div className="flex justify-between items-center">
                   <span className="inline-flex items-center gap-1">
                     <Truck className="w-3 h-3 text-slate-400" />
-                    Flete Plano TSI
+                    Flete Encomienda TSI
                   </span>
-                  <span className="font-mono font-semibold text-slate-800">
-                    ₲ {fletePyg.toLocaleString("es-PY")}
+                  <span className="font-semibold text-emerald-700 text-[11px]">
+                    Calculá tu envío según destino
                   </span>
                 </div>
 

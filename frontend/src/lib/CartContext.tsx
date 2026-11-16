@@ -43,6 +43,8 @@ interface CartContextType {
   subtotalPyg: number;
   subtotalUsd: number;
   fletePyg: number;
+  fleteDestinoPyg: number | null;
+  setFleteDestinoPyg: (f: number | null) => void;
   descuentoPyg: number;
   totalPagarPyg: number;
   cupon: CouponData | null;
@@ -79,6 +81,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [customer, setCustomer] = useState<CustomerData | null>(null);
   const [customerToken, setCustomerToken] = useState<string | null>(null);
   const [notificacion, setNotificacion] = useState<string | null>(null);
+  const [fleteDestinoPyg, setFleteDestinoPyg] = useState<number | null>(null);
 
   // Cargar estado inicial desde localStorage
   useEffect(() => {
@@ -165,9 +168,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const subtotalPyg = cart.reduce((acc, it) => acc + it.precioPyg * it.cantidad, 0);
   const subtotalUsd = cart.reduce((acc, it) => acc + it.precioUsd * it.cantidad, 0);
 
-  // Flete TSI: si algún producto es PESADO -> ₲50.000, sino ₲35.000 (tarifa plana si hay items)
+  // Flete TSI según destino: si se seleccionó destino se usa fleteDestinoPyg; sino estimación base según peso
   const tienePesado = cart.some((it) => it.tipoFlete === "PESADO");
-  const fletePyg = cart.length > 0 ? (tienePesado ? 50000 : 35000) : 0;
+  const fletePyg = cart.length > 0 
+    ? (fleteDestinoPyg !== null ? fleteDestinoPyg : (tienePesado ? 50000 : 35000)) 
+    : 0;
   const descuentoPyg = cupon ? Math.min(cupon.descuentoPyg, subtotalPyg + fletePyg) : 0;
   const totalPagarPyg = Math.max(0, subtotalPyg + fletePyg - descuentoPyg);
 
@@ -292,6 +297,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         subtotalPyg,
         subtotalUsd,
         fletePyg,
+        fleteDestinoPyg,
+        setFleteDestinoPyg,
         descuentoPyg,
         totalPagarPyg,
         cupon,

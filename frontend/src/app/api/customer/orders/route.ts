@@ -41,6 +41,11 @@ export async function GET(req: NextRequest) {
           p.fecha_pago,
           p.numero_guia_tsi,
           p.foto_guia_tsi,
+          p.destino_departamento,
+          p.destino_ciudad,
+          p.modalidad_entrega,
+          p.agencia_tsi,
+          p.fecha_confirmacion_entrega,
           p.created_at
         FROM pedidos p
         WHERE p.cliente_id = $1
@@ -81,6 +86,11 @@ export async function GET(req: NextRequest) {
             fechaPago: ped.fecha_pago,
             numeroGuiaTsi: ped.numero_guia_tsi,
             fotoGuiaTsi: ped.foto_guia_tsi || null,
+            destinoDepartamento: ped.destino_departamento,
+            destinoCiudad: ped.destino_ciudad,
+            modalidadEntrega: ped.modalidad_entrega || "DOMICILIO",
+            agenciaTsi: ped.agencia_tsi || null,
+            fechaConfirmacionEntrega: ped.fecha_confirmacion_entrega || null,
             trackingUrl: ped.numero_guia_tsi ? `https://tsi.com.py/tracking?guia=${encodeURIComponent(ped.numero_guia_tsi)}` : null,
             createdAt: ped.created_at,
             items: itemsRes.rows.map((it: any) => ({

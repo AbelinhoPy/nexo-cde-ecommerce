@@ -76,6 +76,13 @@ export function ProfileDrawer() {
   const [guardandoPass, setGuardandoPass] = useState(false);
   const [passStatus, setPassStatus] = useState<string | null>(null);
 
+  // Estados de vinculación de pedido invitado y confirmación de recepción
+  const [confirmandoId, setConfirmandoId] = useState<string | null>(null);
+  const [mostrarFormVincular, setMostrarFormVincular] = useState(false);
+  const [codigoVincular, setCodigoVincular] = useState("");
+  const [ciVincular, setCiVincular] = useState("");
+  const [vinculandoPedido, setVinculandoPedido] = useState(false);
+
   useEffect(() => {
     if (customer) {
       setEditTicket({
@@ -110,6 +117,64 @@ export function ProfileDrawer() {
       console.error("Error al cargar pedidos:", e);
     } finally {
       setCargandoPedidos(false);
+    }
+  };
+
+  const handleConfirmarRecepcion = async (pedidoId: string, codigo: string) => {
+    if (!confirm(`¿Confirmas que recibiste el paquete del pedido #${codigo} por Transportadora TSI en buen estado?`)) {
+      return;
+    }
+    setConfirmandoId(pedidoId);
+    try {
+      const res = await fetch("/api/customer/orders/confirm-delivery", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${customerToken}`,
+        },
+        body: JSON.stringify({ pedidoId, codigoPedido: codigo }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        mostrarNotificacion("✓ ¡Recepción de pedido confirmada con éxito!");
+        await cargarPedidos();
+      } else {
+        alert(data.error || "No se pudo confirmar la entrega.");
+      }
+    } catch {
+      alert("Error de comunicación al confirmar entrega.");
+    } finally {
+      setConfirmandoId(null);
+    }
+  };
+
+  const handleVincularPedido = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customerToken || !codigoVincular || !ciVincular) return;
+    setVinculandoPedido(true);
+    try {
+      const res = await fetch("/api/customer/orders/link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${customerToken}`,
+        },
+        body: JSON.stringify({ codigoPedido: codigoVincular, ci: ciVincular }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        mostrarNotificacion(data.mensaje);
+        setCodigoVincular("");
+        setCiVincular("");
+        setMostrarFormVincular(false);
+        await cargarPedidos();
+      } else {
+        alert(data.error || "Error al vincular pedido.");
+      }
+    } catch {
+      alert("Error de comunicación al vincular pedido.");
+    } finally {
+      setVinculandoPedido(false);
     }
   };
 
@@ -350,6 +415,55 @@ export function ProfileDrawer() {
             {/* PESTAÑA 2: MIS COMPRAS ANTERIORES */}
             {tab === "pedidos" && (
               <div className="space-y-4">
+                {/* Herramienta para vincular pedidos anteriores como invitado */}
+                <div className="p-3 bg-slate-100 rounded-xl border border-slate-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-slate-700">
+                      ¿Compraste antes como invitado o sin contraseña?
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setMostrarFormVincular(!mostrarFormVincular)}
+                      className="text-[11px] text-emerald-700 font-bold underline hover:text-emerald-900 cursor-pointer"
+                    >
+                      {mostrarFormVincular ? "Ocultar" : "Vincular pedido"}
+                    </button>
+                  </div>
+
+                  {mostrarFormVincular && (
+                    <form onSubmit={handleVincularPedido} className="mt-2.5 pt-2.5 border-t border-slate-200 space-y-2">
+                      <p className="text-[10px] text-slate-500">
+                        Ingresa el código de pedido y la cédula con la que realizaste la compra para asociarlo a tu cuenta y poder confirmar la recepción.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          required
+                          placeholder="CDE-YYYYMMDD-XXXX"
+                          value={codigoVincular}
+                          onChange={(e) => setCodigoVincular(e.target.value)}
+                          className="px-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 bg-white outline-none"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Tu Cédula (CI)"
+                          value={ciVincular}
+                          onChange={(e) => setCiVincular(e.target.value)}
+                          className="px-2.5 py-1.5 text-xs font-mono rounded-lg border border-slate-300 bg-white outline-none"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={vinculandoPedido}
+                        className="w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition"
+                      >
+                        {vinculandoPedido ? "Vinculando..." : "Vincular a Mi Cuenta"}
+                      </button>
+                    </form>
+                  )}
+                </div>
+
                 {cargandoPedidos ? (
                   <div className="text-center py-10 text-slate-400 text-xs">Cargando tus compras...</div>
                 ) : pedidos.length === 0 ? (
@@ -382,19 +496,27 @@ export function ProfileDrawer() {
                           </span>
                         </div>
 
-                        {/* Estado del Pedido */}
+                        {/* Estado del Pedido con Flujo Oficial */}
                         <span
                           className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            ped.estado === "DESPACHADO_TSI"
+                            ped.estado === "ENTREGADO"
                               ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                              : ped.estado === "PAGADO_VERIFICADO"
+                              : ped.estado === "ENVIADO" || ped.estado === "DESPACHADO_TSI"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                              : ped.estado === "PREPARANDO_ENVIO"
+                              ? "bg-purple-100 text-purple-800 border border-purple-300"
+                              : ped.estado === "PAGADO" || ped.estado === "PAGADO_VERIFICADO"
                               ? "bg-blue-100 text-blue-800 border border-blue-300"
                               : "bg-amber-100 text-amber-800 border border-amber-300"
                           }`}
                         >
-                          {ped.estado === "DESPACHADO_TSI"
-                            ? "En Tránsito TSI"
-                            : ped.estado === "PAGADO_VERIFICADO"
+                          {ped.estado === "ENTREGADO"
+                            ? "✓ Entregado"
+                            : ped.estado === "ENVIADO" || ped.estado === "DESPACHADO_TSI"
+                            ? "Enviado por TSI"
+                            : ped.estado === "PREPARANDO_ENVIO"
+                            ? "Preparando Envío"
+                            : ped.estado === "PAGADO" || ped.estado === "PAGADO_VERIFICADO"
                             ? "Pago Conciliado"
                             : "Esperando SIPAP"}
                         </span>
@@ -464,6 +586,39 @@ export function ProfileDrawer() {
                             <Eye className="w-3.5 h-3.5" />
                             <span>Ver Foto del Documento Físico</span>
                           </button>
+                        </div>
+                      )}
+
+                      {/* Botón Confirmar Recepción (Solo para el comprador cuando el estado es ENVIADO) */}
+                      {(ped.estado === "ENVIADO" || ped.estado === "DESPACHADO_TSI") && (
+                        <div className="pt-1 border-t border-slate-200 space-y-1">
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmarRecepcion(ped.id, ped.codigoPedido)}
+                            disabled={confirmandoId === ped.id}
+                            className="w-full py-2.5 px-3 bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-black text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span>{confirmandoId === ped.id ? "Confirmando recepción..." : "Confirmar recepción de paquete"}</span>
+                          </button>
+                          <p className="text-[10px] text-slate-500 text-center">
+                            Confirma una vez que hayas recibido e inspeccionado tu encomienda.
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Estado ENTREGADO */}
+                      {ped.estado === "ENTREGADO" && (
+                        <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-center space-y-0.5">
+                          <span className="text-xs font-bold text-emerald-900 flex items-center justify-center gap-1.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                            ¡Paquete Entregado y Verificado!
+                          </span>
+                          {ped.fechaConfirmacionEntrega && (
+                            <p className="text-[10px] text-emerald-700 font-medium">
+                              Recepción confirmada el {new Date(ped.fechaConfirmacionEntrega).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            </p>
+                          )}
                         </div>
                       )}
 

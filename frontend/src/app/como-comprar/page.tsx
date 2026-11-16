@@ -24,7 +24,7 @@ import { NexoLogo } from "@/components/NexoLogo";
 
 export const metadata: Metadata = {
   title: "Cómo Comprar en Ciudad del Este con Envío TSI | Guía NEXO CDE",
-  description: "Guía paso a paso para comprar electrónica, consolas y smartphones al precio mayorista de Ciudad del Este con flete plano garantizado por Transportadora TSI a todo Paraguay.",
+  description: "Guía paso a paso para comprar electrónica, consolas y smartphones al precio mayorista de Ciudad del Este con flete transparente calculado según destino por Transportadora TSI a todo Paraguay.",
   alternates: {
     canonical: "https://nexocde.vercel.app/como-comprar",
   },
@@ -85,8 +85,8 @@ export default function ComoComprarPage() {
       },
       {
         "@type": "HowToStep",
-        "name": "Consultar total y flete plano TSI",
-        "text": "El sistema calcula el costo del equipo más el flete plano de Transportadora TSI (₲ 35.000 para equipos regulares o ₲ 50.000 para consolas y TVs)."
+        "name": "Consultar total y flete TSI según destino",
+        "text": "El sistema calcula el costo del equipo más la tarifa confirmada de Transportadora TSI según el departamento y ciudad seleccionados (entrega a domicilio o retiro en agencia oficial)."
       },
       {
         "@type": "HowToStep",
@@ -238,14 +238,15 @@ export default function ComoComprarPage() {
                 </span>
               </div>
               <h3 className="text-base font-black text-slate-900">
-                Tarifa plana de flete Transportadora TSI
+                Tarifa TSI calculada según destino
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Sin sorpresas ni cobros abusivos por kilo:
+                Tarifas directas y transparentes según tu localidad:
               </p>
               <ul className="text-xs text-slate-700 space-y-1 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                <li>• <strong>₲ 35.000:</strong> Paquete regular (Smartphones, Auriculares, Perfumes, Smartwatches).</li>
-                <li>• <strong>₲ 50.000:</strong> Paquete pesado/voluminoso (Consolas PS5/Xbox, Notebooks, TVs).</li>
+                <li>• <strong>Desde ₲ 35.000:</strong> Asunción y Gran Asunción (Central) con entrega a domicilio o agencia.</li>
+                <li>• <strong>Desde ₲ 40.000 - ₲ 45.000:</strong> Ciudades del interior (Encarnación, Cnel. Oviedo, Villarrica, Concepción, etc.).</li>
+                <li>• <strong>Modalidades:</strong> Retiro en Agencia oficial TSI o Entrega directa a Domicilio.</li>
               </ul>
             </div>
 

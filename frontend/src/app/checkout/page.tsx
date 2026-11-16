@@ -17,7 +17,9 @@ import {
   Tag, 
   ShoppingBag,
   ExternalLink,
-  Edit2
+  Edit2,
+  AlertTriangle,
+  Info
 } from "lucide-react";
 import { NexoLogo } from "@/components/NexoLogo";
 import { TermsModal } from "@/components/TermsModal";
@@ -51,6 +53,8 @@ export default function CheckoutPage() {
     subtotalPyg, 
     subtotalUsd, 
     fletePyg, 
+    fleteDestinoPyg,
+    setFleteDestinoPyg,
     cupon, 
     descuentoPyg, 
     totalPagarPyg, 
@@ -65,13 +69,20 @@ export default function CheckoutPage() {
   const [cargando, setCargando] = useState(false);
   const [editandoTicket, setEditandoTicket] = useState(false);
   
+  // Destinos TSI dinámicos
+  const [destinosDisponibles, setDestinosDisponibles] = useState<any[]>([]);
+  const [cargandoDestinos, setCargandoDestinos] = useState(false);
+  const [destinoSeleccionado, setDestinoSeleccionado] = useState<any | null>(null);
+  const [tarifaPendiente, setTarifaPendiente] = useState(false);
+  const [fueraDeCobertura, setFueraDeCobertura] = useState(false);
+
   const [ordenGenerada, setOrdenGenerada] = useState<{
     codigo: string;
     totalPyg: number;
     fletePyg: number;
   } | null>(null);
 
-  // Datos del ticket de envío (sin selección inicial para departamento y ciudad)
+  // Datos del ticket de envío
   const [cliente, setCliente] = useState({
     nombre: "",
     ci: "",
@@ -81,6 +92,8 @@ export default function CheckoutPage() {
     departamento: "",
     ciudad: "",
     direccion: "",
+    modalidad: "DOMICILIO",
+    agenciaTsi: "",
   });
 
   useEffect(() => {
@@ -94,9 +107,98 @@ export default function CheckoutPage() {
         departamento: customer.departamento || "",
         ciudad: customer.ciudad || "",
         direccion: customer.direccion || "",
+        modalidad: "DOMICILIO",
+        agenciaTsi: "",
       });
+      if (customer.departamento) {
+        cargarDestinosPorDepartamento(customer.departamento, customer.ciudad);
+      }
     }
   }, [customer]);
+
+  // Cargar localidades habilitadas al seleccionar departamento
+  const cargarDestinosPorDepartamento = async (depto: string, ciudadPrevia = "") => {
+    setCargandoDestinos(true);
+    setFueraDeCobertura(false);
+    try {
+      const res = await fetch(`/api/geo/destinos?departamento=${encodeURIComponent(depto)}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.destinos)) {
+        setDestinosDisponibles(data.destinos);
+        const habilitados = data.destinos.filter((d: any) => d.coberturaHabilitada);
+        if (habilitados.length === 0) {
+          setFueraDeCobertura(true);
+          setDestinoSeleccionado(null);
+          setFleteDestinoPyg(null);
+        } else if (ciudadPrevia) {
+          const match = data.destinos.find((d: any) => d.ciudad.toLowerCase() === ciudadPrevia.toLowerCase());
+          if (match) {
+            aplicarDestino(match);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error cargando destinos TSI:", e);
+    } finally {
+      setCargandoDestinos(false);
+    }
+  };
+
+  const aplicarDestino = (destino: any) => {
+    setDestinoSeleccionado(destino);
+    if (!destino.coberturaHabilitada) {
+      setFueraDeCobertura(true);
+      setTarifaPendiente(false);
+      setFleteDestinoPyg(null);
+      return;
+    }
+    setFueraDeCobertura(false);
+
+    if (destino.requiereCotizacion || destino.fleteRegularPyg === null) {
+      setTarifaPendiente(true);
+      setFleteDestinoPyg(null);
+      return;
+    }
+
+    setTarifaPendiente(false);
+    const tienePesado = cart.some((it) => it.tipoFlete === "PESADO");
+    const costo = tienePesado ? destino.fletePesadoPyg : destino.fleteRegularPyg;
+    setFleteDestinoPyg(costo);
+    setCliente(prev => ({
+      ...prev,
+      agenciaTsi: destino.agenciaNombre || "",
+    }));
+  };
+
+  const handleDepartamentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nuevoDep = e.target.value;
+    setCliente(prev => ({
+      ...prev,
+      departamento: nuevoDep,
+      ciudad: "",
+      agenciaTsi: "",
+    }));
+    setDestinoSeleccionado(null);
+    setTarifaPendiente(false);
+    setFleteDestinoPyg(null);
+    cargarDestinosPorDepartamento(nuevoDep);
+  };
+
+  const handleCiudadChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const nuevaCiudad = e.target.value;
+    setCliente(prev => ({ ...prev, ciudad: nuevaCiudad }));
+
+    const destino = destinosDisponibles.find(
+      d => d.ciudad.toLowerCase() === nuevaCiudad.toLowerCase()
+    );
+
+    if (destino) {
+      aplicarDestino(destino);
+    } else {
+      setDestinoSeleccionado(null);
+      setFleteDestinoPyg(null);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setCliente({
@@ -112,13 +214,18 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.email || !cliente.departamento || !cliente.ciudad || !cliente.direccion) {
-      alert("Por favor completa todos los datos obligatorios para la guía de TSI (incluyendo departamento y ciudad de destino).");
+    if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.departamento || !cliente.ciudad || !cliente.direccion) {
+      alert("Por favor completa los datos requeridos para la guía de remisión TSI (nombre, CI, teléfono, departamento, ciudad y dirección).");
       return;
     }
 
-    if (!customer && (!cliente.password || cliente.password.length < 6)) {
-      alert("Por favor ingresa una contraseña de al menos 6 caracteres para crear tu cuenta y poder ver la foto de tu guía TSI.");
+    if (fueraDeCobertura) {
+      alert("⚠️ El destino seleccionado se encuentra fuera de la cobertura de Transportadora TSI. El pedido no puede ser procesado.");
+      return;
+    }
+
+    if (tarifaPendiente) {
+      alert("⚠️ Envío pendiente de cotización para este destino. Por favor contacta al concierge para cotizar tu flete antes de confirmar el pedido.");
       return;
     }
 
@@ -132,36 +239,36 @@ export default function CheckoutPage() {
       ciudadLower.includes("franco") || 
       ciudadLower.includes("minga")
     ) {
-      alert("⚠️ Servicio Exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a localidades de Asunción y el interior de Paraguay (Central, Itapúa, Caaguazú, etc.). No disponemos de entregas locales ni mostrador en Ciudad del Este.");
+      alert("⚠️ Servicio Exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a localidades de Asunción y el interior de Paraguay. No disponemos de entregas locales ni mostrador en Ciudad del Este.");
       return;
     }
 
     setCargando(true);
 
     try {
-      // Si el cliente no está logueado, registrar su cuenta para que tenga acceso al perfil y foto de guía TSI
-      if (!customer && cliente.password) {
-        const regRes = await registerCustomer({
-          nombre: cliente.nombre,
-          ci: cliente.ci,
-          telefono: cliente.telefono,
-          email: cliente.email,
-          password: cliente.password,
-          departamento: cliente.departamento,
-          ciudad: cliente.ciudad,
-          direccion: cliente.direccion,
-        });
+      // Si el cliente no está logueado pero dejó contraseña y email, crear cuenta
+      if (!customer && cliente.email && cliente.password && cliente.password.length >= 6) {
+        try {
+          const regRes = await registerCustomer({
+            nombre: cliente.nombre,
+            ci: cliente.ci,
+            telefono: cliente.telefono,
+            email: cliente.email,
+            password: cliente.password,
+            departamento: cliente.departamento,
+            ciudad: cliente.ciudad,
+            direccion: cliente.direccion,
+          });
 
-        if (!regRes.success) {
-          if (regRes.error && regRes.error.toLowerCase().includes("ya existe")) {
-            alert("⚠️ Ya existe una cuenta con este correo o cédula. Por favor inicia sesión con tu contraseña para continuar con tu compra.");
-            setIsAuthModalOpen(true);
-            setCargando(false);
-            return;
+          if (!regRes.success && regRes.error && regRes.error.toLowerCase().includes("ya existe")) {
+            alert("⚠️ Ya existe una cuenta con este correo o cédula. Podés iniciar sesión o continuar tu compra.");
           }
+        } catch (regErr) {
+          console.warn("Aviso en registro opcional:", regErr);
         }
       }
-      // Si el carrito está vacío (ej. acceso directo), armar item de respaldo
+
+      // Items de compra
       const itemsPayload = cart.length > 0
         ? cart.map(it => ({
             productoId: it.id,
@@ -181,7 +288,6 @@ export default function CheckoutPage() {
           ];
 
       const montoProd = cart.length > 0 ? subtotalPyg : 3971000;
-      const fleteFinal = cart.length > 0 ? fletePyg : 50000;
 
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -216,6 +322,8 @@ export default function CheckoutPage() {
       setCargando(false);
     }
   };
+
+  const ciudadesHabilitadas = destinosDisponibles.filter(d => d.coberturaHabilitada);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans py-8 px-4 sm:px-6 lg:px-8 flex flex-col">
@@ -279,7 +387,7 @@ export default function CheckoutPage() {
                     <div>
                       <h3 className="text-sm font-bold">Identificación para Despacho TSI</h3>
                       <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
-                        ¿Ya compraste antes en NEXO? Inicia sesión para autocompletar tu ticket guardado. Si es tu primera compra, completa tus datos abajo y te crearemos tu cuenta para que puedas ver la foto de tu guía TSI en tu perfil.
+                        ¿Ya compraste antes en NEXO? Inicia sesión para autocompletar tu ticket guardado. Si es tu primera compra, completa tus datos abajo para coordinar tu envío.
                       </p>
                     </div>
                   </div>
@@ -292,7 +400,7 @@ export default function CheckoutPage() {
                     >
                       Ya tengo cuenta • Iniciar Sesión
                     </button>
-                    <span className="text-[11px] text-slate-400">o completa tus datos abajo para registrarte</span>
+                    <span className="text-[11px] text-slate-400">o completa el ticket abajo</span>
                   </div>
                 </div>
               ) : (
@@ -327,7 +435,7 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Formulario editable (si no está logueado o si activó editar destino) */}
+              {/* Formulario editable */}
               {(!customer || editandoTicket) && (
                 <div className="space-y-4 pt-2 border-t border-slate-100">
                   <div className="flex items-center gap-2 pb-1">
@@ -340,7 +448,7 @@ export default function CheckoutPage() {
                   <div className="space-y-3.5">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Nombre y Apellido del Destinatario
+                        Nombre y Apellido del Destinatario *
                       </label>
                       <input
                         type="text"
@@ -356,7 +464,7 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Cédula (CI o RUC)
+                          Cédula (CI o RUC) *
                         </label>
                         <input
                           type="text"
@@ -371,7 +479,7 @@ export default function CheckoutPage() {
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Teléfono Móvil / WhatsApp
+                          Teléfono Móvil / WhatsApp *
                         </label>
                         <input
                           type="tel"
@@ -387,41 +495,40 @@ export default function CheckoutPage() {
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Correo Electrónico (para comprobante y tracking) *
+                        Correo Electrónico (opcional para tracking)
                       </label>
                       <input
                         type="email"
                         name="email"
-                        required
-                        placeholder="carlos@correo.com"
+                        placeholder="carlos@correo.com (opcional)"
                         value={cliente.email}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Podés dejarlo vacío si preferís gestionar tu pedido únicamente por WhatsApp y CI.
+                      </p>
                     </div>
 
-                    {!customer && (
+                    {!customer && cliente.email && (
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Crear Contraseña para tu Cuenta NEXO (mínimo 6 caracteres) *
+                          Contraseña de Cuenta (opcional)
                         </label>
                         <input
                           type="password"
                           name="password"
-                          required
                           minLength={6}
-                          placeholder="Crea una contraseña para ingresar a tu perfil y ver tu guía TSI"
+                          placeholder="Mínimo 6 caracteres para acceder al perfil"
                           value={cliente.password}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
-                        <p className="text-[11px] text-slate-500 mt-1">
-                          🔒 Se registrará tu cuenta automáticamente para que puedas ingresar a tu perfil y ver la foto de la boleta de remisión en cuanto Abel la despache en TSI.
-                        </p>
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* SELECTOR DE DEPARTAMENTO Y LOCALIDAD TSI */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
                           Departamento de Destino *
@@ -430,9 +537,9 @@ export default function CheckoutPage() {
                           name="departamento"
                           required
                           value={cliente.departamento}
-                          onChange={handleInputChange}
+                          onChange={handleDepartamentoChange}
                           className={`w-full px-2 py-2 rounded-xl border text-xs bg-white focus:ring-1 focus:ring-emerald-500 outline-none ${
-                            !cliente.departamento ? "text-slate-400 border-slate-300" : "text-slate-900 border-slate-300"
+                            !cliente.departamento ? "text-slate-400 border-slate-300" : "text-slate-900 border-slate-300 font-semibold"
                           }`}
                         >
                           <option value="" disabled>
@@ -448,29 +555,135 @@ export default function CheckoutPage() {
 
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Ciudad de Destino *
+                          Localidad o Agencia TSI *
                         </label>
-                        <input
-                          type="text"
-                          name="ciudad"
-                          required
-                          placeholder="ej. Luque, Encarnación, Cnel. Oviedo..."
-                          value={cliente.ciudad}
-                          onChange={handleInputChange}
-                          className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"
-                        />
+                        {cargandoDestinos ? (
+                          <div className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-400">
+                            Consultando cobertura TSI...
+                          </div>
+                        ) : (
+                          <select
+                            name="ciudad"
+                            required
+                            disabled={!cliente.departamento || fueraDeCobertura}
+                            value={cliente.ciudad}
+                            onChange={handleCiudadChange}
+                            className={`w-full px-2 py-2 rounded-xl border text-xs bg-white focus:ring-1 focus:ring-emerald-500 outline-none ${
+                              !cliente.ciudad ? "text-slate-400 border-slate-300" : "text-slate-900 border-slate-300 font-semibold"
+                            }`}
+                          >
+                            <option value="">
+                              {!cliente.departamento 
+                                ? "-- Primero elige un departamento --" 
+                                : fueraDeCobertura
+                                ? "-- Sin cobertura directa TSI --"
+                                : "-- Selecciona tu Localidad o Agencia --"}
+                            </option>
+                            {ciudadesHabilitadas.map((dest) => (
+                              <option key={dest.ciudad} value={dest.ciudad}>
+                                {dest.ciudad} {dest.requiereCotizacion ? "(Requiere cotización previa)" : ""}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </div>
                     </div>
 
+                    {/* ALERTA: FUERA DE COBERTURA */}
+                    {fueraDeCobertura && (
+                      <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold">Destino fuera de cobertura directa TSI</p>
+                          <p className="text-[11px] text-rose-700">
+                            Esta localidad no cuenta con servicio activo directo de Transportadora TSI desde Ciudad del Este. El pedido no puede ser procesado para esta dirección.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ALERTA: ENVÍO PENDIENTE DE COTIZACIÓN */}
+                    {tarifaPendiente && (
+                      <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5">
+                        <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-bold text-sm">Envío pendiente de cotización para este destino</p>
+                          <p className="text-[11px] text-amber-800 leading-relaxed mt-0.5">
+                            Transportadora TSI cubre esta zona especial (ej. Chaco interior o trayectos combinados) bajo cotización por peso volumétrico. No se puede confirmar el pedido sin tener un importe válido asignado.
+                          </p>
+                          <a
+                            href={`https://wa.me/595983000000?text=${encodeURIComponent(`Hola Abel, quiero cotizar flete TSI para ${cliente.ciudad} (${cliente.departamento})`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block mt-2 font-bold text-amber-900 underline hover:text-black"
+                          >
+                            📲 Contactar por WhatsApp para cotizar flete →
+                          </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SELECCIÓN DE MODALIDAD (DOMICILIO O RETIRO EN AGENCIA TSI) */}
+                    {destinoSeleccionado && !fueraDeCobertura && !tarifaPendiente && (
+                      <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                        <label className="block text-xs font-bold text-slate-800">
+                          Modalidad de Entrega TSI
+                        </label>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
+                            cliente.modalidad === "DOMICILIO"
+                              ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                              : "bg-white border-slate-200 text-slate-700"
+                          }`}>
+                            <input
+                              type="radio"
+                              name="modalidad"
+                              value="DOMICILIO"
+                              checked={cliente.modalidad === "DOMICILIO"}
+                              onChange={() => setCliente(prev => ({ ...prev, modalidad: "DOMICILIO" }))}
+                              className="text-emerald-600"
+                            />
+                            <span>Entrega a Domicilio</span>
+                          </label>
+
+                          <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
+                            cliente.modalidad === "AGENCIA"
+                              ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                              : "bg-white border-slate-200 text-slate-700"
+                          }`}>
+                            <input
+                              type="radio"
+                              name="modalidad"
+                              value="AGENCIA"
+                              checked={cliente.modalidad === "AGENCIA"}
+                              onChange={() => setCliente(prev => ({ ...prev, modalidad: "AGENCIA" }))}
+                              className="text-emerald-600"
+                            />
+                            <span>Retiro en Agencia TSI</span>
+                          </label>
+                        </div>
+
+                        {destinoSeleccionado.agenciaNombre && (
+                          <p className="text-[11px] text-slate-500">
+                            🏢 <strong>Agencia cabecera:</strong> {destinoSeleccionado.agenciaNombre} ({destinoSeleccionado.tiempoEstimado || "24-48 hs"})
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Dirección Exacta o Retiro en Agencia TSI
+                        {cliente.modalidad === "AGENCIA" ? "Indicaciones para Retiro en Agencia TSI" : "Dirección Exacta de Entrega *"}
                       </label>
                       <textarea
                         rows={2}
                         name="direccion"
                         required
-                        placeholder="ej. Av. Mariscal López 1240 o 'Retirar en Agencia TSI Asunción'"
+                        placeholder={
+                          cliente.modalidad === "AGENCIA"
+                            ? "ej. 'Retirar en Agencia TSI de la ciudad indicada' (o referencia de quién retira)"
+                            : "ej. Av. Mariscal López 1240 casi San Martín (describir referencias para el chofer de TSI)"
+                        }
                         value={cliente.direccion}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-1 focus:ring-emerald-500 outline-none"
@@ -504,18 +717,25 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* Botón de Confirmación con Validaciones */}
               <button
                 type="button"
                 onClick={handleCrearPedido}
-                disabled={!terminosAceptados || cargando}
+                disabled={!terminosAceptados || cargando || tarifaPendiente || fueraDeCobertura || !cliente.ciudad}
                 className={`w-full py-3.5 px-4 rounded-xl font-bold text-white text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
-                  terminosAceptados && !cargando
+                  terminosAceptados && !cargando && !tarifaPendiente && !fueraDeCobertura && cliente.ciudad
                     ? "bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-black"
                     : "bg-slate-400 cursor-not-allowed opacity-75"
                 }`}
               >
                 {cargando ? (
                   "Registrando Pedido en Neon..."
+                ) : fueraDeCobertura ? (
+                  "❌ Destino fuera de cobertura TSI"
+                ) : tarifaPendiente ? (
+                  "⚠️ Envío pendiente de cotización para este destino"
+                ) : !cliente.ciudad ? (
+                  "Calculá tu envío según destino"
                 ) : (
                   <>
                     <Lock className="w-4 h-4" />
@@ -589,14 +809,24 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <span className="flex items-center gap-1">
                       <Truck className="w-3 h-3 text-slate-400" />
-                      Flete Plano TSI
+                      Flete Encomienda TSI
                     </span>
-                    <span className="font-mono font-semibold text-slate-800">
-                      ₲ {(cart.length > 0 ? fletePyg : 50000).toLocaleString("es-PY")}
-                    </span>
+                    {tarifaPendiente ? (
+                      <span className="text-amber-600 font-bold text-[11px]">
+                        Pendiente de cotización
+                      </span>
+                    ) : !cliente.ciudad || fleteDestinoPyg === null ? (
+                      <span className="text-emerald-700 font-bold text-[11px]">
+                        Calculá tu envío según destino
+                      </span>
+                    ) : (
+                      <span className="font-mono font-semibold text-slate-800">
+                        ₲ {fletePyg.toLocaleString("es-PY")}
+                      </span>
+                    )}
                   </div>
 
                   {descuentoPyg > 0 && (
@@ -607,9 +837,13 @@ export default function CheckoutPage() {
                   )}
 
                   <div className="flex justify-between items-baseline pt-2 border-t border-slate-200 text-slate-900 font-bold">
-                    <span className="text-sm">Total a Pagar</span>
+                    <span className="text-sm">Total a Transferir</span>
                     <span className="text-lg font-black text-[#00c853] font-mono">
-                      ₲ {(cart.length > 0 ? totalPagarPyg : 4021000).toLocaleString("es-PY")}
+                      {tarifaPendiente ? (
+                        <span className="text-amber-600 text-sm">Cotización de flete requerida</span>
+                      ) : (
+                        `₲ ${(cart.length > 0 ? totalPagarPyg : (3971000 + (fleteDestinoPyg || 50000))).toLocaleString("es-PY")}`
+                      )}
                     </span>
                   </div>
                 </div>

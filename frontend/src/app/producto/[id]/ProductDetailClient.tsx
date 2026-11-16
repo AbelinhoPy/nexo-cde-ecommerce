@@ -420,17 +420,17 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                   </div>
                 </div>
 
-                {/* Flete Plano TSI */}
+                {/* Flete TSI según Destino */}
                 <div className="pt-3 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-1 text-xs text-zinc-300">
                   <span className="flex items-center gap-1.5 font-semibold">
                     <Truck className="w-4 h-4 text-emerald-400" />
-                    Flete plano Transportadora TSI a todo Paraguay:
+                    Envíos por Transportadora TSI:
                     <Link href="/como-comprar" className="text-emerald-400 hover:text-emerald-300 underline font-normal text-[11px] ml-1">
-                      (ver cómo funciona)
+                      (calculá tu envío según destino)
                     </Link>
                   </span>
-                  <span className="font-black font-mono text-sm text-emerald-400">
-                    ₲ {prod.fletePyg.toLocaleString("es-PY")}
+                  <span className="font-black font-mono text-xs text-emerald-400">
+                    Desde ₲ {prod.fletePyg.toLocaleString("es-PY")}
                   </span>
                 </div>
               </div>
@@ -685,9 +685,9 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                   </div>
 
                   <div className="flex items-center justify-between text-sm text-zinc-400">
-                    <span>Flete Plano Transportadora TSI hasta tu ciudad:</span>
+                    <span>Flete Transportadora TSI (según destino):</span>
                     <span className="font-semibold font-mono text-zinc-200">
-                      + ₲ {prod.fletePyg.toLocaleString("es-PY")}
+                      Desde ₲ {prod.fletePyg.toLocaleString("es-PY")}
                     </span>
                   </div>
 
