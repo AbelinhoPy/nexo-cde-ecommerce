@@ -1074,10 +1074,10 @@ export default function AdminDashboardPage() {
                   Total Recaudado (SIPAP)
                 </span>
                 <span className="text-2xl font-black text-white font-mono mt-1 block">
-                  ₲ {metricas.resumen.totalRecaudadoPyg.toLocaleString("es-PY")}
+                  ₲ {(metricas?.resumen?.totalRecaudadoPyg ?? 0).toLocaleString("es-PY")}
                 </span>
                 <span className="text-[11px] text-emerald-400 flex items-center gap-1 mt-1 font-semibold">
-                  <ArrowUpRight className="w-3 h-3" /> {metricas.resumen.pedidosLiquidados} pedidos pagados
+                  <ArrowUpRight className="w-3 h-3" /> {metricas?.resumen?.pedidosLiquidados ?? 0} pedidos pagados
                 </span>
               </div>
 
@@ -1086,10 +1086,10 @@ export default function AdminDashboardPage() {
                   Costo de Mercadería Pagado
                 </span>
                 <span className="text-2xl font-black text-slate-300 font-mono mt-1 block">
-                  ₲ {metricas.resumen.costoMercaderiaPyg.toLocaleString("es-PY")}
+                  ₲ {(metricas?.resumen?.costoMercaderiaPyg ?? 0).toLocaleString("es-PY")}
                 </span>
                 <span className="text-[11px] text-slate-400 block mt-1">
-                  US$ {metricas.resumen.costoMercaderiaUsd.toFixed(2)} pagados en CDE
+                  US$ {(metricas?.resumen?.costoMercaderiaUsd ?? 0).toFixed(2)} pagados en CDE
                 </span>
               </div>
 
@@ -1098,10 +1098,10 @@ export default function AdminDashboardPage() {
                   Ganancia Neta Consolidada
                 </span>
                 <span className="text-2xl font-black text-emerald-400 font-mono mt-1 block">
-                  ₲ {metricas.resumen.gananciaNetaPyg.toLocaleString("es-PY")}
+                  ₲ {(metricas?.resumen?.gananciaNetaPyg ?? 0).toLocaleString("es-PY")}
                 </span>
                 <span className="text-[11px] text-emerald-400 font-semibold block mt-1">
-                  Margen neto real: {metricas.resumen.margenNetoPromedioPct}%
+                  Margen neto real: {metricas?.resumen?.margenNetoPromedioPct ?? metricas?.resumen?.margenNetoPct ?? 0}%
                 </span>
               </div>
 
@@ -1110,7 +1110,7 @@ export default function AdminDashboardPage() {
                   Flete Convenio TSI
                 </span>
                 <span className="text-2xl font-black text-indigo-300 font-mono mt-1 block">
-                  ₲ {metricas.resumen.costoEstimadoTsiPyg.toLocaleString("es-PY")}
+                  ₲ {(metricas?.resumen?.costoEstimadoTsiPyg ?? metricas?.resumen?.fletesCostoRealTsiPyg ?? 0).toLocaleString("es-PY")}
                 </span>
                 <span className="text-[11px] text-slate-400 block mt-1">
                   Convenio corporativo de despacho
