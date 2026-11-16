@@ -55,7 +55,7 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
   const [esFavorito, setEsFavorito] = useState(false);
   const [selectedImg, setSelectedImg] = useState<string>(prod?.img || "");
   const [selectedColor, setSelectedColor] = useState<string>(prod?.colores?.[0] || "");
-  const [activeTab, setActiveTab] = useState<"descricao" | "especificacoes" | "comparativo" | "garantia">("descricao");
+  const [activeTab, setActiveTab] = useState<"descripcion" | "especificaciones" | "comparativo" | "garantia">("descripcion");
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
 
   const { addToCart, setIsCartOpen, totalItems, mostrarNotificacion } = useCart();
@@ -523,27 +523,27 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
           {/* Barra de Pestañas Oficial estilo Connect */}
           <div className="flex border-b border-slate-200 overflow-x-auto no-scrollbar bg-slate-50/70">
             <button
-              onClick={() => setActiveTab("descricao")}
+              onClick={() => setActiveTab("descripcion")}
               className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "descricao"
+                activeTab === "descripcion"
                   ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Descrição</span>
+              <span>Descripción</span>
             </button>
 
             <button
-              onClick={() => setActiveTab("especificacoes")}
+              onClick={() => setActiveTab("especificaciones")}
               className={`px-6 py-4 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b-2 transition whitespace-nowrap cursor-pointer ${
-                activeTab === "especificacoes"
+                activeTab === "especificaciones"
                   ? "border-[#00c853] text-[#00c853] bg-white shadow-2xs"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>Especificações</span>
+              <span>Especificaciones</span>
             </button>
 
             <button
@@ -555,7 +555,7 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
               }`}
             >
               <TrendingDown className="w-4 h-4" />
-              <span>Comparativo</span>
+              <span>Comparativa de Ahorro</span>
             </button>
 
             <button
@@ -567,47 +567,47 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
               }`}
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>Garantia & Despacho TSI</span>
+              <span>Garantía y Despacho TSI</span>
             </button>
           </div>
 
           {/* Contenido de la Pestaña Activa */}
           <div className="p-6 sm:p-8">
             
-            {/* 1. ABA DESCRIÇÃO */}
-            {activeTab === "descricao" && (
+            {/* 1. ABA DESCRIPCIÓN */}
+            {activeTab === "descripcion" && (
               <div className="space-y-6 max-w-4xl">
                 <div>
                   <h3 className="text-xl font-black text-slate-900 leading-snug">
-                    Visão Geral do Produto
+                    Visión General del Producto
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Informações e destaques de uso no dia a dia, jogos e tarefas pesadas.
+                    Información técnica, rendimiento en uso real y modalidad de despacho TSI al interior de Paraguay.
                   </p>
                 </div>
 
                 <div className="text-sm text-slate-700 leading-relaxed space-y-3 bg-slate-50/70 p-5 rounded-2xl border border-slate-100">
                   <p>
                     {prod.descripcion || (
-                      `O ${prod.nombre} foi desenvolvido para quem busca máxima eficiência, desempenho veloz e tecnologia de ponta com procedência direta de distribuidores em Ciudad del Este. Ideal para jogos exigentes, edição de conteúdo e multitarefa contínua.`
+                      `El ${prod.nombre} fue seleccionado para quienes buscan máxima eficiencia, rendimiento veloz y tecnología de punta con costo real de Ciudad del Este. Ideal para uso intensivo, trabajo y entretenimiento con despacho diario por Transportadora TSI a todo el interior del país.`
                     )}
                   </p>
                 </div>
 
-                {/* Conteúdo da Embalagem */}
+                {/* Contenido de la Caja */}
                 <div className="space-y-3 pt-2">
                   <h4 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Box className="w-4 h-4 text-[#00c853]" />
-                    <span>Conteúdo da Caixa (Selada de Fábrica)</span>
+                    <span>Contenido de la Caja (Sellada de Fábrica)</span>
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {(prod.contenidoCaja && prod.contenidoCaja.length > 0 ? prod.contenidoCaja : [
-                      `${prod.nombre} (Novo Lacrado de Fábrica)`,
-                      "Carregador de tomada original de alta potência",
-                      "Cabo USB Tipo-C de alta velocidade",
-                      "Capa de proteção original de fábrica",
-                      "Chave extratora da bandeja SIM",
-                      "Manual do usuário e certificado de garantia"
+                      `${prod.nombre} (Nuevo Sellado de Fábrica)`,
+                      "Cargador de toma original homologado",
+                      "Cable USB Tipo-C de alta velocidad",
+                      "Funda o protectores originales incluidos de fábrica",
+                      "Llave extractora de bandeja SIM (si aplica)",
+                      "Manual de usuario y garantía oficial"
                     ]).map((item, idx) => (
                       <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-800">
                         <div className="w-5 h-5 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
@@ -621,16 +621,16 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
               </div>
             )}
 
-            {/* 2. ABA ESPECIFICAÇÕES (Tabela idêntica à Atacado Connect) */}
-            {activeTab === "especificacoes" && (
+            {/* 2. ABA ESPECIFICACIONES */}
+            {activeTab === "especificaciones" && (
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
                   <div>
                     <h3 className="text-xl font-black text-slate-900">
-                      Especificações Técnicas
+                      Especificaciones Técnicas
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Ficha técnica homologada de acordo com o catálogo oficial de Connect Partner.
+                      Ficha técnica homologada y componentes verificados antes del despacho oficial.
                     </p>
                   </div>
                   <span className="text-xs font-mono font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-lg self-start sm:self-auto">
@@ -651,7 +651,7 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                 </div>
 
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-500 leading-relaxed italic">
-                  *As descrições e especificações dos produtos são de responsabilidade do fabricante. Equipamentos 100% originais com números de série verificados antes do despacho por Transportadora TSI.
+                  *Las descripciones y especificaciones técnicas corresponden a los modelos originales sellados de fábrica. Verificación de serie y embalaje reforzado antes de entregar a Transportadora TSI.
                 </div>
               </div>
             )}
@@ -711,15 +711,15 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
               </div>
             )}
 
-            {/* 4. ABA GARANTIA & DESPACHO TSI */}
+            {/* 4. ABA GARANTÍA & DESPACHO TSI */}
             {activeTab === "garantia" && (
               <div className="space-y-6 max-w-3xl">
                 <div>
                   <h3 className="text-xl font-black text-slate-900">
-                    Termos de Garantia e Rastreio TSI
+                    Términos de Garantía y Despacho TSI
                   </h3>
                   <p className="text-xs text-slate-500 mt-1">
-                    Segurança máxima: aparelho novo, lacrado e com comprovante físico no seu perfil.
+                    Seguridad total: equipo nuevo, sellado de fábrica y con foto de guía física en tu perfil.
                   </p>
                 </div>
 
@@ -728,9 +728,9 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                     <span className="w-7 h-7 rounded-full bg-slate-900 text-white font-mono font-bold flex items-center justify-center text-xs">
                       1
                     </span>
-                    <h4 className="font-black text-slate-900">Lacres Originais</h4>
+                    <h4 className="font-black text-slate-900">Sellos de Fábrica</h4>
                     <p className="text-slate-500 leading-snug">
-                      Caixa lacrada de fábrica pelo distribuidor oficial com número de série registrado.
+                      Caja sellada original con número de serie homologado verificado en depósito de CDE.
                     </p>
                   </div>
 
@@ -738,9 +738,9 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                     <span className="w-7 h-7 rounded-full bg-emerald-600 text-white font-mono font-bold flex items-center justify-center text-xs">
                       2
                     </span>
-                    <h4 className="font-black text-slate-900">Garantia de 48 hs</h4>
+                    <h4 className="font-black text-slate-900">Garantía de Prueba 48 hs</h4>
                     <p className="text-slate-500 leading-snug">
-                      Prazo para teste completo de funcionamento e encendido após retirar da agência TSI.
+                      Plazo completo para encendido y verificación de funciones al retirar de la agencia TSI o recibir en tu domicilio.
                     </p>
                   </div>
 
@@ -748,17 +748,17 @@ export default function ProductDetailClient({ initialProd }: { initialProd?: Pro
                     <span className="w-7 h-7 rounded-full bg-purple-600 text-white font-mono font-bold flex items-center justify-center text-xs">
                       3
                     </span>
-                    <h4 className="font-black text-slate-900">Foto da Guia no Perfil</h4>
+                    <h4 className="font-black text-slate-900">Foto de Guía en tu Perfil</h4>
                     <p className="text-slate-500 leading-snug">
-                      Subimos a foto da guia com o carimbo oficial da TSI na ventanilha para você acompanhar.
+                      Subimos la foto de la guía física con carimbo de ventanilla TSI para que confirmes el despacho de tu paquete.
                     </p>
                   </div>
                 </div>
 
                 <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 space-y-1">
-                  <strong className="block font-bold">Exclusões de Garantia:</strong>
+                  <strong className="block font-bold">Exclusiones de Garantía:</strong>
                   <p className="leading-relaxed">
-                    Não cobrem danos causados por quedas, umidade excessiva, choques elétricos na rede ou violação dos lacres internos de fábrica.
+                    No cubre daños ocasionados por golpes o caídas posteriores a la entrega, exposición a líquidos, problemas de sobretensión eléctrica domiciliaria o alteración de los sellos de seguridad originales del fabricante.
                   </p>
                 </div>
               </div>

@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const title = `${prod.nombre} - Precio Mayorista CDE`;
-  const ogTitle = `${prod.nombre} | NEXO CDE`;
-  const description = `Comprá ${prod.nombre} al costo mayorista de Ciudad del Este por ₲ ${prod.precioPyg.toLocaleString("es-PY")} (US$ ${prod.precioUsd.toFixed(2)}). Despacho diario garantizado por Transportadora TSI a Asunción y todo Paraguay.`;
+  const title = prod.metaTitle || `${prod.nombre} - Precio Mayorista CDE`;
+  const ogTitle = prod.metaTitle || `${prod.nombre} | NEXO CDE`;
+  const description = prod.metaDescription || `Comprá ${prod.nombre} al costo mayorista de Ciudad del Este por ₲ ${prod.precioPyg.toLocaleString("es-PY")} (US$ ${prod.precioUsd.toFixed(2)}). Despacho diario garantizado por Transportadora TSI a todo el interior de Paraguay.`;
   const canonicalUrl = `https://nexocde.vercel.app/producto/${prod.id}`;
 
   return {
