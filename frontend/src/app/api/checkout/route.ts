@@ -37,6 +37,7 @@ const CheckoutSchema = z.object({
   productoId: z.string().min(1).max(100).optional(),
   tipoFlete: z.enum(["REGULAR", "PESADO"]).optional(),
   montoProductosPyg: z.number().int().positive("El monto de productos debe ser positivo"),
+  fleteEsperadoPyg: z.number().int().min(0).optional().nullable(),
   cuponCodigo: z.string().max(30).optional().nullable(),
   descuentoCuponPyg: z.number().int().min(0).default(0),
   terminosAceptados: z.literal(true, {
@@ -89,11 +90,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { cliente, items, productoId, tipoFlete, montoProductosPyg, cuponCodigo, descuentoCuponPyg } = parseResult.data;
+    const { 
+      cliente, 
+      items, 
+      productoId, 
+      tipoFlete, 
+      montoProductosPyg, 
+      fleteEsperadoPyg,
+      cuponCodigo, 
+      descuentoCuponPyg 
+    } = parseResult.data;
 
     // Validación estricta: Exclusión geográfica de Ciudad del Este / Alto Paraná
-    const depLower = (cliente.departamento || "").toLowerCase();
-    const ciudadLower = (cliente.ciudad || "").toLowerCase();
+    const depLower = (cliente.departamento || "").toLowerCase().trim();
+    const ciudadLower = (cliente.ciudad || "").toLowerCase().trim();
     const esDestinoCde = 
       depLower.includes("alto paraná") || 
       depLower.includes("alto parana") || 
@@ -113,313 +123,396 @@ export async function POST(req: NextRequest) {
     }
 
     // Normalizar items (soporta array de carrito o producto único)
-    const normalizedItems: Array<{ productoId: string; cantidad: number; precioPyg: number; tipoFlete: "REGULAR" | "PESADO"; nombre?: string }> =
+    const normalizedItems =
       items && items.length > 0
         ? items
-        : [
+        : productoId
+        ? [
             {
-              productoId: productoId || "CON-PS5-SLIM-DIG",
+              productoId,
               cantidad: 1,
               precioPyg: montoProductosPyg,
               tipoFlete: tipoFlete || "REGULAR",
             },
-          ];
+          ]
+        : [];
 
-    // 2. Validación y Cálculo de Flete TSI según Destino en el Servidor
-    let costoFleteCalculado = 35000;
+    if (normalizedItems.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "El carrito está vacío. Agregá al menos un producto para continuar.",
+          codigoError: "CARRITO_VACIO",
+        },
+        { status: 400 }
+      );
+    }
+
+    // 2. Validación Estricta de Cobertura y Tarifa TSI en el Servidor
+    // ELIMINADO CUALQUIER FALLBACK PLANO DE 35.000 O 50.000
+    if (!isDbConfigured()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No pudimos verificar el envío. Volvé a intentar",
+          codigoError: "DB_NO_CONFIGURADA",
+        },
+        { status: 503 }
+      );
+    }
+
     const tienePesado = normalizedItems.some((it) => it.tipoFlete === "PESADO");
+    let destinoDb: any = null;
 
-    if (isDbConfigured()) {
-      try {
-        const destinoRows = await query<any>(
-          `SELECT departamento, ciudad, agencia_nombre, modalidad, flete_regular_pyg, flete_pesado_pyg, cobertura_habilitada
-           FROM destinos_tsi
-           WHERE LOWER(departamento) = LOWER($1) AND LOWER(ciudad) = LOWER($2)
-           LIMIT 1;`,
-          [cliente.departamento, cliente.ciudad]
+    try {
+      const destinoRows = await query<any>(
+        `SELECT id, departamento, ciudad, agencia_nombre, modalidad, flete_regular_pyg, flete_pesado_pyg, cobertura_habilitada
+         FROM destinos_tsi
+         WHERE LOWER(TRIM(departamento)) = LOWER(TRIM($1)) 
+           AND LOWER(TRIM(ciudad)) = LOWER(TRIM($2))
+         LIMIT 1;`,
+        [cliente.departamento, cliente.ciudad]
+      );
+
+      // Destino sin cobertura confirmada o inexistente en la tabla
+      if (destinoRows.length === 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `El destino ${cliente.ciudad} (${cliente.departamento}) no está habilitado para envíos.`,
+            codigoError: "DESTINO_SIN_COBERTURA",
+          },
+          { status: 400 }
         );
-
-        if (destinoRows.length > 0) {
-          const d = destinoRows[0];
-          // Validar cobertura habilitada
-          if (!d.cobertura_habilitada) {
-            return NextResponse.json(
-              {
-                success: false,
-                error: `Destino fuera de cobertura TSI: ${cliente.ciudad} (${cliente.departamento}) no cuenta con cobertura de encomienda TSI directa desde Ciudad del Este. El pedido no puede ser procesado.`,
-              },
-              { status: 400 }
-            );
-          }
-
-          // Validar si tiene tarifa confirmada o requiere cotización
-          if (d.flete_regular_pyg === null || d.flete_pesado_pyg === null) {
-            return NextResponse.json(
-              {
-                success: false,
-                error: `Envío pendiente de cotización para este destino. Por favor comunícate con nosotros para cotizar tu flete antes de confirmar el pedido.`,
-              },
-              { status: 400 }
-            );
-          }
-
-          costoFleteCalculado = tienePesado ? Number(d.flete_pesado_pyg) : Number(d.flete_regular_pyg);
-        } else {
-          // Si el departamento es de zonas remotas sin cobertura cargada (ej. Alto Paraguay o Boquerón profundo)
-          const depRemoto = depLower.includes("boquerón") || depLower.includes("boqueron") || depLower.includes("alto paraguay");
-          if (depRemoto) {
-            return NextResponse.json(
-              {
-                success: false,
-                error: `Destino fuera de cobertura TSI: ${cliente.ciudad} (${cliente.departamento}) está fuera de cobertura directa.`,
-              },
-              { status: 400 }
-            );
-          }
-          // Default seguro según peso
-          costoFleteCalculado = tienePesado ? 50000 : 35000;
-        }
-      } catch (errGeo) {
-        console.warn("Falla temporal validando destino en DB, usando tarifa estándar:", errGeo);
-        costoFleteCalculado = tienePesado ? 50000 : 35000;
       }
-    } else {
-      costoFleteCalculado = tienePesado ? 50000 : 35000;
+
+      destinoDb = destinoRows[0];
+    } catch (errGeo) {
+      console.error("[Checkout] Error al consultar cobertura TSI en DB:", errGeo);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No pudimos verificar el envío. Volvé a intentar",
+          codigoError: "ERROR_CONSULTA_COBERTURA",
+        },
+        { status: 503 }
+      );
+    }
+
+    // Destino deshabilitado
+    if (!destinoDb.cobertura_habilitada) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `El destino ${cliente.ciudad} (${cliente.departamento}) no está habilitado para envíos.`,
+          codigoError: "DESTINO_DESHABILITADO",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Destino habilitado sin tarifa para el tipo de carrito
+    const tarifaAplicable = tienePesado ? destinoDb.flete_pesado_pyg : destinoDb.flete_regular_pyg;
+    if (tarifaAplicable === null || tarifaAplicable === undefined || Number(tarifaAplicable) <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Envío pendiente de cotización para este destino",
+          codigoError: "TARIFA_PENDIENTE",
+        },
+        { status: 400 }
+      );
+    }
+
+    const costoFleteCalculado = Number(tarifaAplicable);
+
+    // Si la tarifa cambió desde que se mostró el total en el checkout del cliente
+    if (
+      fleteEsperadoPyg !== undefined &&
+      fleteEsperadoPyg !== null &&
+      Number(fleteEsperadoPyg) !== costoFleteCalculado
+    ) {
+      const descuentoTemp = Math.min(descuentoCuponPyg, montoProductosPyg + costoFleteCalculado);
+      const totalNuevo = montoProductosPyg + costoFleteCalculado - descuentoTemp;
+      return NextResponse.json(
+        {
+          success: false,
+          tarifaActualizada: true,
+          fleteAnteriorPyg: Number(fleteEsperadoPyg),
+          nuevoFletePyg: costoFleteCalculado,
+          nuevoTotalPagarPyg: totalNuevo,
+          error: `La tarifa de envío para este destino se actualizó a ₲ ${costoFleteCalculado.toLocaleString("es-PY")}. Por favor volvé a confirmar el pedido con el total actualizado.`,
+          codigoError: "TARIFA_ACTUALIZADA",
+        },
+        { status: 409 }
+      );
     }
 
     const descuentoAplicado = Math.min(descuentoCuponPyg, montoProductosPyg + costoFleteCalculado);
     const totalPagarCalculado = montoProductosPyg + costoFleteCalculado - descuentoAplicado;
 
-    // 3. Generación de Código Único de Pedido
-    const hoyStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    const randomHex = crypto.randomBytes(2).toString("hex").toUpperCase();
-    const codigoPedido = `CDE-${hoyStr}-${randomHex}`;
+    // 3. Validación Estricta de Productos: Validar TODOS los artículos del carrito
+    // ELIMINADA CUALQUIER SUSTITUCIÓN AUTOMÁTICA POR EL PRIMER ARTÍCULO DE LA BASE
+    const pool = getPool();
+    const client = await pool.connect();
 
-    // 4. Cifrado AES-256 para datos sensibles PII
-    const ciCifradoBuf = encryptAES256Buffer(cliente.ci);
-    const telCifradoBuf = encryptAES256Buffer(cliente.telefono);
-    const dirCifradoBuf = encryptAES256Buffer(cliente.direccion);
+    const validatedItems: Array<{
+      item: (typeof normalizedItems)[0];
+      prodDb: {
+        id: string;
+        sku: string;
+        nombre: string;
+        costo_neto_usd: string | number;
+        cotizacion_aplicada_pyg: number;
+        costo_neto_pyg: string | number;
+        precio_venta_pyg: string | number;
+      };
+    }> = [];
 
-    const ciHash = hashSHA256(cliente.ci);
-    const telefonoHash = hashSHA256(cliente.telefono);
-    const timestampAceptacion = new Date();
-
-    let pedidoId: string | null = null;
-
-    // 5. Persistencia real en Neon PostgreSQL
-    if (isDbConfigured()) {
-      const pool = getPool();
-      const client = await pool.connect();
-      try {
-        await client.query("BEGIN;");
-
-        // Insertar o actualizar cliente (usando blind index ci_hash)
-        const clienteRes = await client.query(
-          `
-          INSERT INTO clientes (
-            nombre_completo, ci_cifrado, telefono_cifrado, direccion_cifrada,
-            ci_hash, telefono_hash, ciudad_destino, departamento, email
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          ON CONFLICT (ci_hash) DO UPDATE SET
-            nombre_completo = EXCLUDED.nombre_completo,
-            telefono_cifrado = EXCLUDED.telefono_cifrado,
-            direccion_cifrada = EXCLUDED.direccion_cifrada,
-            ciudad_destino = EXCLUDED.ciudad_destino,
-            departamento = EXCLUDED.departamento,
-            email = COALESCE(EXCLUDED.email, clientes.email)
-          RETURNING id;
-          `,
-          [
-            cliente.nombre,
-            ciCifradoBuf,
-            telCifradoBuf,
-            dirCifradoBuf,
-            ciHash,
-            telefonoHash,
-            cliente.ciudad,
-            cliente.departamento,
-            cliente.email || null,
-          ]
+    try {
+      for (const item of normalizedItems) {
+        const prodQuery = await client.query(
+          `SELECT id, sku, nombre, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg, activo
+           FROM productos 
+           WHERE (sku = $1 OR id::text = $1)
+           LIMIT 1;`,
+          [item.productoId]
         );
-        const clienteId = clienteRes.rows[0].id;
 
-        // Insertar Pedido con destino, modalidad, cupón y flete
-        const pedidoRes = await client.query(
-          `
-          INSERT INTO pedidos (
-            codigo_pedido, cliente_id, monto_productos_pyg, monto_flete_pyg,
-            cupon_codigo, descuento_cupon_pyg, total_pagar_pyg,
-            estado, terminos_aceptados, terminos_aceptados_ip, terminos_aceptados_timestamp,
-            destino_departamento, destino_ciudad, modalidad_entrega, agencia_tsi,
-            notificacion_admin_enviada
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDIENTE', TRUE, $8, $9, $10, $11, $12, $13, FALSE)
-          RETURNING id;
-          `,
-          [
-            codigoPedido,
-            clienteId,
-            montoProductosPyg,
-            costoFleteCalculado,
-            cuponCodigo || null,
-            descuentoAplicado,
-            totalPagarCalculado,
-            clientIp,
-            timestampAceptacion,
-            cliente.departamento,
-            cliente.ciudad,
-            cliente.modalidad || "DOMICILIO",
-            cliente.agenciaTsi || null,
-          ]
-        );
-        pedidoId = pedidoRes.rows[0].id;
+        const prodDb = prodQuery.rows[0];
 
-        // Insertar todos los items del carrito
-        for (const item of normalizedItems) {
-          const prodQuery = await client.query(
-            "SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos WHERE sku = $1 OR id::text = $1 LIMIT 1;",
-            [item.productoId]
+        // Si el producto no se encuentra o está inactivo, rechazar el pedido completo
+        if (!prodDb || prodDb.activo === false) {
+          client.release();
+          const nombreItem = item.nombre || item.productoId;
+          return NextResponse.json(
+            {
+              success: false,
+              error: `El producto "${nombreItem}" (Código: ${item.productoId}) no se encuentra disponible en nuestro catálogo. Por favor quitalo de tu carrito para continuar.`,
+              productoInvalido: {
+                productoId: item.productoId,
+                nombre: nombreItem,
+              },
+              codigoError: "PRODUCTO_NO_DISPONIBLE",
+            },
+            { status: 400 }
           );
+        }
 
-          let prodDb = prodQuery.rows[0];
-          if (!prodDb) {
-            const fallbackQuery = await client.query("SELECT id, costo_neto_usd, cotizacion_aplicada_pyg, costo_neto_pyg, precio_venta_pyg FROM productos LIMIT 1;");
-            prodDb = fallbackQuery.rows[0];
-          }
+        validatedItems.push({ item, prodDb });
+      }
 
-          if (prodDb) {
-            await client.query(
-              `
-              INSERT INTO pedido_items (
-                pedido_id, producto_id, cantidad, costo_unitario_usd,
-                cotizacion_usada_pyg, costo_unitario_pyg, precio_unitario_pyg, subtotal_pyg
-              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
-              `,
-              [
-                pedidoId,
-                prodDb.id,
-                item.cantidad,
-                prodDb.costo_neto_usd,
-                prodDb.cotizacion_aplicada_pyg,
-                prodDb.costo_neto_pyg,
-                item.precioPyg,
-                item.precioPyg * item.cantidad,
-              ]
+      // 4. Generación de Código Único de Pedido y Cifrado PII
+      const hoyStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const randomHex = crypto.randomBytes(2).toString("hex").toUpperCase();
+      const codigoPedido = `CDE-${hoyStr}-${randomHex}`;
+
+      const ciCifradoBuf = encryptAES256Buffer(cliente.ci);
+      const telCifradoBuf = encryptAES256Buffer(cliente.telefono);
+      const dirCifradoBuf = encryptAES256Buffer(cliente.direccion);
+
+      const ciHash = hashSHA256(cliente.ci);
+      const telefonoHash = hashSHA256(cliente.telefono);
+      const timestampAceptacion = new Date();
+
+      // 5. Transacción Atómica Única en Neon PostgreSQL
+      await client.query("BEGIN;");
+
+      // Insertar o actualizar cliente (usando blind index ci_hash)
+      const clienteRes = await client.query(
+        `
+        INSERT INTO clientes (
+          nombre_completo, ci_cifrado, telefono_cifrado, direccion_cifrada,
+          ci_hash, telefono_hash, ciudad_destino, departamento, email
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        ON CONFLICT (ci_hash) DO UPDATE SET
+          nombre_completo = EXCLUDED.nombre_completo,
+          telefono_cifrado = EXCLUDED.telefono_cifrado,
+          direccion_cifrada = EXCLUDED.direccion_cifrada,
+          ciudad_destino = EXCLUDED.ciudad_destino,
+          departamento = EXCLUDED.departamento,
+          email = COALESCE(EXCLUDED.email, clientes.email)
+        RETURNING id;
+        `,
+        [
+          cliente.nombre,
+          ciCifradoBuf,
+          telCifradoBuf,
+          dirCifradoBuf,
+          ciHash,
+          telefonoHash,
+          cliente.ciudad,
+          cliente.departamento,
+          cliente.email || null,
+        ]
+      );
+      const clienteId = clienteRes.rows[0].id;
+
+      // Insertar Pedido
+      const pedidoRes = await client.query(
+        `
+        INSERT INTO pedidos (
+          codigo_pedido, cliente_id, monto_productos_pyg, monto_flete_pyg,
+          cupon_codigo, descuento_cupon_pyg, total_pagar_pyg,
+          estado, terminos_aceptados, terminos_aceptados_ip, terminos_aceptados_timestamp,
+          destino_departamento, destino_ciudad, modalidad_entrega, agencia_tsi,
+          notificacion_admin_enviada
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDIENTE', TRUE, $8, $9, $10, $11, $12, $13, FALSE)
+        RETURNING id;
+        `,
+        [
+          codigoPedido,
+          clienteId,
+          montoProductosPyg,
+          costoFleteCalculado,
+          cuponCodigo || null,
+          descuentoAplicado,
+          totalPagarCalculado,
+          clientIp,
+          timestampAceptacion,
+          cliente.departamento,
+          cliente.ciudad,
+          cliente.modalidad || "DOMICILIO",
+          cliente.agenciaTsi || null,
+        ]
+      );
+      const pedidoId = pedidoRes.rows[0].id;
+
+      // Insertar EXACTAMENTE los productos validados que eligió el cliente
+      for (const { item, prodDb } of validatedItems) {
+        await client.query(
+          `
+          INSERT INTO pedido_items (
+            pedido_id, producto_id, cantidad, costo_unitario_usd,
+            cotizacion_usada_pyg, costo_unitario_pyg, precio_unitario_pyg, subtotal_pyg
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+          `,
+          [
+            pedidoId,
+            prodDb.id,
+            item.cantidad,
+            prodDb.costo_neto_usd,
+            prodDb.cotizacion_aplicada_pyg,
+            prodDb.costo_neto_pyg,
+            item.precioPyg,
+            item.precioPyg * item.cantidad,
+          ]
+        );
+      }
+
+      // Confirmar transacción de forma atómica
+      await client.query("COMMIT;");
+
+      client.release();
+
+      // 6. Aviso Inmediato por Correo al Administrador
+      // Se envía ÚNICAMENTE después de haber guardado el pedido completo exitosamente.
+      let adminNotifSuccess = false;
+      let adminNotifError: string | null = null;
+      try {
+        const adminEmailResult = await sendAdminNewOrderEmail({
+          codigoPedido,
+          items: normalizedItems,
+          clienteNombre: cliente.nombre,
+          clienteCi: cliente.ci,
+          clienteTelefono: cliente.telefono,
+          clienteEmail: cliente.email || null,
+          destinoDepartamento: cliente.departamento,
+          destinoCiudad: cliente.ciudad,
+          destinoDireccion: cliente.direccion,
+          modalidadEntrega: cliente.modalidad || "DOMICILIO",
+          agenciaTsi: cliente.agenciaTsi || null,
+          montoProductosPyg,
+          fletePyg: costoFleteCalculado,
+          descuentoPyg: descuentoAplicado,
+          totalPagarPyg: totalPagarCalculado,
+        });
+
+        if (adminEmailResult.success) {
+          adminNotifSuccess = true;
+        } else {
+          adminNotifError = adminEmailResult.error || "Falla desconocida al enviar aviso al administrador";
+          console.warn("[Checkout] Error despachando correo al admin:", adminNotifError);
+        }
+      } catch (errAdminEmail: any) {
+        adminNotifError = errAdminEmail?.message || "Excepción al enviar aviso al administrador";
+        console.error("[Checkout] Excepción al enviar correo al admin:", errAdminEmail);
+      }
+
+      // Actualizar trazabilidad de la notificación al admin en la base de datos
+      if (pedidoId && isDbConfigured()) {
+        try {
+          if (adminNotifSuccess) {
+            await query(
+              `UPDATE pedidos 
+               SET notificacion_admin_enviada = TRUE, notificacion_admin_at = NOW(), notificacion_admin_error = NULL 
+               WHERE id = $1;`,
+              [pedidoId]
+            );
+          } else if (adminNotifError) {
+            await query(
+              `UPDATE pedidos 
+               SET notificacion_admin_enviada = FALSE, notificacion_admin_error = $1 
+               WHERE id = $2;`,
+              [adminNotifError, pedidoId]
             );
           }
+        } catch (errUpdateNotif) {
+          console.warn("No se pudo actualizar flag notificacion_admin_enviada:", errUpdateNotif);
         }
-
-        await client.query("COMMIT;");
-      } catch (dbErr) {
-        await client.query("ROLLBACK;");
-        console.error("Error transaccional en Neon DB al crear pedido:", dbErr);
-        return NextResponse.json(
-          {
-            success: false,
-            error: "No se pudo registrar la orden en la base de datos. Por favor reintente en unos instantes.",
-          },
-          { status: 500 }
-        );
-      } finally {
-        client.release();
       }
-    }
 
-    // 6. Aviso Inmediato por Correo al Administrador (Requisito 1)
-    // El aviso debe salir SIEMPRE (incluso si el comprador deja vacío su email).
-    let adminNotifSuccess = false;
-    let adminNotifError: string | null = null;
-    try {
-      const adminEmailResult = await sendAdminNewOrderEmail({
-        codigoPedido,
-        items: normalizedItems,
-        clienteNombre: cliente.nombre,
-        clienteCi: cliente.ci,
-        clienteTelefono: cliente.telefono,
-        clienteEmail: cliente.email || null,
-        destinoDepartamento: cliente.departamento,
-        destinoCiudad: cliente.ciudad,
-        destinoDireccion: cliente.direccion,
-        modalidadEntrega: cliente.modalidad || "DOMICILIO",
-        agenciaTsi: cliente.agenciaTsi || null,
-        montoProductosPyg,
-        fletePyg: costoFleteCalculado,
-        descuentoPyg: descuentoAplicado,
-        totalPagarPyg: totalPagarCalculado,
-      });
+      // 7. Envío de Correo de Confirmación de Compra al Cliente (Solo si ingresó su email)
+      if (cliente.email && cliente.email.includes("@")) {
+        try {
+          const resumenProductos = normalizedItems
+            .map((i) => `${i.cantidad}x ${i.nombre || i.productoId}`)
+            .join(", ");
 
-      if (adminEmailResult.success) {
-        adminNotifSuccess = true;
-      } else {
-        adminNotifError = adminEmailResult.error || "Falla desconocida al enviar aviso al administrador";
-        console.warn("[Checkout] Error despachando correo al admin:", adminNotifError);
-      }
-    } catch (errAdminEmail: any) {
-      adminNotifError = errAdminEmail?.message || "Excepción al enviar aviso al administrador";
-      console.error("[Checkout] Excepción al enviar correo al admin:", errAdminEmail);
-    }
-
-    // Actualizar trazabilidad de la notificación al admin en la base de datos
-    if (pedidoId && isDbConfigured()) {
-      try {
-        if (adminNotifSuccess) {
-          await query(
-            `UPDATE pedidos 
-             SET notificacion_admin_enviada = TRUE, notificacion_admin_at = NOW(), notificacion_admin_error = NULL 
-             WHERE id = $1;`,
-            [pedidoId]
-          );
-        } else if (adminNotifError) {
-          await query(
-            `UPDATE pedidos 
-             SET notificacion_admin_enviada = FALSE, notificacion_admin_error = $1 
-             WHERE id = $2;`,
-            [adminNotifError, pedidoId]
-          );
+          await sendOrderConfirmationEmail({
+            email: cliente.email.trim(),
+            nombre: cliente.nombre,
+            codigoPedido,
+            productoNombre: resumenProductos || "Productos Mayoristas CDE",
+            totalPyg: totalPagarCalculado,
+            fletePyg: costoFleteCalculado,
+            ciudadDestino: `${cliente.ciudad} (${cliente.departamento})`,
+          });
+        } catch (errEmail) {
+          console.warn("Aviso: No se pudo despachar el correo de confirmación al cliente:", errEmail);
         }
-      } catch (errUpdateNotif) {
-        console.warn("No se pudo actualizar flag notificacion_admin_enviada:", errUpdateNotif);
       }
-    }
 
-    // 7. Envío de Correo de Confirmación de Compra al Cliente (Solo si ingresó su email)
-    if (cliente.email && cliente.email.includes("@")) {
-      try {
-        const resumenProductos = normalizedItems
-          .map((i) => `${i.cantidad}x ${i.nombre || i.productoId}`)
-          .join(", ");
-
-        await sendOrderConfirmationEmail({
-          email: cliente.email.trim(),
-          nombre: cliente.nombre,
+      return NextResponse.json(
+        {
+          success: true,
           codigoPedido,
-          productoNombre: resumenProductos || "Productos Mayoristas CDE",
-          totalPyg: totalPagarCalculado,
+          totalPagarPyg: totalPagarCalculado,
           fletePyg: costoFleteCalculado,
-          ciudadDestino: `${cliente.ciudad} (${cliente.departamento})`,
-        });
-      } catch (errEmail) {
-        console.warn("Aviso: No se pudo despachar el correo de confirmación al cliente:", errEmail);
-      }
+          descuentoPyg: descuentoAplicado,
+          cuponCodigo: cuponCodigo || null,
+          banco: "Banco Continental",
+          cuenta: "010015602601",
+          titular: "NUÑEZ MARTINEZ, ABEL IRENEO",
+          ci: "4196328",
+          ruc: "4196328-8",
+          avisoAdminEnviado: adminNotifSuccess,
+          mensaje: "Pedido registrado exitosamente. Transfiera el monto exacto vía SIPAP antes de las 12:00 PM.",
+        },
+        { status: 201 }
+      );
+    } catch (dbErr) {
+      await client.query("ROLLBACK;");
+      client.release();
+      console.error("Error transaccional en Neon DB al crear pedido (ROLLBACK ejecutado):", dbErr);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No se pudo registrar la orden en la base de datos. Por favor reintente en unos instantes.",
+        },
+        { status: 500 }
+      );
     }
-
-    return NextResponse.json(
-      {
-        success: true,
-        codigoPedido,
-        totalPagarPyg: totalPagarCalculado,
-        fletePyg: costoFleteCalculado,
-        descuentoPyg: descuentoAplicado,
-        cuponCodigo: cuponCodigo || null,
-        banco: "Banco Continental",
-        cuenta: "010015602601",
-        titular: "NUÑEZ MARTINEZ, ABEL IRENEO",
-        ci: "4196328",
-        ruc: "4196328-8",
-        avisoAdminEnviado: adminNotifSuccess,
-        mensaje: "Pedido registrado exitosamente. Transfiera el monto exacto vía SIPAP antes de las 12:00 PM.",
-      },
-      { status: 201 }
-    );
   } catch (error: any) {
     console.error("Error en checkout API:", error);
     return NextResponse.json(

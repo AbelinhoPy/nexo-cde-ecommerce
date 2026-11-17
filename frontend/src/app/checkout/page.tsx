@@ -68,6 +68,8 @@ export default function CheckoutPage() {
   const [modalTerminosAbierto, setModalTerminosAbierto] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [editandoTicket, setEditandoTicket] = useState(false);
+  const [errorMensaje, setErrorMensaje] = useState<string | null>(null);
+  const [avisoTarifa, setAvisoTarifa] = useState<string | null>(null);
   
   // Destinos TSI dinámicos
   const [destinosDisponibles, setDestinosDisponibles] = useState<any[]>([]);
@@ -209,28 +211,36 @@ export default function CheckoutPage() {
 
   const handleCrearPedido = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMensaje(null);
+    setAvisoTarifa(null);
+
+    if (cart.length === 0) {
+      setErrorMensaje("El carrito está vacío. Agregá al menos un producto desde el catálogo para continuar.");
+      return;
+    }
+
     if (!terminosAceptados) {
-      alert("Es requisito obligatorio aceptar los Términos de Envío, Inspección previa en TSI y Garantía.");
+      setErrorMensaje("Es requisito obligatorio aceptar los Términos de Envío, Inspección previa en TSI y Garantía.");
       return;
     }
 
     if (!cliente.nombre || !cliente.ci || !cliente.telefono || !cliente.departamento || !cliente.ciudad || !cliente.direccion) {
-      alert("Por favor completa los datos requeridos para la guía de remisión TSI (nombre, CI, teléfono, departamento, ciudad y dirección).");
+      setErrorMensaje("Por favor completá los datos requeridos para la guía de remisión TSI (nombre, CI, teléfono, departamento, ciudad y dirección).");
       return;
     }
 
     if (fueraDeCobertura) {
-      alert("⚠️ El destino seleccionado se encuentra fuera de la cobertura de Transportadora TSI. El pedido no puede ser procesado.");
+      setErrorMensaje("⚠️ El destino seleccionado no está habilitado para envíos por transportadora TSI.");
       return;
     }
 
     if (tarifaPendiente) {
-      alert("⚠️ Envío pendiente de cotización para este destino. Por favor contacta al concierge para cotizar tu flete antes de confirmar el pedido.");
+      setErrorMensaje("⚠️ Envío pendiente de cotización para este destino.");
       return;
     }
 
-    const depLower = (cliente.departamento || "").toLowerCase();
-    const ciudadLower = (cliente.ciudad || "").toLowerCase();
+    const depLower = (cliente.departamento || "").toLowerCase().trim();
+    const ciudadLower = (cliente.ciudad || "").toLowerCase().trim();
     if (
       depLower.includes("alto paraná") || 
       depLower.includes("alto parana") || 
@@ -239,7 +249,7 @@ export default function CheckoutPage() {
       ciudadLower.includes("franco") || 
       ciudadLower.includes("minga")
     ) {
-      alert("⚠️ Servicio Exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a localidades de Asunción y el interior de Paraguay. No disponemos de entregas locales ni mostrador en Ciudad del Este.");
+      setErrorMensaje("⚠️ Servicio Exclusivo para el Interior: NEXO CDE opera únicamente despachando por encomienda TSI a localidades de Asunción y el interior de Paraguay. No disponemos de entregas locales ni mostrador en Ciudad del Este.");
       return;
     }
 
@@ -261,33 +271,21 @@ export default function CheckoutPage() {
           });
 
           if (!regRes.success && regRes.error && regRes.error.toLowerCase().includes("ya existe")) {
-            alert("⚠️ Ya existe una cuenta con este correo o cédula. Podés iniciar sesión o continuar tu compra.");
+            console.log("Usuario ya existente, continuando con checkout");
           }
         } catch (regErr) {
           console.warn("Aviso en registro opcional:", regErr);
         }
       }
 
-      // Items de compra
-      const itemsPayload = cart.length > 0
-        ? cart.map(it => ({
-            productoId: it.id,
-            nombre: it.nombre,
-            cantidad: it.cantidad,
-            precioPyg: it.precioPyg,
-            tipoFlete: it.tipoFlete,
-          }))
-        : [
-            {
-              productoId: "CON-PS5-SLIM-DIG",
-              nombre: "Sony PlayStation 5 Slim Digital 1TB",
-              cantidad: 1,
-              precioPyg: 3971000,
-              tipoFlete: "PESADO" as const,
-            }
-          ];
-
-      const montoProd = cart.length > 0 ? subtotalPyg : 3971000;
+      // Items de compra exactos del carrito
+      const itemsPayload = cart.map(it => ({
+        productoId: it.id,
+        nombre: it.nombre,
+        cantidad: it.cantidad,
+        precioPyg: it.precioPyg,
+        tipoFlete: it.tipoFlete,
+      }));
 
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -297,7 +295,8 @@ export default function CheckoutPage() {
           items: itemsPayload,
           productoId: itemsPayload[0]?.productoId,
           tipoFlete: itemsPayload[0]?.tipoFlete,
-          montoProductosPyg: montoProd,
+          montoProductosPyg: subtotalPyg,
+          fleteEsperadoPyg: fleteDestinoPyg,
           cuponCodigo: cupon?.codigo || null,
           descuentoCuponPyg: descuentoPyg,
           terminosAceptados: true,
@@ -306,7 +305,14 @@ export default function CheckoutPage() {
 
       const resData = await response.json();
 
-      if (response.ok && resData.success) {
+      if (response.status === 409 || resData.tarifaActualizada) {
+        // La tarifa del servidor cambió respecto a la cotización previa del cliente
+        if (typeof resData.nuevoFletePyg === "number") {
+          setFleteDestinoPyg(resData.nuevoFletePyg);
+        }
+        setAvisoTarifa(resData.error || "La tarifa de flete se ha actualizado en el servidor. Verificá el nuevo total y volvé a presionar Confirmar.");
+        // El carrito se mantiene intacto para que pueda reconfirmar
+      } else if (response.ok && resData.success) {
         setOrdenGenerada({
           codigo: resData.codigoPedido,
           totalPyg: resData.totalPagarPyg,
@@ -314,10 +320,12 @@ export default function CheckoutPage() {
         });
         clearCart();
       } else {
-        alert(resData.error || "No se pudo registrar la orden.");
+        setErrorMensaje(resData.error || "No se pudo registrar la orden. Por favor revisá los datos o reintentá.");
+        // El carrito se mantiene intacto para que pueda corregir
       }
     } catch (err) {
-      alert("Error de conexión al procesar la orden.");
+      console.error("Error en checkout:", err);
+      setErrorMensaje("No pudimos verificar el envío o conectar con el servidor. Volvé a intentar.");
     } finally {
       setCargando(false);
     }
@@ -717,13 +725,34 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* Avisos de Error o Tarifa Actualizada del Servidor */}
+              {errorMensaje && (
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 animate-in fade-in">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-bold">Error en la orden</p>
+                    <p className="mt-0.5 leading-relaxed">{errorMensaje}</p>
+                  </div>
+                </div>
+              )}
+
+              {avisoTarifa && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5 animate-in fade-in">
+                  <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-bold">Tarifa actualizada</p>
+                    <p className="mt-0.5 leading-relaxed">{avisoTarifa}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Botón de Confirmación con Validaciones */}
               <button
                 type="button"
                 onClick={handleCrearPedido}
-                disabled={!terminosAceptados || cargando || tarifaPendiente || fueraDeCobertura || !cliente.ciudad}
+                disabled={!terminosAceptados || cargando || tarifaPendiente || fueraDeCobertura || !cliente.ciudad || cart.length === 0}
                 className={`w-full py-3.5 px-4 rounded-xl font-bold text-white text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
-                  terminosAceptados && !cargando && !tarifaPendiente && !fueraDeCobertura && cliente.ciudad
+                  terminosAceptados && !cargando && !tarifaPendiente && !fueraDeCobertura && cliente.ciudad && cart.length > 0
                     ? "bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-black"
                     : "bg-slate-400 cursor-not-allowed opacity-75"
                 }`}
@@ -736,6 +765,8 @@ export default function CheckoutPage() {
                   "⚠️ Envío pendiente de cotización para este destino"
                 ) : !cliente.ciudad ? (
                   "Calculá tu envío según destino"
+                ) : cart.length === 0 ? (
+                  "Tu carrito está vacío"
                 ) : (
                   <>
                     <Lock className="w-4 h-4" />
@@ -759,10 +790,12 @@ export default function CheckoutPage() {
                 </div>
 
                 {cart.length === 0 ? (
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
-                    <p className="font-bold">Ítem de prueba seleccionado:</p>
-                    <p>Sony PlayStation 5 Slim Digital 1TB (JP/USA)</p>
-                    <span className="font-mono text-emerald-600 font-bold">₲ 3.971.000</span>
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2 text-center">
+                    <p className="font-bold text-slate-700">Tu carrito está vacío</p>
+                    <p className="text-[11px] text-slate-500">Agregá productos desde el catálogo para continuar con tu pedido.</p>
+                    <Link href="/" className="inline-block mt-1 font-bold text-emerald-700 underline hover:text-emerald-800 text-xs">
+                      Ir al catálogo &rarr;
+                    </Link>
                   </div>
                 ) : (
                   <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto space-y-2">
@@ -805,7 +838,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between">
                     <span>Subtotal Productos</span>
                     <span className="font-mono font-semibold text-slate-800">
-                      ₲ {(cart.length > 0 ? subtotalPyg : 3971000).toLocaleString("es-PY")}
+                      ₲ {(cart.length > 0 ? subtotalPyg : 0).toLocaleString("es-PY")}
                     </span>
                   </div>
 
@@ -842,7 +875,7 @@ export default function CheckoutPage() {
                       {tarifaPendiente ? (
                         <span className="text-amber-600 text-sm">Cotización de flete requerida</span>
                       ) : (
-                        `₲ ${(cart.length > 0 ? totalPagarPyg : (3971000 + (fleteDestinoPyg || 50000))).toLocaleString("es-PY")}`
+                        `₲ ${(cart.length > 0 ? totalPagarPyg : 0).toLocaleString("es-PY")}`
                       )}
                     </span>
                   </div>
