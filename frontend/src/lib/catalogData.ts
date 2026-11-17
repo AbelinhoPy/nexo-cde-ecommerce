@@ -40,43 +40,83 @@ export function getPrecioAntesAsuncion(prod: ProductoCatalogo): number {
 }
 
 export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
-  // ==========================================
-  // 1. SMARTPHONES (20 ITEMS TOP CDE)
-  // ==========================================
+
+  // ============================================================================== 
+  // TOP 5 PRODUCTOS MÁS BUSCADOS DEL INTERIOR (VISTOS EN INSTAGRAM / DESPACHO TSI)
+  // ============================================================================== 
+
   {
-    id: "1422221",
-    nombre: "Smartphone Xiaomi Poco F9 Pro 5G Global 512GB 12GB RAM Dual SIM Tela 6.59\" - Branco",
+    id: "1450729",
+    nombre: "Smartphone Poco X6 Pro 5G 512GB 12GB RAM Dual SIM Pantalla 6.67\" Flow AMOLED 120Hz",
     categoria: "Smartphones",
     marca: "POCO",
-    precioUsd: 718.00,
-    precioPyg: calcPyg(718.00),
-    precioRetailReferencia: 6850000,
+    precioUsd: 319.00,
+    precioPyg: calcPyg(319.00),
+    precioRetailReferencia: 2950000, // Precio de referencia Nissei
     fletePyg: 35000,
     tipoFlete: "REGULAR",
-    stock: 18,
-    img: "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+    stock: 25,
+    img: "https://i02.appmifile.com/mi-com-product/fly-birds/poco-x6-pro/pc/specs-01.png",
     galeria: [
-      "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+      "https://i02.appmifile.com/mi-com-product/fly-birds/poco-x6-pro/pc/specs-01.png",
       "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
-      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"
     ],
-    colores: ["Branco (White)", "Preto (Black)"],
-    descripcion: "¡Mais espaço para unir alto desempenho e uso intenso! O Xiaomi POCO F9 Pro 5G combina 12 GB de RAM e 512 GB de armazenamento, oferecendo agilidade em jogos, aplicativos e multitarefas, além de ampla capacidade para fotos e vídeos. A tela AMOLED de 6,59\" favorece conteúdos e games com visual amplo a 185Hz, enquanto o 5G garante conexão veloz em redes compatíveis. Com Dual SIM e versão Global, é ideal para trabalho, comunicação e entretenimento diário.",
+    colores: ["Negro (Black)", "Amarillo (Poco Yellow)", "Gris (Titanium Grey)"],
+    metaTitle: "Poco X6 Pro 5G 512GB 12GB RAM | Precio Ciudad del Este con Envío TSI Paraguay",
+    metaDescription: "Comprá el Poco X6 Pro 5G 512GB al precio mayorista de Ciudad del Este (₲ 2.437.000 / US$ 319). Envío asegurado por Transportadora TSI a Encarnación, Cnel. Oviedo, Villarrica y todo el interior de Paraguay.",
+    descripcion: "El Poco X6 Pro 5G de 512GB y 12GB de RAM es el smartphone gamer y multitarea de mayor demanda en Paraguay por su relación potencia-precio imbatible. Integra el procesador MediaTek Dimensity 8300-Ultra (4nm) con más de 1.460.000 puntos en AnTuTu, pantalla Flow AMOLED de 6.67 pulgadas CrystalRes 1.5K a 120Hz con HDR10+ y Dolby Vision, y batería de 5.000 mAh con carga turbo de 67W (0 a 100% en 45 minutos con cargador original incluido). Equipo 100% original, nuevo y sellado de fábrica, libre para todas las telefonías (Tigo, Personal, Claro). Despacho diario desde Ciudad del Este vía Transportadora TSI (entrega a domicilio o retiro en agencia oficial según tu localidad). El flete se calcula en el checkout según destino desde ₲ 35.000 (regular).",
     destacados: [
-      "Processador Snapdragon 8 Elite Gen 5 Octa-core Oryon V3 até 4.6 GHz",
-      "Tela AMOLED de 6.59\" Full HD+ com taxa de atualização de 185Hz",
-      "Câmera Traseira Tripla de 200 MP + 50 MP + 8 MP com Estabilização Óptica (OIS)",
-      "Bateria monstruosa de 6.330 mAh com suporte a Fast Charging de alta potência",
-      "512 GB UFS 4.0 de armazenamento interno + 12 GB RAM LPDDR5X",
-      "Dual Nano-SIM + eSIM livre de fábrica para Tigo, Personal e Claro Paraguay"
+      "Procesador MediaTek Dimensity 8300-Ultra (4nm) AnTuTu +1.460.000 pts",
+      "Pantalla 6.67\" Flow AMOLED CrystalRes 1.5K 120Hz Dolby Vision HDR10+",
+      "Cámara Triple 64MP con OIS (Estabilización Óptica de Imagen) + 8MP + 2MP",
+      "Batería de 5.000 mAh con Carga Turbo de 67W (cargador incluido en la caja)",
+      "512GB UFS 4.0 Ultrarrápido + 12GB Memoria RAM LPDDR5X",
+      "Altavoces Estéreo Dual Dolby Atmos + Sensor de Huellas bajo pantalla"
     ],
     contenidoCaja: [
-      "Smartphone Xiaomi Poco F9 Pro 5G 512GB (Sellado de Fábrica)",
-      "Carregador de tomada oficial de alta potência",
-      "Cabo de carga e dados USB Tipo-C",
-      "Capa de proteção original de fábrica",
-      "Ferramenta extratora de chip SIM",
-      "Guia de início rápido e termos de garantia"
+      "Smartphone Xiaomi Poco X6 Pro 5G (Sellado de Fábrica)",
+      "Cargador Turbo Original 67W HyperCharge (Enchufe tipo EU/US)",
+      "Cable de carga y datos USB Tipo-C de alto amperaje",
+      "Funda protectora original color negro mate",
+      "Herramienta extractora de bandeja SIM dual",
+      "Guía de inicio rápido y tarjeta de garantía de fábrica"
+    ],
+    esTopVentas: true,
+  },
+  {
+    id: "1448597",
+    nombre: "Consola Sony PlayStation 5 Slim Standard Con Lectora Blu-Ray 1TB",
+    categoria: "Games",
+    marca: "SONY",
+    precioUsd: 519.00,
+    precioPyg: calcPyg(519.00),
+    precioRetailReferencia: 4850000,
+    fletePyg: 50000,
+    tipoFlete: "PESADO",
+    stock: 25,
+    img: "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-disc-console-front-angle-en-07nov23?$native$",
+    galeria: [
+      "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-disc-console-front-angle-en-07nov23?$native$",
+      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80"
+    ],
+    metaTitle: "PlayStation 5 Slim 1TB con Lectora Blu-Ray | Precio CDE con Envío TSI Interior Paraguay",
+    metaDescription: "PlayStation 5 Slim 1TB con lectora física de discos al costo real de Ciudad del Este (₲ 3.965.000 / US$ 519). Envíos asegurados por Transportadora TSI a todo el interior de Paraguay.",
+    descripcion: "La consola PlayStation 5 Slim Standard (modelo CFI-2000 con unidad lectora de discos Ultra HD Blu-Ray integrada) es la versión preferida por la comunidad gamer de Paraguay por permitir jugar tanto discos físicos de PS5 y PS4 como títulos digitales. Con disco SSD de 1TB de ultra alta velocidad, compatibilidad con Ray Tracing acelerado por hardware y mando inalámbrico DualSense con gatillos adaptativos y vibración háptica. Equipo 100% original, nuevo y sellado de fábrica. Se despacha en el día por Transportadora TSI con embalaje reforzado para bulto pesado (flete calculado según departamento y ciudad en el checkout desde ₲ 50.000) y comprobante físico con carimbo oficial subido a tu perfil.",
+    destacados: [
+      "Unidad lectora de discos Ultra HD Blu-Ray integrada (reproduce juegos físicos y películas 4K)",
+      "1TB de almacenamiento SSD NVMe ultrarrápido (5.5 GB/s sin comprimir)",
+      "Compatibilidad total con más de 4.000 juegos físicos y digitales de PS4 y PS5",
+      "Mando inalámbrico DualSense original con respuesta háptica y gatillos adaptativos",
+      "Resolución 4K nativa hasta 120 fps con soporte para HDR y Ray Tracing",
+      "Audio 3D inmersivo Tempest con compatibilidad Dolby Atmos"
+    ],
+    contenidoCaja: [
+      "Consola PlayStation 5 Slim con Lectora Blu-Ray 1TB (Sellada de Fábrica)",
+      "Control inalámbrico DualSense original blanco",
+      "Cable HDMI 2.1 de ultra alta velocidad",
+      "Cable de alimentación con enchufe homologado",
+      "2 soportes horizontales de apoyo y manual de usuario",
+      "Juego ASTRO's PLAYROOM preinstalado gratis en consola"
     ],
     esTopVentas: true,
   },
@@ -118,40 +158,121 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     esTopVentas: true,
   },
   {
-    id: "1450729",
-    nombre: "Smartphone Poco X6 Pro 5G 512GB 12GB RAM Dual SIM Pantalla 6.67\" Flow AMOLED 120Hz",
-    categoria: "Smartphones",
-    marca: "POCO",
-    precioUsd: 319.00,
-    precioPyg: calcPyg(319.00),
-    precioRetailReferencia: 2950000, // Precio de referencia Nissei
-    fletePyg: 35000,
-    tipoFlete: "REGULAR",
-    stock: 25,
-    img: "https://i02.appmifile.com/mi-com-product/fly-birds/poco-x6-pro/pc/specs-01.png",
+    id: "1448620",
+    nombre: "Notebook Gamer Acer Nitro V 15 ANV15 Core i5-13420H RTX 4050 16GB 512GB SSD 144Hz",
+    categoria: "Informática",
+    marca: "ACER",
+    precioUsd: 769.00,
+    precioPyg: calcPyg(769.00),
+    precioRetailReferencia: 7490000,
+    fletePyg: 50000,
+    tipoFlete: "PESADO",
+    stock: 12,
+    img: "https://static-ecapac.acer.com/media/catalog/product/n/i/nitro-v15_anv15-51_black_01a_gallery_1.png",
     galeria: [
-      "https://i02.appmifile.com/mi-com-product/fly-birds/poco-x6-pro/pc/specs-01.png",
-      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      "https://static-ecapac.acer.com/media/catalog/product/n/i/nitro-v15_anv15-51_black_01a_gallery_1.png",
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&q=80"
     ],
-    colores: ["Negro (Black)", "Amarillo (Poco Yellow)", "Gris (Titanium Grey)"],
-    metaTitle: "Poco X6 Pro 5G 512GB 12GB RAM | Precio Ciudad del Este con Envío TSI Paraguay",
-    metaDescription: "Comprá el Poco X6 Pro 5G 512GB al precio mayorista de Ciudad del Este (₲ 2.437.000 / US$ 319). Envío asegurado por Transportadora TSI a Encarnación, Cnel. Oviedo, Villarrica y todo el interior de Paraguay.",
-    descripcion: "El Poco X6 Pro 5G de 512GB y 12GB de RAM es el smartphone gamer y multitarea de mayor demanda en Paraguay por su relación potencia-precio imbatible. Integra el procesador MediaTek Dimensity 8300-Ultra (4nm) con más de 1.460.000 puntos en AnTuTu, pantalla Flow AMOLED de 6.67 pulgadas CrystalRes 1.5K a 120Hz con HDR10+ y Dolby Vision, y batería de 5.000 mAh con carga turbo de 67W (0 a 100% en 45 minutos con cargador original incluido). Equipo 100% original, nuevo y sellado de fábrica, libre para todas las telefonías (Tigo, Personal, Claro). Despacho diario desde Ciudad del Este vía Transportadora TSI (entrega a domicilio o retiro en agencia oficial según tu localidad). El flete se calcula en el checkout según destino desde ₲ 35.000 (regular).",
+    metaTitle: "Notebook Gamer Acer Nitro V 15 RTX 4050 i5 | Precio Ciudad del Este con Envío TSI",
+    metaDescription: "Notebook Acer Nitro V 15 con procesador Core i5 13ª Gen y placa NVIDIA RTX 4050 6GB al costo real de CDE (₲ 5.875.000 / US$ 769). Embalaje reforzado y despacho diario por TSI al interior de Paraguay.",
+    descripcion: "La notebook gamer Acer Nitro V 15 (ANV15-51) es el equipo más cotizado por estudiantes de ingeniería, arquitectos y creadores de contenido de las ciudades del interior de Paraguay. Equipada con procesador Intel Core i5-13420H de 8 núcleos, tarjeta gráfica dedicada NVIDIA GeForce RTX 4050 de 6GB GDDR6 (compatible con DLSS 3 y Ray Tracing), 16GB de memoria RAM DDR5 de alta velocidad y 512GB de disco sólido SSD NVMe Gen4 (con ranura libre para expansión). Su pantalla IPS de 15.6 pulgadas Full HD a 144Hz garantiza fluidez absoluta tanto en juegos competitivos como en software de modelado 3D (AutoCAD, Revit, SketchUp). Se despacha en el día desde Ciudad del Este vía Transportadora TSI con embalaje antichoque de protección pesada y comprobante de envío con carimbo oficial subido a tu perfil.",
     destacados: [
-      "Procesador MediaTek Dimensity 8300-Ultra (4nm) AnTuTu +1.460.000 pts",
-      "Pantalla 6.67\" Flow AMOLED CrystalRes 1.5K 120Hz Dolby Vision HDR10+",
-      "Cámara Triple 64MP con OIS (Estabilización Óptica de Imagen) + 8MP + 2MP",
-      "Batería de 5.000 mAh con Carga Turbo de 67W (cargador incluido en la caja)",
-      "512GB UFS 4.0 Ultrarrápido + 12GB Memoria RAM LPDDR5X",
-      "Altavoces Estéreo Dual Dolby Atmos + Sensor de Huellas bajo pantalla"
+      "Procesador Intel Core i5-13420H (10 hilos hasta 4.60 GHz)",
+      "Placa de video NVIDIA GeForce RTX 4050 6GB GDDR6 con DLSS 3",
+      "16GB de memoria RAM DDR5 a 5200MHz (expandible a 32GB)",
+      "512GB SSD M.2 PCIe 4.0 NVMe de ultra alta velocidad",
+      "Pantalla 15.6\" Full HD (1920x1080) IPS a 144Hz de bordes delgados",
+      "Teclado retroiluminado con teclado numérico integrado y Wi-Fi 6"
     ],
     contenidoCaja: [
-      "Smartphone Xiaomi Poco X6 Pro 5G (Sellado de Fábrica)",
-      "Cargador Turbo Original 67W HyperCharge (Enchufe tipo EU/US)",
-      "Cable de carga y datos USB Tipo-C de alto amperaje",
-      "Funda protectora original color negro mate",
-      "Herramienta extractora de bandeja SIM dual",
-      "Guía de inicio rápido y tarjeta de garantía de fábrica"
+      "Notebook Acer Nitro V 15 ANV15 (Sellada en caja de fábrica)",
+      "Cargador original de alta potencia homologado con cable de poder",
+      "Kit de soporte y tornillos para ampliación de disco secundario",
+      "Manual de usuario y póliza de garantía oficial de fabricante"
+    ],
+    esTopVentas: true,
+  },
+  {
+    id: "1448580",
+    nombre: "Consola Nintendo Switch OLED 64GB Edición Blanca Original",
+    categoria: "Games",
+    marca: "NINTENDO",
+    precioUsd: 285.00,
+    precioPyg: calcPyg(285.00),
+    precioRetailReferencia: 2890000,
+    fletePyg: 50000,
+    tipoFlete: "PESADO",
+    stock: 30,
+    img: "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/es_LA/switch/system/oled-model-white-set/gallery/image01",
+    galeria: [
+      "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/es_LA/switch/system/oled-model-white-set/gallery/image01",
+      "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80"
+    ],
+    metaTitle: "Nintendo Switch OLED Blanca 64GB | Precio Mayorista CDE Envío TSI Paraguay",
+    metaDescription: "Comprá la consola Nintendo Switch OLED 64GB Blanca al precio real de Ciudad del Este (₲ 2.177.000 / US$ 285). Envío seguro por Transportadora TSI a Encarnación, Cnel. Oviedo, Villarrica y todo el interior.",
+    descripcion: "La consola Nintendo Switch modelo OLED Blanca ofrece la mejor experiencia de juego híbrida tanto portátil como conectada al televisor. Cuenta con una deslumbrante pantalla OLED de 7 pulgadas con colores intensos y alto contraste, soporte ajustable ancho para jugar sobre cualquier mesa, base con puerto LAN por cable integrado para partidas online estables, 64GB de memoria interna y altavoces integrados con audio optimizado. Equipo 100% original, nuevo en caja sellada con número de serie de fábrica. Despachamos todos los días desde Ciudad del Este vía Transportadora TSI (entrega a domicilio o retiro en agencia según tu ciudad) con foto del comprobante físico subido a tu cuenta.",
+    destacados: [
+      "Pantalla OLED de 7 pulgadas con colores vívidos y negros profundos",
+      "Soporte trasero ancho y ajustable para ángulo de visión ideal",
+      "Base con puerto LAN Ethernet cableado para juego online sin lag",
+      "64GB de almacenamiento interno (expandible con tarjeta microSD hasta 2TB)",
+      "Altavoces estéreo con sonido mejorado para modos portátil y semiportátil",
+      "Incluye controles Joy-Con blanco original con correas y soporte grip"
+    ],
+    contenidoCaja: [
+      "Consola Nintendo Switch con pantalla OLED de 7 pulgadas",
+      "Base de Nintendo Switch Blanca con puerto LAN integrado",
+      "Control Joy-Con izquierdo (blanco) y Joy-Con derecho (blanco)",
+      "Dos correas para la muñeca del control Joy-Con",
+      "Soporte para controles Joy-Con (Grip)",
+      "Cable HDMI de alta velocidad",
+      "Adaptador de corriente original Nintendo Switch"
+    ],
+    esTopVentas: true,
+  },
+
+  // ============================================================================== 
+  // CATÁLOGO GENERAL POR CATEGORÍAS
+  // ============================================================================== 
+
+
+  // ==========================================
+  // 1. SMARTPHONES (20 ITEMS TOP CDE)
+  // ==========================================
+  {
+    id: "1422221",
+    nombre: "Smartphone Xiaomi Poco F9 Pro 5G Global 512GB 12GB RAM Dual SIM Tela 6.59\" - Branco",
+    categoria: "Smartphones",
+    marca: "POCO",
+    precioUsd: 718.00,
+    precioPyg: calcPyg(718.00),
+    precioRetailReferencia: 6850000,
+    fletePyg: 35000,
+    tipoFlete: "REGULAR",
+    stock: 18,
+    img: "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+    galeria: [
+      "https://cdn.atacadoconnect.com/produtos/1422221/smartphone-xiaomi-poco-f9-pro-5g-global-512gb-12gb-ram-dual-sim-tela-659-branco-1422221-ml6ev.webp",
+      "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&q=80",
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"
+    ],
+    colores: ["Branco (White)", "Preto (Black)"],
+    descripcion: "¡Mais espaço para unir alto desempenho e uso intenso! O Xiaomi POCO F9 Pro 5G combina 12 GB de RAM e 512 GB de armazenamento, oferecendo agilidade em jogos, aplicativos e multitarefas, além de ampla capacidade para fotos e vídeos. A tela AMOLED de 6,59\" favorece conteúdos e games com visual amplo a 185Hz, enquanto o 5G garante conexão veloz em redes compatíveis. Com Dual SIM e versão Global, é ideal para trabalho, comunicação e entretenimento diário.",
+    destacados: [
+      "Processador Snapdragon 8 Elite Gen 5 Octa-core Oryon V3 até 4.6 GHz",
+      "Tela AMOLED de 6.59\" Full HD+ com taxa de atualização de 185Hz",
+      "Câmera Traseira Tripla de 200 MP + 50 MP + 8 MP com Estabilização Óptica (OIS)",
+      "Bateria monstruosa de 6.330 mAh com suporte a Fast Charging de alta potência",
+      "512 GB UFS 4.0 de armazenamento interno + 12 GB RAM LPDDR5X",
+      "Dual Nano-SIM + eSIM livre de fábrica para Tigo, Personal e Claro Paraguay"
+    ],
+    contenidoCaja: [
+      "Smartphone Xiaomi Poco F9 Pro 5G 512GB (Sellado de Fábrica)",
+      "Carregador de tomada oficial de alta potência",
+      "Cabo de carga e dados USB Tipo-C",
+      "Capa de proteção original de fábrica",
+      "Ferramenta extratora de chip SIM",
+      "Guia de início rápido e termos de garantia"
     ],
     esTopVentas: true,
   },
@@ -427,43 +548,6 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     esTopVentas: true,
   },
   {
-    id: "1448597",
-    nombre: "Consola Sony PlayStation 5 Slim Standard Con Lectora Blu-Ray 1TB",
-    categoria: "Games",
-    marca: "SONY",
-    precioUsd: 519.00,
-    precioPyg: calcPyg(519.00),
-    precioRetailReferencia: 4850000,
-    fletePyg: 50000,
-    tipoFlete: "PESADO",
-    stock: 25,
-    img: "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-disc-console-front-angle-en-07nov23?$native$",
-    galeria: [
-      "https://gmedia.playstation.com/is/image/SIEPDC/ps5-slim-disc-console-front-angle-en-07nov23?$native$",
-      "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80"
-    ],
-    metaTitle: "PlayStation 5 Slim 1TB con Lectora Blu-Ray | Precio CDE con Envío TSI Interior Paraguay",
-    metaDescription: "PlayStation 5 Slim 1TB con lectora física de discos al costo real de Ciudad del Este (₲ 3.965.000 / US$ 519). Envíos asegurados por Transportadora TSI a todo el interior de Paraguay.",
-    descripcion: "La consola PlayStation 5 Slim Standard (modelo CFI-2000 con unidad lectora de discos Ultra HD Blu-Ray integrada) es la versión preferida por la comunidad gamer de Paraguay por permitir jugar tanto discos físicos de PS5 y PS4 como títulos digitales. Con disco SSD de 1TB de ultra alta velocidad, compatibilidad con Ray Tracing acelerado por hardware y mando inalámbrico DualSense con gatillos adaptativos y vibración háptica. Equipo 100% original, nuevo y sellado de fábrica. Se despacha en el día por Transportadora TSI con embalaje reforzado para bulto pesado (flete calculado según departamento y ciudad en el checkout desde ₲ 50.000) y comprobante físico con carimbo oficial subido a tu perfil.",
-    destacados: [
-      "Unidad lectora de discos Ultra HD Blu-Ray integrada (reproduce juegos físicos y películas 4K)",
-      "1TB de almacenamiento SSD NVMe ultrarrápido (5.5 GB/s sin comprimir)",
-      "Compatibilidad total con más de 4.000 juegos físicos y digitales de PS4 y PS5",
-      "Mando inalámbrico DualSense original con respuesta háptica y gatillos adaptativos",
-      "Resolución 4K nativa hasta 120 fps con soporte para HDR y Ray Tracing",
-      "Audio 3D inmersivo Tempest con compatibilidad Dolby Atmos"
-    ],
-    contenidoCaja: [
-      "Consola PlayStation 5 Slim con Lectora Blu-Ray 1TB (Sellada de Fábrica)",
-      "Control inalámbrico DualSense original blanco",
-      "Cable HDMI 2.1 de ultra alta velocidad",
-      "Cable de alimentación con enchufe homologado",
-      "2 soportes horizontales de apoyo y manual de usuario",
-      "Juego ASTRO's PLAYROOM preinstalado gratis en consola"
-    ],
-    esTopVentas: true,
-  },
-  {
     id: "1448604",
     nombre: "Consola Sony PlayStation 5 Pro 2TB SSD 4K 120fps Ray Tracing Avanzado",
     categoria: "Games",
@@ -475,44 +559,6 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     tipoFlete: "PESADO",
     stock: 8,
     img: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80",
-    esTopVentas: true,
-  },
-  {
-    id: "1448580",
-    nombre: "Consola Nintendo Switch OLED 64GB Edición Blanca Original",
-    categoria: "Games",
-    marca: "NINTENDO",
-    precioUsd: 285.00,
-    precioPyg: calcPyg(285.00),
-    precioRetailReferencia: 2890000,
-    fletePyg: 50000,
-    tipoFlete: "PESADO",
-    stock: 30,
-    img: "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/es_LA/switch/system/oled-model-white-set/gallery/image01",
-    galeria: [
-      "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/es_LA/switch/system/oled-model-white-set/gallery/image01",
-      "https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80"
-    ],
-    metaTitle: "Nintendo Switch OLED Blanca 64GB | Precio Mayorista CDE Envío TSI Paraguay",
-    metaDescription: "Comprá la consola Nintendo Switch OLED 64GB Blanca al precio real de Ciudad del Este (₲ 2.177.000 / US$ 285). Envío seguro por Transportadora TSI a Encarnación, Cnel. Oviedo, Villarrica y todo el interior.",
-    descripcion: "La consola Nintendo Switch modelo OLED Blanca ofrece la mejor experiencia de juego híbrida tanto portátil como conectada al televisor. Cuenta con una deslumbrante pantalla OLED de 7 pulgadas con colores intensos y alto contraste, soporte ajustable ancho para jugar sobre cualquier mesa, base con puerto LAN por cable integrado para partidas online estables, 64GB de memoria interna y altavoces integrados con audio optimizado. Equipo 100% original, nuevo en caja sellada con número de serie de fábrica. Despachamos todos los días desde Ciudad del Este vía Transportadora TSI (entrega a domicilio o retiro en agencia según tu ciudad) con foto del comprobante físico subido a tu cuenta.",
-    destacados: [
-      "Pantalla OLED de 7 pulgadas con colores vívidos y negros profundos",
-      "Soporte trasero ancho y ajustable para ángulo de visión ideal",
-      "Base con puerto LAN Ethernet cableado para juego online sin lag",
-      "64GB de almacenamiento interno (expandible con tarjeta microSD hasta 2TB)",
-      "Altavoces estéreo con sonido mejorado para modos portátil y semiportátil",
-      "Incluye controles Joy-Con blanco original con correas y soporte grip"
-    ],
-    contenidoCaja: [
-      "Consola Nintendo Switch con pantalla OLED de 7 pulgadas",
-      "Base de Nintendo Switch Blanca con puerto LAN integrado",
-      "Control Joy-Con izquierdo (blanco) y Joy-Con derecho (blanco)",
-      "Dos correas para la muñeca del control Joy-Con",
-      "Soporte para controles Joy-Con (Grip)",
-      "Cable HDMI de alta velocidad",
-      "Adaptador de corriente original Nintendo Switch"
-    ],
     esTopVentas: true,
   },
   {
@@ -660,45 +706,6 @@ export const PRODUCTOS_CATALOGO: ProductoCatalogo[] = [
     tipoFlete: "REGULAR",
     stock: 50,
     img: "https://image.api.playstation.com/vulcan/ap/rnd/202409/1616/d90ccc5e8c0cff821bd1c61fbc2b5fea98f18e4f832ff2f6.png",
-    esTopVentas: true,
-  },
-
-  // ==========================================
-  // 3. INFORMÁTICA & NOTEBOOKS (16 ITEMS)
-  // ==========================================
-  {
-    id: "1448620",
-    nombre: "Notebook Gamer Acer Nitro V 15 ANV15 Core i5-13420H RTX 4050 16GB 512GB SSD 144Hz",
-    categoria: "Informática",
-    marca: "ACER",
-    precioUsd: 769.00,
-    precioPyg: calcPyg(769.00),
-    precioRetailReferencia: 7490000,
-    fletePyg: 50000,
-    tipoFlete: "PESADO",
-    stock: 12,
-    img: "https://static-ecapac.acer.com/media/catalog/product/n/i/nitro-v15_anv15-51_black_01a_gallery_1.png",
-    galeria: [
-      "https://static-ecapac.acer.com/media/catalog/product/n/i/nitro-v15_anv15-51_black_01a_gallery_1.png",
-      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600&q=80"
-    ],
-    metaTitle: "Notebook Gamer Acer Nitro V 15 RTX 4050 i5 | Precio Ciudad del Este con Envío TSI",
-    metaDescription: "Notebook Acer Nitro V 15 con procesador Core i5 13ª Gen y placa NVIDIA RTX 4050 6GB al costo real de CDE (₲ 5.875.000 / US$ 769). Embalaje reforzado y despacho diario por TSI al interior de Paraguay.",
-    descripcion: "La notebook gamer Acer Nitro V 15 (ANV15-51) es el equipo más cotizado por estudiantes de ingeniería, arquitectos y creadores de contenido de las ciudades del interior de Paraguay. Equipada con procesador Intel Core i5-13420H de 8 núcleos, tarjeta gráfica dedicada NVIDIA GeForce RTX 4050 de 6GB GDDR6 (compatible con DLSS 3 y Ray Tracing), 16GB de memoria RAM DDR5 de alta velocidad y 512GB de disco sólido SSD NVMe Gen4 (con ranura libre para expansión). Su pantalla IPS de 15.6 pulgadas Full HD a 144Hz garantiza fluidez absoluta tanto en juegos competitivos como en software de modelado 3D (AutoCAD, Revit, SketchUp). Se despacha en el día desde Ciudad del Este vía Transportadora TSI con embalaje antichoque de protección pesada y comprobante de envío con carimbo oficial subido a tu perfil.",
-    destacados: [
-      "Procesador Intel Core i5-13420H (10 hilos hasta 4.60 GHz)",
-      "Placa de video NVIDIA GeForce RTX 4050 6GB GDDR6 con DLSS 3",
-      "16GB de memoria RAM DDR5 a 5200MHz (expandible a 32GB)",
-      "512GB SSD M.2 PCIe 4.0 NVMe de ultra alta velocidad",
-      "Pantalla 15.6\" Full HD (1920x1080) IPS a 144Hz de bordes delgados",
-      "Teclado retroiluminado con teclado numérico integrado y Wi-Fi 6"
-    ],
-    contenidoCaja: [
-      "Notebook Acer Nitro V 15 ANV15 (Sellada en caja de fábrica)",
-      "Cargador original de alta potencia homologado con cable de poder",
-      "Kit de soporte y tornillos para ampliación de disco secundario",
-      "Manual de usuario y póliza de garantía oficial de fabricante"
-    ],
     esTopVentas: true,
   },
   {
@@ -1835,8 +1842,7 @@ export function getEspecificacionesProducto(prod: ProductoCatalogo): Array<{ eti
       { etiqueta: "Concentración", valor: "Eau de Parfum (EDP) / Parfum" },
       { etiqueta: "Volumen", valor: nombre.includes("100ml") ? "100 ml" : nombre.includes("125ml") ? "125 ml" : "80 ml" },
       { etiqueta: "Autenticidad", valor: "100% Original con celofán y código de lote (Batch Code) verificable" },
-      ...baseSpecs
-    ];
+];
   }
 
   return baseSpecs;

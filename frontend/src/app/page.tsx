@@ -63,6 +63,12 @@ export default function StorefrontPage() {
   const [isPuenteOpen, setIsPuenteOpen] = useState(false);
   const [geoAlertaCde, setGeoAlertaCde] = useState(false);
 
+  // Top 5 productos de alta demanda en el interior (tráfico de Reels y pauta de Instagram)
+  const IDS_DESTACADOS_INTERIOR = ["1450729", "1448597", "1450781", "1448620", "1448580"];
+  const productosDestacadosInterior = IDS_DESTACADOS_INTERIOR
+    .map((id) => PRODUCTOS_CATALOGO.find((p) => p.id === id))
+    .filter((p): p is ProductoCatalogo => Boolean(p));
+
   // Verificación de geolocalización automática: Detectar si el visitante está en CDE / Alto Paraná
   React.useEffect(() => {
     fetch("/api/geo/check")
@@ -393,44 +399,56 @@ export default function StorefrontPage() {
 
               {/* Ticker de Ahorro Directo Black November */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
-                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                <Link
+                  href="/producto/1448597"
+                  className="bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-2.5 transition block group"
+                  title="Ver PlayStation 5 Slim 1TB con Lectora"
+                >
                   <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
-                    <span>PS5 SLIM 1TB</span>
-                    <span className="text-rose-400 line-through">₲ 5.080.000</span>
+                    <span className="group-hover:text-amber-300 transition">PS5 SLIM CON LECTORA</span>
+                    <span className="text-rose-400 line-through">₲ 4.850.000</span>
                   </div>
                   <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
-                    ₲ 3.971.000
+                    ₲ 3.965.000
                   </div>
                   <div className="text-[10px] font-bold text-amber-300">
-                    Ahorrás ₲ 1.109.000
+                    Ahorrás ₲ 885.000
                   </div>
-                </div>
+                </Link>
 
-                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                <Link
+                  href="/producto/1450729"
+                  className="bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-2.5 transition block group"
+                  title="Ver Poco X6 Pro 5G 512GB"
+                >
                   <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
-                    <span>POCO F9 PRO 5G</span>
-                    <span className="text-rose-400 line-through">₲ 7.020.000</span>
+                    <span className="group-hover:text-amber-300 transition">POCO X6 PRO 5G</span>
+                    <span className="text-rose-400 line-through">₲ 3.100.000</span>
                   </div>
                   <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
-                    ₲ 5.486.000
+                    ₲ 2.437.000
                   </div>
                   <div className="text-[10px] font-bold text-amber-300">
-                    Ahorrás ₲ 1.534.000
+                    Ahorrás ₲ 663.000
                   </div>
-                </div>
+                </Link>
 
-                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5">
+                <Link
+                  href="/producto/1448620"
+                  className="bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-amber-500/50 rounded-xl p-2.5 transition block group"
+                  title="Ver Notebook Acer Nitro V 15 RTX 4050"
+                >
                   <div className="text-[10px] font-bold text-zinc-400 flex items-center justify-between">
-                    <span>DJI MINI 4K</span>
-                    <span className="text-rose-400 line-through">₲ 3.650.000</span>
+                    <span className="group-hover:text-amber-300 transition">ACER NITRO V 15</span>
+                    <span className="text-rose-400 line-through">₲ 7.490.000</span>
                   </div>
                   <div className="text-sm font-black text-emerald-400 font-mono mt-0.5">
-                    ₲ 2.857.000
+                    ₲ 5.875.000
                   </div>
                   <div className="text-[10px] font-bold text-amber-300">
-                    Ahorrás ₲ 793.000
+                    Ahorrás ₲ 1.615.000
                   </div>
-                </div>
+                </Link>
               </div>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -471,18 +489,20 @@ export default function StorefrontPage() {
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
                   <Flame className="w-3 h-3 text-amber-300" />
-                  BLACK DEAL
+                  MÁS PEDIDO • VIRAL IG
                 </span>
                 <span className="text-[10px] font-black text-amber-400 bg-amber-400/10 border border-amber-400/30 px-2 py-0.5 rounded">
-                  -22% OFF
+                  -21% OFF
                 </span>
               </div>
               
-              <h3 className="text-base font-black leading-tight pt-1">
-                XIAOMI POCO F9 PRO 5G (512GB)
-              </h3>
+              <Link href="/producto/1450729" className="block group/title">
+                <h3 className="text-base font-black leading-tight pt-1 group-hover/title:text-amber-400 transition">
+                  XIAOMI POCO X6 PRO 5G (512GB)
+                </h3>
+              </Link>
               <p className="text-[11px] text-zinc-400">
-                Gama alta con 12GB RAM y pantalla 6.59&quot;. Stock físico verificado en CDE.
+                Dimensity 8300-Ultra • 12GB RAM • Pantalla 120Hz. El smartphone gamer más cotizado del interior.
               </p>
             </div>
 
@@ -490,27 +510,27 @@ export default function StorefrontPage() {
               <div className="flex items-center justify-between text-xs">
                 <span className="text-zinc-400 font-semibold">ANTES (Asunción):</span>
                 <span className="line-through text-rose-400 font-bold font-mono">
-                  ₲ 7.020.000
+                  ₲ 3.100.000
                 </span>
               </div>
               <div className="flex items-baseline justify-between">
                 <span className="text-xs font-black text-emerald-400 uppercase">AHORA BLACK:</span>
                 <span className="text-xl font-black text-emerald-400 font-mono">
-                  ₲ 5.486.000
+                  ₲ 2.437.000
                 </span>
               </div>
               <div className="pt-1 border-t border-zinc-800 flex items-center justify-between text-[11px] text-amber-300 font-bold">
                 <span>Ahorro en tu bolsillo:</span>
                 <span className="bg-amber-400/10 px-1.5 py-0.5 rounded text-amber-300 font-mono">
-                  ₲ 1.534.000
+                  ₲ 663.000
                 </span>
               </div>
             </div>
 
-            <div className="z-10">
+            <div className="z-10 space-y-2">
               <button
                 onClick={() => {
-                  const poco = PRODUCTOS_CATALOGO.find(p => p.id === "1422221");
+                  const poco = PRODUCTOS_CATALOGO.find(p => p.id === "1450729");
                   if (poco) addToCart(poco);
                   setIsCartOpen(true);
                 }}
@@ -519,6 +539,12 @@ export default function StorefrontPage() {
                 <ShoppingBag className="w-3.5 h-3.5" />
                 <span>COMPRAR AL PRECIO CDE</span>
               </button>
+              <Link
+                href="/producto/1450729"
+                className="w-full py-1 text-center block text-[11px] text-zinc-400 hover:text-white underline font-semibold transition"
+              >
+                Ver ficha técnica oficial ↗
+              </Link>
             </div>
           </div>
         </div>
@@ -574,6 +600,127 @@ export default function StorefrontPage() {
           </div>
         </div>
       </section>
+
+      {/* ==============================================================================
+          2.5 SECCIÓN EN EL FRENTE: EQUIPOS MÁS PEDIDOS DEL INTERIOR (VISTOS EN INSTAGRAM)
+      ============================================================================== */}
+      {categoriaActiva === "todos" && !busqueda && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 w-full">
+          <div className="bg-gradient-to-br from-slate-950 via-zinc-900 to-black text-white rounded-3xl p-5 sm:p-7 border border-amber-500/40 shadow-xl space-y-5">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 border-b border-zinc-800 pb-4">
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs animate-pulse">
+                    <Flame className="w-3.5 h-3.5 text-amber-300" />
+                    <span>VISTOS EN NUESTRO VIDEO DE INSTAGRAM</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    <Truck className="w-3 h-3 text-emerald-400" />
+                    <span>DESPACHO SEGURO VÍA TSI AL INTERIOR</span>
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Top 5 Equipos Más Buscados del Interior de Paraguay
+                </h2>
+                <p className="text-xs sm:text-sm text-zinc-300 max-w-2xl leading-relaxed">
+                  Los 5 productos que viste en la pauta de Instagram con precio real mayorista de Ciudad del Este y salida diaria asegurada hacia Encarnación, Cnel. Oviedo, Villarrica, Caaguazú y todo el país.
+                </p>
+              </div>
+
+              <Link
+                href="/como-comprar"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 underline shrink-0 transition"
+              >
+                <span>¿Cómo funciona el envío por TSI?</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* Grilla de los 5 Destacados del Frente */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+              {productosDestacadosInterior.map((prod) => {
+                const precioAntes = getPrecioAntesAsuncion(prod);
+                const ahorroPyg = Math.max(0, precioAntes - prod.precioPyg);
+                const pctAhorro = Math.round((ahorroPyg / precioAntes) * 100);
+
+                return (
+                  <div
+                    key={prod.id}
+                    className="bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/70 rounded-2xl p-3.5 flex flex-col justify-between transition group shadow-md"
+                  >
+                    <Link
+                      href={`/producto/${prod.id}`}
+                      className="block group/link space-y-2.5"
+                    >
+                      <div className="h-36 bg-zinc-950/60 rounded-xl p-2 flex items-center justify-center relative overflow-hidden">
+                        <span className="absolute top-1.5 left-1.5 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-xs">
+                          -{pctAhorro}% OFF
+                        </span>
+                        <img
+                          src={prod.img}
+                          alt={prod.nombre}
+                          className="max-h-full max-w-full object-contain group-hover/link:scale-105 transition duration-300"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                          {prod.categoria} • {prod.marca}
+                        </span>
+                        <h3 className="text-xs font-bold text-white line-clamp-2 leading-snug group-hover/link:text-amber-400 transition">
+                          {prod.nombre}
+                        </h3>
+                      </div>
+
+                      <div className="pt-2 border-t border-zinc-800/80 space-y-1">
+                        <div className="flex items-center justify-between text-[10px] text-zinc-400">
+                          <span>ANTES (Asunción):</span>
+                          <span className="line-through text-rose-400 font-mono">
+                            ₲ {precioAntes.toLocaleString("es-PY")}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline justify-between">
+                          <span className="text-[10px] font-black text-amber-300">AHORA CDE:</span>
+                          <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">
+                            ₲ {prod.precioPyg.toLocaleString("es-PY")}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] pt-0.5">
+                          <span className="text-zinc-300 font-mono font-bold bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800">
+                            US$ {prod.precioUsd.toFixed(2)}
+                          </span>
+                          <span className="text-amber-300 font-bold text-[10px]">
+                            Ahorro ₲ {ahorroPyg.toLocaleString("es-PY")}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    <div className="pt-2.5 mt-2 border-t border-zinc-800/80 space-y-1.5">
+                      <button
+                        onClick={() => {
+                          addToCart(prod);
+                          setIsCartOpen(true);
+                        }}
+                        className="w-full py-2 rounded-xl bg-[#00c853] hover:bg-[#00b34a] text-white text-xs font-black uppercase tracking-wider transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <span>Comprar</span>
+                      </button>
+                      <Link
+                        href={`/producto/${prod.id}`}
+                        className="block text-center text-[10px] text-zinc-400 hover:text-white underline transition"
+                      >
+                        Ver ficha completa ↗
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ==============================================================================
           3. CATÁLOGO PRINCIPAL Y RESULTADOS DE BÚSQUEDA DINÁMICA
