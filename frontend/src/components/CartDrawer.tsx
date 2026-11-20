@@ -25,6 +25,7 @@ export function CartDrawer() {
     subtotalPyg, 
     subtotalUsd, 
     fletePyg, 
+    fleteDestinoPyg,
     descuentoPyg, 
     totalPagarPyg, 
     cupon, 
@@ -258,7 +259,9 @@ export function CartDrawer() {
                       ₲ {totalPagarPyg.toLocaleString("es-PY")}
                     </span>
                     <span className="text-[10px] text-slate-400 font-mono">
-                      (Aprox. U$ {(subtotalUsd + (fletePyg / 7640)).toFixed(2)})
+                      {fleteDestinoPyg === null 
+                        ? "+ Flete según destino en checkout" 
+                        : `(Aprox. U$ ${(subtotalUsd + (fletePyg / 7640)).toFixed(2)})`}
                     </span>
                   </div>
                 </div>

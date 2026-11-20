@@ -641,7 +641,7 @@ export function ProfileDrawer() {
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600">
                   <span className="font-bold block text-slate-800 mb-1">Seguridad de la Cuenta</span>
                   <p className="text-[11px] leading-relaxed">
-                    Actualiza tu contraseña ("seña") para proteger tu ticket de envío y tus compras anteriores.
+                    Actualiza tu contraseña (&quot;seña&quot;) para proteger tu ticket de envío y tus compras anteriores.
                   </p>
                 </div>
 

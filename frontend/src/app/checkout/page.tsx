@@ -74,6 +74,7 @@ export default function CheckoutPage() {
   // Destinos TSI dinámicos
   const [destinosDisponibles, setDestinosDisponibles] = useState<any[]>([]);
   const [cargandoDestinos, setCargandoDestinos] = useState(false);
+  const [errorDestinos, setErrorDestinos] = useState<string | null>(null);
   const [destinoSeleccionado, setDestinoSeleccionado] = useState<any | null>(null);
   const [tarifaPendiente, setTarifaPendiente] = useState(false);
   const [fueraDeCobertura, setFueraDeCobertura] = useState(false);
@@ -120,15 +121,18 @@ export default function CheckoutPage() {
 
   // Cargar localidades habilitadas al seleccionar departamento
   const cargarDestinosPorDepartamento = async (depto: string, ciudadPrevia = "") => {
+    if (!depto) return;
     setCargandoDestinos(true);
     setFueraDeCobertura(false);
+    setErrorDestinos(null);
+    setDestinosDisponibles([]);
     try {
       const res = await fetch(`/api/geo/destinos?departamento=${encodeURIComponent(depto)}`);
       const data = await res.json();
-      if (data.success && Array.isArray(data.destinos)) {
+      if (res.ok && data.success && Array.isArray(data.destinos)) {
         setDestinosDisponibles(data.destinos);
         const habilitados = data.destinos.filter((d: any) => d.coberturaHabilitada);
-        if (habilitados.length === 0) {
+        if (data.destinos.length === 0 || habilitados.length === 0) {
           setFueraDeCobertura(true);
           setDestinoSeleccionado(null);
           setFleteDestinoPyg(null);
@@ -138,15 +142,22 @@ export default function CheckoutPage() {
             aplicarDestino(match);
           }
         }
+      } else {
+        setErrorDestinos(data.error || "No pudimos consultar la cobertura TSI. Volvé a intentar.");
+        setDestinoSeleccionado(null);
+        setFleteDestinoPyg(null);
       }
     } catch (e) {
       console.error("Error cargando destinos TSI:", e);
+      setErrorDestinos("Error de conexión al consultar la cobertura TSI. Volvé a intentar.");
+      setDestinoSeleccionado(null);
+      setFleteDestinoPyg(null);
     } finally {
       setCargandoDestinos(false);
     }
   };
 
-  const aplicarDestino = (destino: any) => {
+  const aplicarDestino = (destino: any, modalidadDeseada?: string) => {
     setDestinoSeleccionado(destino);
     if (!destino.coberturaHabilitada) {
       setFueraDeCobertura(true);
@@ -163,11 +174,16 @@ export default function CheckoutPage() {
     }
 
     setTarifaPendiente(false);
+
+    // Si el destino es solo AGENCIA, forzar modalidad a AGENCIA
+    const modalidadEfectiva = destino.modalidad === "AGENCIA" ? "AGENCIA" : (modalidadDeseada || cliente.modalidad || "DOMICILIO");
+
     const tienePesado = cart.some((it) => it.tipoFlete === "PESADO");
     const costo = tienePesado ? destino.fletePesadoPyg : destino.fleteRegularPyg;
     setFleteDestinoPyg(costo);
     setCliente(prev => ({
       ...prev,
+      modalidad: modalidadEfectiva,
       agenciaTsi: destino.agenciaNombre || "",
     }));
   };
@@ -182,13 +198,21 @@ export default function CheckoutPage() {
     }));
     setDestinoSeleccionado(null);
     setTarifaPendiente(false);
+    setFueraDeCobertura(false);
     setFleteDestinoPyg(null);
+    setErrorMensaje(null);
+    setErrorDestinos(null);
     cargarDestinosPorDepartamento(nuevoDep);
   };
 
   const handleCiudadChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     const nuevaCiudad = e.target.value;
     setCliente(prev => ({ ...prev, ciudad: nuevaCiudad }));
+    setDestinoSeleccionado(null);
+    setTarifaPendiente(false);
+    setFueraDeCobertura(false);
+    setFleteDestinoPyg(null);
+    setErrorMensaje(null);
 
     const destino = destinosDisponibles.find(
       d => d.ciudad.toLowerCase() === nuevaCiudad.toLowerCase()
@@ -196,11 +220,17 @@ export default function CheckoutPage() {
 
     if (destino) {
       aplicarDestino(destino);
-    } else {
-      setDestinoSeleccionado(null);
-      setFleteDestinoPyg(null);
     }
   };
+
+  // Recalcular cotización de flete automáticamente si cambia el contenido del carrito
+  useEffect(() => {
+    if (cart.length === 0) {
+      setFleteDestinoPyg(null);
+    } else if (destinoSeleccionado) {
+      aplicarDestino(destinoSeleccionado, cliente.modalidad);
+    }
+  }, [cart]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setCliente({
@@ -597,7 +627,22 @@ export default function CheckoutPage() {
                       </div>
                     </div>
 
-                    {/* ALERTA: FUERA DE COBERTURA */}
+                    {/* ERROR DE CONEXIÓN O CONSULTA DE DESTINOS */}
+                    {errorDestinos && (
+                      <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                          <span>{errorDestinos}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => cargarDestinosPorDepartamento(cliente.departamento, cliente.ciudad)}
+                          className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs shrink-0 cursor-pointer transition shadow-xs"
+                        >
+                          Reintentar
+                        </button>
+                      </div>
+                    )}
                     {fueraDeCobertura && (
                       <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-start gap-2">
                         <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
@@ -637,39 +682,57 @@ export default function CheckoutPage() {
                         <label className="block text-xs font-bold text-slate-800">
                           Modalidad de Entrega TSI
                         </label>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                          <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
-                            cliente.modalidad === "DOMICILIO"
-                              ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
-                              : "bg-white border-slate-200 text-slate-700"
-                          }`}>
-                            <input
-                              type="radio"
-                              name="modalidad"
-                              value="DOMICILIO"
-                              checked={cliente.modalidad === "DOMICILIO"}
-                              onChange={() => setCliente(prev => ({ ...prev, modalidad: "DOMICILIO" }))}
-                              className="text-emerald-600"
-                            />
-                            <span>Entrega a Domicilio</span>
-                          </label>
+                        {destinoSeleccionado.modalidad === "AGENCIA" ? (
+                          <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+                            <Building2 className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="font-bold">Solo Retiro en Agencia TSI disponible</p>
+                              <p className="text-[11px] text-amber-800 leading-snug">
+                                Para esta localidad, Transportadora TSI opera exclusivamente entregas en su agencia oficial de ventanilla.
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
+                              cliente.modalidad === "DOMICILIO"
+                                ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                                : "bg-white border-slate-200 text-slate-700"
+                            }`}>
+                              <input
+                                type="radio"
+                                name="modalidad"
+                                value="DOMICILIO"
+                                checked={cliente.modalidad === "DOMICILIO"}
+                                onChange={() => {
+                                  setCliente(prev => ({ ...prev, modalidad: "DOMICILIO" }));
+                                  aplicarDestino(destinoSeleccionado, "DOMICILIO");
+                                }}
+                                className="text-emerald-600"
+                              />
+                              <span>Entrega a Domicilio</span>
+                            </label>
 
-                          <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
-                            cliente.modalidad === "AGENCIA"
-                              ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
-                              : "bg-white border-slate-200 text-slate-700"
-                          }`}>
-                            <input
-                              type="radio"
-                              name="modalidad"
-                              value="AGENCIA"
-                              checked={cliente.modalidad === "AGENCIA"}
-                              onChange={() => setCliente(prev => ({ ...prev, modalidad: "AGENCIA" }))}
-                              className="text-emerald-600"
-                            />
-                            <span>Retiro en Agencia TSI</span>
-                          </label>
-                        </div>
+                            <label className={`p-2.5 rounded-lg border cursor-pointer flex items-center gap-2 transition ${
+                              cliente.modalidad === "AGENCIA"
+                                ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                                : "bg-white border-slate-200 text-slate-700"
+                            }`}>
+                              <input
+                                type="radio"
+                                name="modalidad"
+                                value="AGENCIA"
+                                checked={cliente.modalidad === "AGENCIA"}
+                                onChange={() => {
+                                  setCliente(prev => ({ ...prev, modalidad: "AGENCIA" }));
+                                  aplicarDestino(destinoSeleccionado, "AGENCIA");
+                                }}
+                                className="text-emerald-600"
+                              />
+                              <span>Retiro en Agencia TSI</span>
+                            </label>
+                          </div>
+                        )}
 
                         {destinoSeleccionado.agenciaNombre && (
                           <p className="text-[11px] text-slate-500">
@@ -750,20 +813,46 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={handleCrearPedido}
-                disabled={!terminosAceptados || cargando || tarifaPendiente || fueraDeCobertura || !cliente.ciudad || cart.length === 0}
+                disabled={
+                  !terminosAceptados ||
+                  cargando ||
+                  cargandoDestinos ||
+                  tarifaPendiente ||
+                  fueraDeCobertura ||
+                  !cliente.departamento ||
+                  !cliente.ciudad ||
+                  fleteDestinoPyg === null ||
+                  cart.length === 0 ||
+                  Boolean(errorMensaje) ||
+                  Boolean(errorDestinos)
+                }
                 className={`w-full py-3.5 px-4 rounded-xl font-bold text-white text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
-                  terminosAceptados && !cargando && !tarifaPendiente && !fueraDeCobertura && cliente.ciudad && cart.length > 0
+                  terminosAceptados &&
+                  !cargando &&
+                  !cargandoDestinos &&
+                  !tarifaPendiente &&
+                  !fueraDeCobertura &&
+                  cliente.departamento &&
+                  cliente.ciudad &&
+                  fleteDestinoPyg !== null &&
+                  cart.length > 0 &&
+                  !errorMensaje &&
+                  !errorDestinos
                     ? "bg-[#00c853] hover:bg-[#00b34a] text-slate-950 font-black"
                     : "bg-slate-400 cursor-not-allowed opacity-75"
                 }`}
               >
                 {cargando ? (
                   "Registrando Pedido en Neon..."
+                ) : cargandoDestinos ? (
+                  "Consultando cobertura TSI..."
                 ) : fueraDeCobertura ? (
                   "❌ Destino fuera de cobertura TSI"
                 ) : tarifaPendiente ? (
                   "⚠️ Envío pendiente de cotización para este destino"
-                ) : !cliente.ciudad ? (
+                ) : !cliente.departamento ? (
+                  "Seleccioná tu departamento de destino"
+                ) : !cliente.ciudad || fleteDestinoPyg === null ? (
                   "Calculá tu envío según destino"
                 ) : cart.length === 0 ? (
                   "Tu carrito está vacío"
@@ -872,10 +961,16 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-baseline pt-2 border-t border-slate-200 text-slate-900 font-bold">
                     <span className="text-sm">Total a Transferir</span>
                     <span className="text-lg font-black text-[#00c853] font-mono">
-                      {tarifaPendiente ? (
-                        <span className="text-amber-600 text-sm">Cotización de flete requerida</span>
+                      {cargandoDestinos ? (
+                        <span className="text-slate-400 text-xs font-semibold animate-pulse">Consultando flete TSI...</span>
+                      ) : fueraDeCobertura ? (
+                        <span className="text-rose-600 text-xs font-bold">Destino fuera de cobertura</span>
+                      ) : tarifaPendiente ? (
+                        <span className="text-amber-600 text-xs font-bold">Cotización de flete requerida</span>
+                      ) : !cliente.ciudad || fleteDestinoPyg === null ? (
+                        <span className="text-slate-400 text-xs font-semibold">Pendiente de cotización de flete</span>
                       ) : (
-                        `₲ ${(cart.length > 0 ? totalPagarPyg : 0).toLocaleString("es-PY")}`
+                        `₲ ${(cart.length > 0 ? (subtotalPyg + fleteDestinoPyg - descuentoPyg) : 0).toLocaleString("es-PY")}`
                       )}
                     </span>
                   </div>

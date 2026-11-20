@@ -287,7 +287,7 @@ export function AuthModal() {
 
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                  Contraseña ("Seña")
+                  Contraseña (&quot;Seña&quot;)
                 </label>
                 <div className="relative">
                   <input

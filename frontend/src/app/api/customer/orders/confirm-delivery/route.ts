@@ -37,7 +37,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Base de datos no disponible." }, { status: 503 });
     }
 
-    // 1. Obtener el pedido y verificar permisos
+    // 1. Intento de actualización ATÓMICA en una sola sentencia SQL
+    // Verifica en una sola operación el comprador, el estado ENVIADO/DESPACHADO_TSI y que no haya sido confirmado previamente
+    const updateRes = await query<any>(
+      `UPDATE pedidos
+       SET estado = 'ENTREGADO',
+           fecha_confirmacion_entrega = NOW()
+       WHERE (id::text = $1 OR codigo_pedido = $2)
+         AND cliente_id = $3
+         AND estado IN ('ENVIADO', 'DESPACHADO_TSI')
+         AND fecha_confirmacion_entrega IS NULL
+       RETURNING id, codigo_pedido, estado, fecha_confirmacion_entrega;`,
+      [pedidoId || "", codigoPedido || "", customer.id]
+    );
+
+    if (updateRes.length > 0) {
+      const pActualizado = updateRes[0];
+      return NextResponse.json({
+        success: true,
+        mensaje: "¡Recepción confirmada con éxito! Muchas gracias por confiar en NEXO CDE.",
+        estado: "ENTREGADO",
+        fechaConfirmacion: pActualizado.fecha_confirmacion_entrega,
+      });
+    }
+
+    // 2. Si la actualización atómica afectó 0 filas, diagnosticar con precisión el motivo:
     const rows = await query<any>(
       `SELECT id, codigo_pedido, cliente_id, estado, fecha_confirmacion_entrega
        FROM pedidos
@@ -52,7 +76,7 @@ export async function POST(req: NextRequest) {
 
     const pedido = rows[0];
 
-    // 2. Validar que el comprador autenticado sea el dueño legítimo del pedido
+    // ¿El pedido pertenece a otro usuario?
     if (pedido.cliente_id !== customer.id) {
       return NextResponse.json(
         {
@@ -63,9 +87,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Validar estado: solo se puede confirmar si está ENVIADO o DESPACHADO_TSI
+    // ¿Ya había sido confirmado (por ejemplo ante dobles clics simultáneos o reintentos)?
     const estadoActual = String(pedido.estado).toUpperCase();
-    if (estadoActual === "ENTREGADO") {
+    if (estadoActual === "ENTREGADO" || pedido.fecha_confirmacion_entrega !== null) {
       return NextResponse.json({
         success: true,
         mensaje: "Este pedido ya fue confirmado como entregado.",
@@ -74,32 +98,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (estadoActual !== "ENVIADO" && estadoActual !== "DESPACHADO_TSI") {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `No se puede confirmar la recepción: el pedido se encuentra en estado "${estadoActual}". Solo puede confirmarse cuando esté en estado Enviado.`,
-        },
-        { status: 400 }
-      );
-    }
-
-    // 4. Actualizar a ENTREGADO con fecha y hora exacta
-    const timestampConfirmacion = new Date();
-    await query(
-      `UPDATE pedidos
-       SET estado = 'ENTREGADO',
-           fecha_confirmacion_entrega = $1
-       WHERE id = $2;`,
-      [timestampConfirmacion, pedido.id]
+    // ¿El pedido está en un estado previo (ej. PENDIENTE_PAGO, PREPARANDO_ENVIO)?
+    return NextResponse.json(
+      {
+        success: false,
+        error: `No se puede confirmar la recepción: el pedido se encuentra en estado "${estadoActual}". Solo puede confirmarse cuando esté en estado Enviado.`,
+      },
+      { status: 400 }
     );
-
-    return NextResponse.json({
-      success: true,
-      mensaje: "¡Recepción confirmada con éxito! Muchas gracias por confiar en NEXO CDE.",
-      estado: "ENTREGADO",
-      fechaConfirmacion: timestampConfirmacion.toISOString(),
-    });
   } catch (err: any) {
     console.error("Error confirmando entrega:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

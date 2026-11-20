@@ -211,6 +211,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validar modalidad habilitada para el destino (DOMICILIO vs RETIRO EN AGENCIA TSI)
+    const modalidadCliente = (cliente.modalidad || "DOMICILIO").toUpperCase().trim();
+    if (destinoDb.modalidad === "AGENCIA" && modalidadCliente === "DOMICILIO") {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `La localidad de ${cliente.ciudad} (${cliente.departamento}) solo dispone de servicio para retiro en agencia TSI. Por favor seleccioná la modalidad «Retiro en Agencia TSI».`,
+          codigoError: "MODALIDAD_NO_DISPONIBLE",
+        },
+        { status: 400 }
+      );
+    }
+
     // Destino habilitado sin tarifa para el tipo de carrito
     const tarifaAplicable = tienePesado ? destinoDb.flete_pesado_pyg : destinoDb.flete_regular_pyg;
     if (tarifaAplicable === null || tarifaAplicable === undefined || Number(tarifaAplicable) <= 0) {
